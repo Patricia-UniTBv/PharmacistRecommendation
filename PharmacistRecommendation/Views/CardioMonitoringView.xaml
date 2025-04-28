@@ -1,0 +1,36 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
+             x:Class="PharmacistRecommendation.Views.CardioMonitoringView"
+             Title="Monitorizare Cardio">
+
+    <!--<ContentPage.BindingContext>
+        <viewModels:CardioMonitoringViewModel />
+    </ContentPage.BindingContext>-->
+
+    <!--<ContentPage.BindingContext>
+        <Binding Path="CardioMonitoringViewModel" Source="{x:Static helpers:ServiceHelper.Services}" />
+    </ContentPage.BindingContext>-->
+
+    <VerticalStackLayout Padding="20">
+        <Label Text="Date pacient" FontAttributes="Bold" FontSize="20"/>
+
+        <Entry Placeholder="Număr card" Text="{Binding CardNumber}" />
+        <Entry Placeholder="Nume" Text="{Binding Name}" />
+        <Entry Placeholder="CNP" Text="{Binding Cnp}" />
+        <Entry Placeholder="Vârstă" Keyboard="Numeric" Text="{Binding Age}" />
+        <Entry Placeholder="Sex" Text="{Binding Gender}" />
+        <Entry Placeholder="Greutate" Text="{Binding Weight}" />
+        <Entry Placeholder="Inaltime" Text="{Binding Height}" />
+
+        <Label Text="Monitorizare" FontAttributes="Bold" FontSize="20" Margin="0,20,0,0" />
+
+        <Entry Placeholder="Tensiune max" Keyboard="Numeric" Text="{Binding MaxBloodPressure}" />
+        <Entry Placeholder="Tensiune min" Keyboard="Numeric" Text="{Binding MinBloodPressure}" />
+        <Entry Placeholder="Puls" Keyboard="Numeric" Text="{Binding HeartRate}" />
+        <Entry Placeholder="Saturație oxigen" Keyboard="Numeric" Text="{Binding PulseOximetry}" />
+
+        <Button Text="Salvează" Command="{Binding SaveCommand}" Margin="0,20,0,0"/>
+    </VerticalStackLayout>
+</ContentPage>

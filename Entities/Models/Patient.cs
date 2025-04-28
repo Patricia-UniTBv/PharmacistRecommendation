@@ -11,11 +11,17 @@ public partial class Patient
 
     public string FirstName { get; set; } = null!;
 
-    public string? PersonalId { get; set; }
+    public string? Cnp { get; set; }
+
+    public string? Cid { get; set; }
 
     public string? Email { get; set; }
 
     public string? Phone { get; set; }
+
+    public DateOnly? Birthdate { get; set; }
+
+    public string? Gender { get; set; }
 
     public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
 

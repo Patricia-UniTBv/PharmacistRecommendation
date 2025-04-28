@@ -11,15 +11,21 @@ public partial class Monitoring
 
     public int? CardId { get; set; }
 
-    public double Value { get; set; }
-
-    public string Parameter { get; set; } = null!;
-
     public string? Notes { get; set; }
 
     public DateTime MonitoringDate { get; set; }
 
+    public decimal? Height { get; set; }
+
+    public decimal? Weight { get; set; }
+
     public virtual PharmacyCard? Card { get; set; }
 
+    public virtual CardioMonitoring? CardioMonitoring { get; set; }
+
+    public virtual DiabetesMonitoring? DiabetesMonitoring { get; set; }
+
     public virtual Patient Patient { get; set; } = null!;
+
+    public virtual TemperatureMonitoring? TemperatureMonitoring { get; set; }
 }
