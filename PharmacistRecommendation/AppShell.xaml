@@ -1,15 +1,36 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <Shell
     x:Class="PharmacistRecommendation.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:PharmacistRecommendation"
-    Shell.FlyoutBehavior="Disabled"
-    Title="PharmacistRecommendation">
+    xmlns:views="clr-namespace:PharmacistRecommendation.Views">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <Shell.MenuBarItems>
+        <MenuBarItem Text="Card">
+            <MenuFlyoutItem Text="Adaugă Card" />
+        </MenuBarItem>
 
+        <MenuBarItem Text="Monitorizare">
+            <MenuFlyoutItem Text="Cardio" Clicked="OnCardioClicked" />
+            <MenuFlyoutItem Text="Diabet" Clicked="OnDiabetClicked" />
+            <MenuFlyoutItem Text="Temperatură" Clicked="OnTemperatureClicked" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Emitere Documente">
+            <MenuFlyoutItem Text="Emite Document" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Rapoarte">
+            <MenuFlyoutItem Text="Vezi Raport" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Configurări">
+            <MenuFlyoutItem Text="Setări" />
+        </MenuBarItem>
+
+        <MenuBarItem Text="Ajutor">
+            <MenuFlyoutItem Text="Despre" />
+        </MenuBarItem>
+    </Shell.MenuBarItems>
+
+    <ShellContent  ContentTemplate="{DataTemplate views:CardioMonitoringView}"/>
 </Shell>

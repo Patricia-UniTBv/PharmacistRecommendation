@@ -6,17 +6,11 @@ namespace PharmacistRecommendation
 {
     public partial class App : Application
     {
-        public App(CardioMonitoringView cardioMonitoringView)
+        public App()
         {
-            try
-            {
-                InitializeComponent();
-                MainPage = cardioMonitoringView;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
+            InitializeComponent();
+            //Current.UserAppTheme = AppTheme.Light;
+            MainPage = new AppShell();
         }
     }
 }

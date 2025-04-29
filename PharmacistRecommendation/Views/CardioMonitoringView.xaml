@@ -2,35 +2,123 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:PharmacistRecommendation.ViewModels"
              xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
-             x:Class="PharmacistRecommendation.Views.CardioMonitoringView"
-             Title="Monitorizare Cardio">
+             x:Class="PharmacistRecommendation.Views.CardioMonitoringView">
 
-    <!--<ContentPage.BindingContext>
-        <viewModels:CardioMonitoringViewModel />
-    </ContentPage.BindingContext>-->
 
-    <!--<ContentPage.BindingContext>
-        <Binding Path="CardioMonitoringViewModel" Source="{x:Static helpers:ServiceHelper.Services}" />
-    </ContentPage.BindingContext>-->
+    <ScrollView Padding="20">
+        <Grid ColumnSpacing="40" RowSpacing="20">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-    <VerticalStackLayout Padding="20">
-        <Label Text="Date pacient" FontAttributes="Bold" FontSize="20"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <Entry Placeholder="Număr card" Text="{Binding CardNumber}" />
-        <Entry Placeholder="Nume" Text="{Binding Name}" />
-        <Entry Placeholder="CNP" Text="{Binding Cnp}" />
-        <Entry Placeholder="Vârstă" Keyboard="Numeric" Text="{Binding Age}" />
-        <Entry Placeholder="Sex" Text="{Binding Gender}" />
-        <Entry Placeholder="Greutate" Text="{Binding Weight}" />
-        <Entry Placeholder="Inaltime" Text="{Binding Height}" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <Label Text="Monitorizare" FontAttributes="Bold" FontSize="20" Margin="0,20,0,0" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <Entry Placeholder="Tensiune max" Keyboard="Numeric" Text="{Binding MaxBloodPressure}" />
-        <Entry Placeholder="Tensiune min" Keyboard="Numeric" Text="{Binding MinBloodPressure}" />
-        <Entry Placeholder="Puls" Keyboard="Numeric" Text="{Binding HeartRate}" />
-        <Entry Placeholder="Saturație oxigen" Keyboard="Numeric" Text="{Binding PulseOximetry}" />
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Monitorizare Cardio" FontSize="22" FontAttributes="Bold" Margin="0,0,0,20" HorizontalOptions="Start"/>
 
-        <Button Text="Salvează" Command="{Binding SaveCommand}" Margin="0,20,0,0"/>
-    </VerticalStackLayout>
+                <Label Grid.Row="1" Grid.Column="0" Text="Date pacient" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
+            </Grid>
+
+
+
+            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                <Label Text="Număr card" FontAttributes="Bold" />
+                <Entry Placeholder="Număr card" Text="{Binding CardNumber}" HeightRequest="40"/>
+
+                <Label Text="Pacient" FontAttributes="Bold" />
+                <Entry Placeholder="Pacient" Text="{Binding Name}" HeightRequest="40"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+
+                <Label Text="CNP" FontAttributes="Bold" />
+                <Entry Placeholder="CNP" Text="{Binding Cnp}" HeightRequest="40"/>
+                
+                <Label Text="CID" FontAttributes="Bold" />
+                <Entry Placeholder="CID" Text="{Binding Cid}" HeightRequest="40"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1" Grid.Column="2">
+                <Label Text="Vârstă" FontAttributes="Bold" />
+                <Entry Placeholder="Vârstă" Keyboard="Numeric" Text="{Binding Age}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+
+                <Label Text="Sex" FontAttributes="Bold" />
+
+                <Picker SelectedItem="{Binding Gender}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start">
+                    <Picker.Items>
+                        <x:String>Feminin</x:String>
+                        <x:String>Masculin</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                
+            </VerticalStackLayout>
+
+            <Label Grid.Row="2" Grid.ColumnSpan="2" Text="Parametrii monitorizați" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
+
+            <VerticalStackLayout Grid.Row="3" Grid.Column="0">
+                <Label Text="Greutate (kg)" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="500" Increment="1" Value="{Binding Weight, Mode=TwoWay}" />
+                <Entry Placeholder="Greutate" Keyboard="Numeric" Text="{Binding Weight, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="4" Grid.Column="0">
+                <Label Text="Înălțime (cm)" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding Height, Mode=TwoWay}" />
+                <Entry Placeholder="Înălțime" Keyboard="Numeric" Text="{Binding Height, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="Parametrii cardio-vasculari" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
+
+            <VerticalStackLayout Grid.Row="3" Grid.Column="1">
+                <Label Text="TA Max (mmHg)" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding MaxBloodPressure, Mode=TwoWay}" />
+                <Entry Placeholder="TA Max" Keyboard="Numeric" Text="{Binding MaxBloodPressure, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="4" Grid.Column="1">
+                <Label Text="TA Min (mmHg)" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding MinBloodPressure, Mode=TwoWay}" />
+                <Entry Placeholder="TA Min" Keyboard="Numeric" Text="{Binding MinBloodPressure, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="3" Grid.Column="2">
+                <Label Text="Puls (bpm)" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="200" Increment="1" Value="{Binding HeartRate, Mode=TwoWay}" />
+                <Entry Placeholder="Puls" Keyboard="Numeric" Text="{Binding HeartRate, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="4" Grid.Column="2">
+                <Label Text="Pulsoximetrie" FontAttributes="Bold" />
+                <Stepper Minimum="0" Maximum="100" Increment="1" Value="{Binding PulseOximetry, Mode=TwoWay}" />
+                <Entry Placeholder="Saturație oxigen" Keyboard="Numeric" Text="{Binding PulseOximetry, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+
+            <Grid Grid.Row="6" Grid.ColumnSpan="3" HorizontalOptions="Start">
+                <Button Text="Salvează" Command="{Binding SaveCommand}" HeightRequest="40" HorizontalOptions="Center"/>
+            </Grid>
+        </Grid>
+    </ScrollView>
 </ContentPage>
