@@ -25,22 +25,17 @@ namespace Entities.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddCardioMonitoringAsync(CardioMonitoring cardioMonitoring)
-        {
-            _context.CardioMonitorings.Add(cardioMonitoring);
-            await _context.SaveChangesAsync();
-        }
 
-        public async Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring)
-        {
-            _context.TemperatureMonitorings.Add(temperatureMonitoring);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring)
+        //{
+        //    _context.TemperatureMonitorings.Add(temperatureMonitoring);
+        //    await _context.SaveChangesAsync();
+        //}
 
-        public async Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring)
-        {
-            _context.DiabetesMonitorings.Add(diabetesMonitoring);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring)
+        //{
+        //    _context.DiabetesMonitorings.Add(diabetesMonitoring);
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }

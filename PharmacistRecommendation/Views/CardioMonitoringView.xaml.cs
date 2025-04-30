@@ -4,7 +4,6 @@ namespace PharmacistRecommendation.Views;
 
 public partial class CardioMonitoringView : ContentPage
 {
-    private readonly CardioMonitoringViewModel _viewModel;
 
     public CardioMonitoringView(CardioMonitoringViewModel viewModel)
     {

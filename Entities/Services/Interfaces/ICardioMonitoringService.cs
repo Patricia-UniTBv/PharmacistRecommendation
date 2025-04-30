@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using DTO;
+using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,7 @@ namespace Entities.Services.Interfaces
 {
     public interface ICardioMonitoringService
     {
-        Task AddCardioMonitoringAsync(CardioMonitoring monitoring);
-        Task<CardioMonitoring?> GetCardioMonitoringAsync(int monitoringId);
-        Task UpdateCardioMonitoringAsync(CardioMonitoring monitoring);
+        Task SaveCardioMonitoringAsync(CardioMonitoring cardio);
+        Task<List<CardioMonitoringDTO>> GetHistoryAsync(int patientId, DateTime start, DateTime end);
     }
 }

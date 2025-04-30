@@ -21,11 +21,21 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+            builder.Services.AddSingleton<PharmacistRecommendationDbContext>();
+
             builder.Services.AddTransient<CardioMonitoringView>();
             builder.Services.AddTransient<CardioMonitoringViewModel>();
+            builder.Services.AddSingleton<ICardioMonitoringService, CardioMonitoringService>();
+
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
-            builder.Services.AddSingleton<PharmacistRecommendationDbContext>();
+
+            builder.Services.AddSingleton<IPatientService, PatientService>();
+            builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
+
+
+            builder.Services.AddScoped<ICardioMonitoringRepository, CardioMonitoringRepository>();
+
 
 
 #if DEBUG

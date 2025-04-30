@@ -10,8 +10,7 @@ namespace Entities.Services.Interfaces
     public interface IMonitoringService
     {
         Task SaveMonitoringAsync(Monitoring monitoring);
-        Task SaveCardioMonitoringAsync(CardioMonitoring cardio);
-        Task SaveTemperatureMonitoringAsync(TemperatureMonitoring temperature);
-        Task SaveDiabetesMonitoringAsync(DiabetesMonitoring diabetes);
+        //Task SaveTemperatureMonitoringAsync(TemperatureMonitoring temperature);
+        //Task SaveDiabetesMonitoringAsync(DiabetesMonitoring diabetes);
     }
 }

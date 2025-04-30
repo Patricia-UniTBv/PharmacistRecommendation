@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Services.Interfaces
+namespace Entities.Repository.Interfaces
 {
-    public interface IPatientService
+    public interface IPatientRepository
     {
-       
+        Task<Patient?> GetByCardCodeAsync(string cardCode);
     }
 }

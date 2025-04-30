@@ -1,20 +1,27 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DTO;
 using Entities.Data;
 using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace PharmacistRecommendation.ViewModels;
 
 public partial class CardioMonitoringViewModel : ObservableObject
 {
-    private readonly ICardioMonitoringService _cardioService;
     private readonly IMonitoringService _monitoringService;
+    private readonly ICardioMonitoringService _cardioMonitoringService;
+    private readonly IPatientService _patientService;
+    public DateTime StartDate { get; set; } = DateTime.Now.AddDays(-7);
+    public DateTime EndDate { get; set; } = DateTime.Now;
 
-    public CardioMonitoringViewModel(IMonitoringService monitoringService)
+    public CardioMonitoringViewModel(IMonitoringService monitoringService, ICardioMonitoringService cardioMonitoringService, IPatientService patientService)
     {
         _monitoringService = monitoringService;
+        _cardioMonitoringService = cardioMonitoringService;
+        _patientService = patientService;
     }
 
     public int PatientId { get; set; }
@@ -52,6 +59,9 @@ public partial class CardioMonitoringViewModel : ObservableObject
     [ObservableProperty]
     private decimal? pulseOximetry;
 
+    [ObservableProperty]
+    private ObservableCollection<CardioMonitoringDTO> historyList = [];
+
     [RelayCommand]
     private async Task SearchPatientAsync()
     {
@@ -60,29 +70,28 @@ public partial class CardioMonitoringViewModel : ObservableObject
             return; // Sa afisez un mesj de eroare daca nu e completat campul acesta!
         }
 
-        //var patient = await _patientService.GetPatientByCardNumberAsync(CardNumber);
-        //if (patient == null)
+        //var patient = await _patientService.GetPatientByCardCodeAsync(CardNumber);
+        //if (patient != null)
         //{
-        //    return;
+        //    Name = $"{patient.FirstName} {patient.LastName}";
+        //    Cnp = patient.Cnp;
+        //    Cid = patient.Cid;
+        //    Age = CalculateAge(patient.Birthdate);
+        //    Gender = patient.Gender;
         //}
-
-        //PatientId = patient.Id; // Seteaza ID-ul pacientului
-
-        PatientId = 1;
     }
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        //if (PatientId == 0)
-        //{
-        //    // Daca pacientul nu este gasit, nu se poate salva monitorizarea
-        //    return;
-        //}
+        if (PatientId == 0)
+        {
+            return;
+        }
 
         var monitoring = new Monitoring
         {
-            PatientId = 1, // !!!! this.PatientId
+            PatientId = 1021, // !!!! this.PatientId
             MonitoringDate = DateTime.Now,
             Height = this.Height,
             Weight = this.Weight
@@ -99,6 +108,33 @@ public partial class CardioMonitoringViewModel : ObservableObject
             PulseOximetry = this.PulseOximetry
         };
 
-        await _monitoringService.SaveCardioMonitoringAsync(cardioMonitoring);
+        await _cardioMonitoringService.SaveCardioMonitoringAsync(cardioMonitoring);
+    }
+
+    [RelayCommand]
+    private async Task LoadHistory()
+    {
+        try
+        {
+            //to be deleted
+            PatientId = 1;
+
+           // HistoryList.Clear();
+
+            var result = await _cardioMonitoringService.GetHistoryAsync(PatientId, StartDate, EndDate);
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                HistoryList.Clear(); 
+                foreach (var item in result)
+                {
+                    HistoryList.Add(item);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert("Eroare", ex.Message, "OK");
+        }
     }
 }

@@ -10,8 +10,8 @@ namespace Entities.Repository.Interfaces
     public interface IMonitoringRepository
     {
         Task AddMonitoringAsync(Monitoring monitoring);
-        Task AddCardioMonitoringAsync(CardioMonitoring cardioMonitoring);
-        Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring);
-        Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring);
+        //Task AddCardioMonitoringAsync(CardioMonitoring cardioMonitoring);
+        //Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring);
+        //Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring);
     }
 }
