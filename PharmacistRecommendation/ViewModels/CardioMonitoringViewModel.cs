@@ -5,7 +5,10 @@ using Entities.Data;
 using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
+using static Microsoft.Maui.ApplicationModel.Permissions;
+using Windows.Networking;
 
 namespace PharmacistRecommendation.ViewModels;
 
@@ -36,6 +39,9 @@ public partial class CardioMonitoringViewModel : ObservableObject
     private string cnp;
 
     [ObservableProperty]
+    private string cid;
+
+    [ObservableProperty]
     private int age;
 
     [ObservableProperty]
@@ -62,6 +68,14 @@ public partial class CardioMonitoringViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<CardioMonitoringDTO> historyList = [];
 
+    partial void OnCardNumberChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5) 
+        {
+            _ = SearchPatientAsync(); 
+        }
+    }
+
     [RelayCommand]
     private async Task SearchPatientAsync()
     {
@@ -70,15 +84,21 @@ public partial class CardioMonitoringViewModel : ObservableObject
             return; // Sa afisez un mesj de eroare daca nu e completat campul acesta!
         }
 
-        //var patient = await _patientService.GetPatientByCardCodeAsync(CardNumber);
-        //if (patient != null)
-        //{
-        //    Name = $"{patient.FirstName} {patient.LastName}";
-        //    Cnp = patient.Cnp;
-        //    Cid = patient.Cid;
-        //    Age = CalculateAge(patient.Birthdate);
-        //    Gender = patient.Gender;
-        //}
+        var patient = await _patientService.GetPatientByCardCodeAsync(CardNumber);
+
+        if (patient != null)
+        {
+            Name = $"{patient.FirstName} {patient.LastName}";
+            Cnp = patient.Cnp!;
+            Cid = patient.Cid!;
+            Age = PatientHelper.CalculateAge(patient.Birthdate);
+            Gender = patient.Gender!;
+            PatientId = patient.Id;
+        }
+        else
+        {
+            Name = Cnp = Cid = Gender = string.Empty;
+        }
     }
 
     [RelayCommand]
