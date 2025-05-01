@@ -5,197 +5,248 @@
              x:Class="PharmacistRecommendation.Views.CardioMonitoringView">
 
 
-    <ScrollView Padding="20">
-        <StackLayout>
-            <Grid ColumnSpacing="40" RowSpacing="20">
+    <ScrollView >
+        <VerticalStackLayout Padding="35" Spacing="1" BackgroundColor="#F5F5F5">
+            <!-- Header Section -->
+            <Label Text="Monitorizare Cardio" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10" TextColor="Black"/>
+            <Label Grid.Row="1" Grid.Column="0" Text="Date pacient" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
+            <!-- Patient Data Section -->
+            <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#DDDDDD" BackgroundColor="White" Padding="10">
+                <VerticalStackLayout Spacing="0" BackgroundColor="White" Padding="10">
+                    <!-- Row 1 -->
+                    <Grid ColumnSpacing="20" RowSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Monitorizare Cardio" FontSize="22" FontAttributes="Bold" Margin="0,0,0,20" HorizontalOptions="Start"/>
-
-                    <Label Grid.Row="1" Grid.Column="0" Text="Date pacient" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
-                </Grid>
-
-
-
-                <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                    <Label Text="Număr card" FontAttributes="Bold" />
-                    <Entry Placeholder="Număr card" Text="{Binding CardNumber}" HeightRequest="40"/>
-
-                    <Label Text="Pacient" FontAttributes="Bold" />
-                    <Entry Placeholder="Pacient" Text="{Binding Name}" HeightRequest="40"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-
-                    <Label Text="CNP" FontAttributes="Bold" />
-                    <Entry Placeholder="CNP" Text="{Binding Cnp}" HeightRequest="40"/>
-
-                    <Label Text="CID" FontAttributes="Bold" />
-                    <Entry Placeholder="CID" Text="{Binding Cid}" HeightRequest="40"/>
-
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="1" Grid.Column="2">
-                    <Label Text="Vârstă" FontAttributes="Bold" />
-                    <Entry Placeholder="Vârstă" Keyboard="Numeric" Text="{Binding Age}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-
-                    <Label Text="Sex" FontAttributes="Bold" />
-
-                    <Picker SelectedItem="{Binding Gender}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start">
-                        <Picker.Items>
-                            <x:String>Feminin</x:String>
-                            <x:String>Masculin</x:String>
-                        </Picker.Items>
-                    </Picker>
-
-
-                </VerticalStackLayout>
-
-                <Label Grid.Row="2" Grid.ColumnSpan="2" Text="Parametrii monitorizați" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
-
-                <VerticalStackLayout Grid.Row="3" Grid.Column="0">
-                    <Label Text="Greutate (kg)" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="500" Increment="1" Value="{Binding Weight, Mode=TwoWay}" />
-                    <Entry Placeholder="Greutate" Keyboard="Numeric" Text="{Binding Weight, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="4" Grid.Column="0">
-                    <Label Text="Înălțime (cm)" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding Height, Mode=TwoWay}" />
-                    <Entry Placeholder="Înălțime" Keyboard="Numeric" Text="{Binding Height, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="Parametrii cardio-vasculari" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
-
-                <VerticalStackLayout Grid.Row="3" Grid.Column="1">
-                    <Label Text="TA Max (mmHg)" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding MaxBloodPressure, Mode=TwoWay}" />
-                    <Entry Placeholder="TA Max" Keyboard="Numeric" Text="{Binding MaxBloodPressure, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="4" Grid.Column="1">
-                    <Label Text="TA Min (mmHg)" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="300" Increment="1" Value="{Binding MinBloodPressure, Mode=TwoWay}" />
-                    <Entry Placeholder="TA Min" Keyboard="Numeric" Text="{Binding MinBloodPressure, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="3" Grid.Column="2">
-                    <Label Text="Puls (bpm)" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="200" Increment="1" Value="{Binding HeartRate, Mode=TwoWay}" />
-                    <Entry Placeholder="Puls" Keyboard="Numeric" Text="{Binding HeartRate, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="4" Grid.Column="2">
-                    <Label Text="Pulsoximetrie" FontAttributes="Bold" />
-                    <Stepper Minimum="0" Maximum="100" Increment="1" Value="{Binding PulseOximetry, Mode=TwoWay}" />
-                    <Entry Placeholder="Saturație oxigen" Keyboard="Numeric" Text="{Binding PulseOximetry, Mode=TwoWay}" HeightRequest="40" WidthRequest="200" HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-
-                <Grid Grid.Row="6" Grid.ColumnSpan="3" HorizontalOptions="Start">
-                    <Button Text="Salvează" Command="{Binding SaveCommand}" HeightRequest="40" HorizontalOptions="Center"/>
-                </Grid>
-
-                <Label Grid.Row="7" Grid.ColumnSpan="3" Text="Istoric" FontSize="20" FontAttributes="Bold" HorizontalOptions="Start" Margin="0,10,0,0"/>
-
-                <Grid Grid.Row="8" Grid.ColumnSpan="3" Margin="0,20,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <HorizontalStackLayout Grid.Column="0" Spacing="10">
-                        <VerticalStackLayout>
-                            <Label Text="Data început" FontAttributes="Bold" />
-                            <DatePicker Date="{Binding StartDate}" WidthRequest="140" />
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Număr card" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="Număr card" Text="{Binding CardNumber}" HeightRequest="0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
                         </VerticalStackLayout>
 
-                        <VerticalStackLayout>
-                            <Label Text="Data sfârșit" FontAttributes="Bold" />
-                            <DatePicker Date="{Binding EndDate}" WidthRequest="140" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="CNP" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA"  HeightRequest="42">
+                                <Entry Placeholder="CNP" Text="{Binding Cnp}" HeightRequest="0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
                         </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Row 2 -->
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Nume pacient" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="Nume pacient" Text="{Binding Name}" Margin="0,0" HeightRequest="40" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="CID" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="CID" Text="{Binding Cid}" Margin="0,0" HeightRequest="40" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Row 3 -->
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Vârstă" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" WidthRequest="200" HorizontalOptions="Start" HeightRequest="42">
+                                <Entry Placeholder="Vârstă" Keyboard="Numeric" Text="{Binding Age}" Margin="10,0" HeightRequest="40" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="Sex" FontAttributes="Bold" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" WidthRequest="200" HorizontalOptions="Start" HeightRequest="42">
+                                <Picker SelectedItem="{Binding Gender}" Margin="5,0" HeightRequest="40" BackgroundColor="Transparent" TextColor="Black">
+                                    <Picker.Items>
+                                        <x:String>Feminin</x:String>
+                                        <x:String>Masculin</x:String>
+                                    </Picker.Items>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Monitored Parameters Section -->
+            <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#DDDDDD" BackgroundColor="White" Padding="15">
+                <VerticalStackLayout Spacing="5" BackgroundColor="White" Padding="5">
+                    <!-- Date and Time Row -->
+                    <Label Grid.Row="1" Grid.Column="0" Text="Parametri monitorizati" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0"/>
+
+                    <!-- Weight and Measurements -->
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Greutate (kg)" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="Greutate" Keyboard="Numeric" Text="{Binding Weight}" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="Înălțime (cm)" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="Înălțime" Keyboard="Numeric" Text="{Binding Height}" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Blood Pressure Row -->
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Tensiune Sistolică" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="TA Max" Keyboard="Numeric" Text="{Binding MaxBloodPressure}" HeightRequest="40" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="Tensiune Diastolică" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="TA Min" Keyboard="Numeric" Text="{Binding MinBloodPressure}" HeightRequest="40" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Pulse and Oximetry Row -->
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Puls (bpm)" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="Puls" Keyboard="Numeric" Text="{Binding HeartRate}" HeightRequest="40" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="Saturație Oxigen" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
+                                <Entry Placeholder="SpO2" Keyboard="Numeric" Text="{Binding PulseOximetry}" HeightRequest="40" Margin="10,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Buttons -->
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                        <Button Text="Renunță" BackgroundColor="#dc3545" TextColor="White" WidthRequest="90" HeightRequest="40" Command="{Binding CancelCommand}"/>
+                        <Button Text="Salvează" BackgroundColor="#28a745" TextColor="White" WidthRequest="100" HeightRequest="20" Command="{Binding SaveCommand}"/>
                     </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
-                    <Button Grid.Column="1" Text="Caută" Command="{Binding LoadHistoryCommand}" VerticalOptions="End" Margin="20,0,0,0"/>
-                </Grid>
-            </Grid>
-            
-            
-            <CollectionView ItemsSource="{Binding HistoryList}" Margin="0,20,0,20">
-                    <CollectionView.Header>
-                        <Grid Padding="5" ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+            <!-- History Section -->
+            <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#DDDDDD" BackgroundColor="White" Padding="15">
+                <VerticalStackLayout Spacing="15" BackgroundColor="White">
+                    <Label Text="Istoric" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
 
-                            <Label Text="Data" Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="TA Max" Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="TA Min" Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="Puls" Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="Saturație" Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="Greutate" Grid.Column="5" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                            <Label Text="Înălțime" Grid.Column="6" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                        </Grid>
-                    </CollectionView.Header>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Padding="5" ColumnSpacing="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                    <Grid ColumnSpacing="20" RowSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                                <Label Text="{Binding Date}" Grid.Column="0" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding MaxBloodPressure}" Grid.Column="1" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding MinBloodPressure}" Grid.Column="2" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding HeartRate}" Grid.Column="3" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding PulseOximetry}" Grid.Column="4" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding Weight}" Grid.Column="5" HorizontalTextAlignment="Center" />
-                                <Label Text="{Binding Height}" Grid.Column="6" HorizontalTextAlignment="Center" />
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            
-        </StackLayout>
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="Data început" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA">
+                                <DatePicker Date="{Binding StartDate}" HeightRequest="40" Margin="5,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="Data sfârșit" Margin="5,0,0,0" TextColor="Black"/>
+                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA">
+                                <DatePicker Date="{Binding EndDate}" HeightRequest="40" Margin="5,0" BackgroundColor="Transparent" TextColor="Black"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Button Grid.Column="2" Text="Caută" Command="{Binding LoadHistoryCommand}" VerticalOptions="End" BackgroundColor="#007bff" TextColor="White" HeightRequest="40" WidthRequest="120"/>
+                    </Grid>
+
+                    <!-- History Table -->
+                    <Border StrokeThickness="1" StrokeShape="Rectangle" Stroke="#DDDDDD">
+                        <CollectionView ItemsSource="{Binding HistoryList}" HeightRequest="200" BackgroundColor="White">
+                            <CollectionView.Header>
+                                <Grid BackgroundColor="#f8f9fa" Padding="10,5" ColumnSpacing="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Text="Data" Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="TA Max" Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="TA Min" Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="Puls" Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="Saturație" Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="Greutate" Grid.Column="5" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    <Label Text="Înălțime" Grid.Column="6" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                </Grid>
+                            </CollectionView.Header>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="10,5" ColumnSpacing="5" BackgroundColor="White">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Text="{Binding Date}" Grid.Column="0" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding MaxBloodPressure}" Grid.Column="1" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding MinBloodPressure}" Grid.Column="2" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding HeartRate}" Grid.Column="3" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding PulseOximetry}" Grid.Column="4" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding Weight}" Grid.Column="5" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                        <Label Text="{Binding Height}" Grid.Column="6" HorizontalTextAlignment="Center" TextColor="Black"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
