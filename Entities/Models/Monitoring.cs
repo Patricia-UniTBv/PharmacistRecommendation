@@ -19,13 +19,9 @@ public partial class Monitoring
 
     public decimal? Weight { get; set; }
 
+    public string? ParametersJson { get; set; }
+
     public virtual PharmacyCard? Card { get; set; }
 
-    public virtual CardioMonitoring? CardioMonitoring { get; set; }
-
-    public virtual DiabetesMonitoring? DiabetesMonitoring { get; set; }
-
     public virtual Patient Patient { get; set; } = null!;
-
-    public virtual TemperatureMonitoring? TemperatureMonitoring { get; set; }
 }

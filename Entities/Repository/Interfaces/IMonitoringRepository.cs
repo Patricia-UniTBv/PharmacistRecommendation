@@ -9,9 +9,7 @@ namespace Entities.Repository.Interfaces
 {
     public interface IMonitoringRepository
     {
-        Task AddMonitoringAsync(Monitoring monitoring);
-        //Task AddCardioMonitoringAsync(CardioMonitoring cardioMonitoring);
-        //Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring);
-        //Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring);
+        Task<int> AddAsync(Monitoring entity);
+        Task<List<Monitoring>> GetByPatientAndRangeAsync(int patientId, DateTime start, DateTime end);
     }
 }

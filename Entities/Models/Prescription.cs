@@ -7,8 +7,6 @@ public partial class Prescription
 {
     public int Id { get; set; }
 
-    public int DoctorId { get; set; }
-
     public int PatientId { get; set; }
 
     public int? DocumentId { get; set; }
@@ -22,8 +20,6 @@ public partial class Prescription
     public DateTime IssueDate { get; set; }
 
     public DateTime? FillDate { get; set; }
-
-    public virtual Doctor Doctor { get; set; } = null!;
 
     public virtual Document? Document { get; set; }
 

@@ -9,10 +9,8 @@
             <MenuFlyoutItem Text="Adaugă Card" />
         </MenuBarItem>
 
-        <MenuBarItem Text="Monitorizare">
-            <MenuFlyoutItem Text="Cardio" Clicked="OnCardioClicked" />
-            <MenuFlyoutItem Text="Diabet" Clicked="OnDiabetClicked" />
-            <MenuFlyoutItem Text="Temperatură" Clicked="OnTemperatureClicked" />
+        <MenuBarItem Text="Monitorizare" >
+            <MenuFlyoutItem Text="Monitorizare" Clicked="OnMonitClicked" />
         </MenuBarItem>
 
         <MenuBarItem Text="Emitere Documente">
@@ -32,5 +30,13 @@
         </MenuBarItem>
     </Shell.MenuBarItems>
 
-    <ShellContent  ContentTemplate="{DataTemplate views:CardioMonitoringView}"/>
+    <ShellContent  Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:MonitoringView}"/>
+
+    <Shell.Resources>
+        <Style x:Key="MyPageStyle" TargetType="Element">
+            <Setter Property="Shell.BackgroundColor" Value="#34495E" />
+            <Setter Property="Shell.TitleColor" Value="White" />
+            <Setter Property="Shell.DisabledColor" Value="White" />
+        </Style>
+    </Shell.Resources>
 </Shell>

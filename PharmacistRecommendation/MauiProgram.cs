@@ -23,9 +23,8 @@ namespace PharmacistRecommendation
                 });
             builder.Services.AddSingleton<PharmacistRecommendationDbContext>();
 
-            builder.Services.AddTransient<CardioMonitoringView>();
-            builder.Services.AddTransient<CardioMonitoringViewModel>();
-            builder.Services.AddSingleton<ICardioMonitoringService, CardioMonitoringService>();
+            builder.Services.AddTransient<MonitoringView>();
+            builder.Services.AddTransient<MonitoringViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -34,7 +33,7 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
 
-            builder.Services.AddScoped<ICardioMonitoringRepository, CardioMonitoringRepository>();
+            builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 
 
 

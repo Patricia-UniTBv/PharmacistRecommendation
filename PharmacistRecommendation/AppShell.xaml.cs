@@ -7,21 +7,12 @@ namespace PharmacistRecommendation
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute("monitoring", typeof(MonitoringView));
         }
 
-        private async void OnCardioClicked(object sender, EventArgs e)
+        private async void OnMonitClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync(nameof(CardioMonitoringView));
-        }
-
-        private async void OnDiabetClicked(object sender, EventArgs e)
-        {
-           // await Shell.Current.GoToAsync(nameof(DiabetesMonitoringView));
-        }
-
-        private async void OnTemperatureClicked(object sender, EventArgs e)
-        {
-           // await Shell.Current.GoToAsync(nameof(TemperatureMonitoringView));
+            await GoToAsync("monitoring");
         }
     }
 }

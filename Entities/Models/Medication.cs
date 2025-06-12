@@ -15,8 +15,6 @@ public partial class Medication
 
     public string? Description { get; set; }
 
-    public virtual ICollection<DoctorMedication> DoctorMedications { get; set; } = new List<DoctorMedication>();
-
     public virtual ICollection<MedicationDocument> MedicationDocuments { get; set; } = new List<MedicationDocument>();
 
     public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();

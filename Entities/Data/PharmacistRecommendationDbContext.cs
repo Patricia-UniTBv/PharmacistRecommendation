@@ -20,14 +20,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
     public virtual DbSet<Assistant> Assistants { get; set; }
 
-    public virtual DbSet<CardioMonitoring> CardioMonitorings { get; set; }
-
-    public virtual DbSet<DiabetesMonitoring> DiabetesMonitorings { get; set; }
-
-    public virtual DbSet<Doctor> Doctors { get; set; }
-
-    public virtual DbSet<DoctorMedication> DoctorMedications { get; set; }
-
     public virtual DbSet<Document> Documents { get; set; }
 
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
@@ -53,8 +45,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
     public virtual DbSet<Prescription> Prescriptions { get; set; }
 
     public virtual DbSet<PrescriptionMedication> PrescriptionMedications { get; set; }
-
-    public virtual DbSet<TemperatureMonitoring> TemperatureMonitorings { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -95,70 +85,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
                 .HasForeignKey(d => d.SupervisorPharmacistId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Assistant_Pharmacist");
-        });
-
-        modelBuilder.Entity<CardioMonitoring>(entity =>
-        {
-            entity.HasKey(e => e.MonitoringId).HasName("PK__CardioMo__CAC3C077D583B478");
-
-            entity.ToTable("CardioMonitoring");
-
-            entity.Property(e => e.MonitoringId)
-                .ValueGeneratedNever()
-                .HasColumnName("MonitoringID");
-            entity.Property(e => e.MaxBloodPressure).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.MinBloodPressure).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.PulseOximetry).HasColumnType("decimal(5, 2)");
-
-            entity.HasOne(d => d.Monitoring).WithOne(p => p.CardioMonitoring)
-                .HasForeignKey<CardioMonitoring>(d => d.MonitoringId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CardioMon__Monit__76969D2E");
-        });
-
-        modelBuilder.Entity<DiabetesMonitoring>(entity =>
-        {
-            entity.HasKey(e => e.MonitoringId).HasName("PK__Diabetes__CAC3C077427749C7");
-
-            entity.ToTable("DiabetesMonitoring");
-
-            entity.Property(e => e.MonitoringId)
-                .ValueGeneratedNever()
-                .HasColumnName("MonitoringID");
-            entity.Property(e => e.Glucose).HasColumnType("decimal(5, 2)");
-
-            entity.HasOne(d => d.Monitoring).WithOne(p => p.DiabetesMonitoring)
-                .HasForeignKey<DiabetesMonitoring>(d => d.MonitoringId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__DiabetesM__Monit__7D439ABD");
-        });
-
-        modelBuilder.Entity<Doctor>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Doctor__3214EC07B25007FB");
-
-            entity.ToTable("Doctor");
-
-            entity.Property(e => e.FirstName).HasMaxLength(50);
-            entity.Property(e => e.LastName).HasMaxLength(50);
-            entity.Property(e => e.Specialization).HasMaxLength(100);
-        });
-
-        modelBuilder.Entity<DoctorMedication>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__DoctorMe__3214EC07CCAC5E47");
-
-            entity.ToTable("DoctorMedication");
-
-            entity.HasOne(d => d.Doctor).WithMany(p => p.DoctorMedications)
-                .HasForeignKey(d => d.DoctorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DoctorMedication_Doctor");
-
-            entity.HasOne(d => d.Medication).WithMany(p => p.DoctorMedications)
-                .HasForeignKey(d => d.MedicationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DoctorMedication_Medication");
         });
 
         modelBuilder.Entity<Document>(entity =>
@@ -386,11 +312,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Number).HasMaxLength(20);
             entity.Property(e => e.Series).HasMaxLength(20);
 
-            entity.HasOne(d => d.Doctor).WithMany(p => p.Prescriptions)
-                .HasForeignKey(d => d.DoctorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Prescription_Doctor");
-
             entity.HasOne(d => d.Document).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.DocumentId)
                 .HasConstraintName("FK_Prescription_Document");
@@ -420,23 +341,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
                 .HasForeignKey(d => d.PrescriptionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrescriptionMedication_Prescription");
-        });
-
-        modelBuilder.Entity<TemperatureMonitoring>(entity =>
-        {
-            entity.HasKey(e => e.MonitoringId).HasName("PK__Temperat__CAC3C0779B3B23A7");
-
-            entity.ToTable("TemperatureMonitoring");
-
-            entity.Property(e => e.MonitoringId)
-                .ValueGeneratedNever()
-                .HasColumnName("MonitoringID");
-            entity.Property(e => e.Temperature).HasColumnType("decimal(5, 2)");
-
-            entity.HasOne(d => d.Monitoring).WithOne(p => p.TemperatureMonitoring)
-                .HasForeignKey<TemperatureMonitoring>(d => d.MonitoringId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Temperatu__Monit__00200768");
         });
 
         modelBuilder.Entity<User>(entity =>

@@ -1,6 +1,7 @@
 ﻿using Entities.Data;
 using Entities.Models;
 using Entities.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,28 +15,25 @@ namespace Entities.Repository
     {
         private readonly PharmacistRecommendationDbContext _context;
 
-        public MonitoringRepository(PharmacistRecommendationDbContext context)
-        {
-            _context = context;
-        }
+        public MonitoringRepository(PharmacistRecommendationDbContext context) => _context = context;
 
-        public async Task AddMonitoringAsync(Monitoring monitoring)
+        public async Task<int> AddAsync(Monitoring entity)
         {
-            _context.Monitorings.Add(monitoring);
+            _context.Monitorings.Add(entity);
             await _context.SaveChangesAsync();
+            return entity.Id;
         }
 
-
-        //public async Task AddTemperatureMonitoringAsync(TemperatureMonitoring temperatureMonitoring)
-        //{
-        //    _context.TemperatureMonitorings.Add(temperatureMonitoring);
-        //    await _context.SaveChangesAsync();
-        //}
-
-        //public async Task AddDiabetesMonitoringAsync(DiabetesMonitoring diabetesMonitoring)
-        //{
-        //    _context.DiabetesMonitorings.Add(diabetesMonitoring);
-        //    await _context.SaveChangesAsync();
-        //}
+        public async Task<List<Monitoring>> GetByPatientAndRangeAsync(
+         int patientId, DateTime from, DateTime to)
+        {
+            return await _context.Monitorings
+                                 .AsNoTracking()
+                                 .Where(m => m.PatientId == patientId &&
+                                             m.MonitoringDate >= from &&
+                                             m.MonitoringDate <= to)
+                                 .OrderBy(m => m.MonitoringDate)
+                                 .ToListAsync();
+        }
     }
 }

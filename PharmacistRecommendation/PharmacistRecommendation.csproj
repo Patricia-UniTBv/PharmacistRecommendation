@@ -78,7 +78,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\CardioMonitoringView.xaml">
+	  <Compile Update="Views\MonitoringView.xaml.cs">
+	    <DependentUpon>MonitoringView.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\MonitoringView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
