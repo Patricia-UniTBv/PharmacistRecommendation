@@ -4,7 +4,7 @@
              x:Class="PharmacistRecommendation.Views.MonitoringView">
 
     <ScrollView x:Name="MainScroll">
-        <VerticalStackLayout Padding="35" BackgroundColor="#F5F5F5">
+        <VerticalStackLayout Padding="20" BackgroundColor="#F5F5F5">
 
             <Label Text="Monitorizare pacient"
                    FontSize="20"
@@ -15,7 +15,7 @@
             <Label Text="Date pacient"
                    FontSize="18"
                    FontAttributes="Bold"
-                   Margin="0,10,0,0"/>
+                   Margin="0,0,0,0"/>
 
             <Border StrokeThickness="1"
                     StrokeShape="RoundRectangle 5,5,5,5"
@@ -119,7 +119,7 @@
             <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5"
                     Stroke="#DDDDDD" BackgroundColor="White" Padding="15">
 
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="8">
 
                     <Label Text="Parametri monitorizați" FontSize="18" FontAttributes="Bold"/>
 
@@ -174,15 +174,21 @@
                         </VerticalStackLayout>
                     </Grid>
 
-                    <VerticalStackLayout Spacing="5">
-                        <Label Text="Glicemie (mg/dL)" TextColor="Black"/>
-                        <Entry Text="{Binding BloodGlucose}" Keyboard="Numeric" Placeholder="Glicemie"/>
-                    </VerticalStackLayout>
+                    <Grid ColumnSpacing="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Glicemie (mg/dL)" TextColor="Black"/>
+                            <Entry Text="{Binding BloodGlucose}" Keyboard="Numeric" Placeholder="Glicemie"/>
+                        </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5">
-                        <Label Text="Temperatură (°C)" TextColor="Black"/>
-                        <Entry Text="{Binding BodyTemperature}" Keyboard="Numeric" Placeholder="Temperatură"/>
-                    </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5" Grid.Column="1">
+                            <Label Text="Temperatură (°C)" TextColor="Black"/>
+                            <Entry Text="{Binding BodyTemperature}" Keyboard="Numeric" Placeholder="Temperatură"/>
+                        </VerticalStackLayout>
+                    </Grid>
 
                     <HorizontalStackLayout HorizontalOptions="End" Spacing="10">
                         <!--<Button Text="Renunță" Command="{Binding CancelCommand}"
