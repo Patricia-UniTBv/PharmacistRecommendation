@@ -19,10 +19,15 @@ namespace Entities.Services
         {
             _repository = repository;
         }
-
         public async Task<Patient?> GetPatientByCardCodeAsync(string cardCode)
         {
             return await _repository.GetByCardCodeAsync(cardCode);
         }
+
+        public async Task<Patient?> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+
     }
 }

@@ -26,5 +26,11 @@ namespace Entities.Repository
                 .Select(pc => pc.Patient)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<Patient?> GetByIdAsync(int id)
+        {
+            return await _context.Patients
+                  .Where(p => p.Id == id).FirstOrDefaultAsync();
+        }
     }
 }

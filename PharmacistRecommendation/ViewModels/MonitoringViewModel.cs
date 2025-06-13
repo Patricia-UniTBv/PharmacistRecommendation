@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
 using Entities.Services.Interfaces;
@@ -12,12 +12,16 @@ public partial class MonitoringViewModel : ObservableObject
 {
     private readonly IMonitoringService _monitoringService;
     private readonly IPatientService _patientService;
+    private readonly IPdfReportService _pdfReportService;
+    private readonly IEmailService _emailService;
 
     public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService)
+                               IPatientService patientService, IPdfReportService pdfReportService, IEmailService emailService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
+        _pdfReportService = pdfReportService;
+        _emailService = emailService;
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
@@ -39,6 +43,7 @@ public partial class MonitoringViewModel : ObservableObject
     [ObservableProperty] private string cid;
     [ObservableProperty] private int age;
     [ObservableProperty] private string gender;
+    [ObservableProperty] private string patientEmail;
 
     [ObservableProperty] private decimal height;
     [ObservableProperty] private decimal weight;
@@ -56,7 +61,7 @@ public partial class MonitoringViewModel : ObservableObject
 
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 6)
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 7) // a se modifica cu 16!!! nr de cifre din cardul de sanatate
             _ = SearchPatientAsync();
     }
 
@@ -82,6 +87,7 @@ public partial class MonitoringViewModel : ObservableObject
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
+        PatientEmail = patient.Email!;
     }
 
     [RelayCommand]
@@ -139,7 +145,50 @@ public partial class MonitoringViewModel : ObservableObject
             HistoryList.Add(row);
     }
 
+    [RelayCommand]
+    private async Task GeneratePdfAsync()
+    {
+        var path = await _pdfReportService.CreatePatientReportAsync(PatientId,
+            StartDate, EndDate);
 
+        await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
+    }
+    [RelayCommand]
+    private async Task SendEmailAsync()
+    {
+        var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId,
+            StartDate, EndDate);
+
+        
+        var patient = await _patientService.GetByIdAsync(PatientId);
+        var to = new[] {""};
+        if (patientEmail == null)
+        {
+            patientEmail = await Shell.Current.DisplayPromptAsync(
+            title: "Adresă e-mail",
+            message: $"Pacientul {patient.LastName} {patient.FirstName} nu are e-mail salvat.\nIntrodu adresa:",
+            accept: "OK",
+            cancel: "Renunță",
+            placeholder: "ex: ion.popescu@mail.com");
+            to = new[] { patientEmail };
+        }
+        else
+        {
+            to = new[] { patientEmail };
+        }
+
+        
+        var subject = $"Raport monitorizare – {patient.LastName} {patient.FirstName}";
+        var body = $"""
+                       Bună ziua,
+
+                       Atașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.
+
+                       Vă mulțumim!
+                       """; // DE ADAUGAT NUMELE FARMACIEI 
+
+        await _emailService.ComposeAsync(subject, body, to, new[] { pdfPath });
+    }
     private int LoggedInUserId =>
         Preferences.Get("LoggedInUserId", 1);// de inlocuit 1 cu 0
 }

@@ -55,8 +55,9 @@ namespace Entities.Services
 
             foreach (var m in entities)
             {
-                var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(m.ParametersJson!)
-                           ?? new Dictionary<string, JsonElement>();
+                var dict = string.IsNullOrWhiteSpace(m.ParametersJson)
+                    ? new Dictionary<string, JsonElement>()
+                    : JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(m.ParametersJson!)!;
 
                 rows.Add(new HistoryRowDto
                 {

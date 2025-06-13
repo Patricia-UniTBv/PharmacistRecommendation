@@ -6,6 +6,7 @@ using PharmacistRecommendation.Views;
 using Entities.Repository.Interfaces;
 using Entities.Repository;
 using Entities.Data;
+using PharmacistRecommendation.Helpers;
 
 namespace PharmacistRecommendation
 {
@@ -32,6 +33,8 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPatientService, PatientService>();
             builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
+            builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
+            builder.Services.AddSingleton<IEmailService, EmailService>();
 
             builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 
