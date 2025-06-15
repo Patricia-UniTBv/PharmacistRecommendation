@@ -7,6 +7,7 @@ using Entities.Repository.Interfaces;
 using Entities.Repository;
 using Entities.Data;
 using PharmacistRecommendation.Helpers;
+using CommunityToolkit.Maui;
 
 namespace PharmacistRecommendation
 {
@@ -22,10 +23,12 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+            builder.UseMauiCommunityToolkit();
             builder.Services.AddSingleton<PharmacistRecommendationDbContext>();
 
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<MonitoringViewModel>();
+            builder.Services.AddTransient<PharmacistConfigurationViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();

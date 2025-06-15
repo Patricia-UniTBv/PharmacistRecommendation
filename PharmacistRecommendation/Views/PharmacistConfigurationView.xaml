@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="PharmacistRecommendation.Views.PharmacistConfigurationView"
+    Color="#66000000">
+
+    <Frame BackgroundColor="White"
+           CornerRadius="12"
+           Padding="24,24,24,8"
+           WidthRequest="500"
+           HeightRequest="500"
+           HasShadow="True"
+           HorizontalOptions="Center"
+           VerticalOptions="Center">
+
+        <Grid RowDefinitions="Auto,* ,Auto">
+
+            <Label Grid.Row="0"
+                   Text="Adăugare farmacist"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   TextColor="Black"
+                   Margin="0,0,0,16"/>
+
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="10">
+                    <Entry Placeholder="Nume"      Text="{Binding LastName}"      TextColor="Black"/>
+                    <Entry Placeholder="Prenume"   Text="{Binding FirstName}"   TextColor="Black"/>
+                    <Entry Placeholder="NCM"       Text="{Binding Ncm}"       TextColor="Black"/>
+                    <Entry Placeholder="Email"     Text="{Binding Email}"     Keyboard="Email"      TextColor="Black"/>
+                    <Entry Placeholder="Telefon"   Text="{Binding PhoneNr}"   Keyboard="Telephone"  TextColor="Black"/>
+                    <Entry Placeholder="Username"  Text="{Binding Username}"  TextColor="Black"/>
+                    <Entry Placeholder="Parolă"    Text="{Binding Password}"    IsPassword="True"     TextColor="Black"/>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <HorizontalStackLayout Grid.Row="2"
+                                   Spacing="16"
+                                   Margin="0,0,0,0"
+                                   HorizontalOptions="End">
+                <Button Text="Salvează"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="Green"
+                        TextColor="White"/>
+                <Button Text="Renunță"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White"/>
+            </HorizontalStackLayout>
+
+        </Grid>
+    </Frame>
+</toolkit:Popup>

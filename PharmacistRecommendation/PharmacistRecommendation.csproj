@@ -62,6 +62,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
 		  <PrivateAssets>all</PrivateAssets>
@@ -91,6 +92,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\MonitoringView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\PharmacistConfigurationView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
