@@ -23,6 +23,8 @@ public partial class Document
 
     public DateTime CreatedDate { get; set; }
 
+    public int? UserId { get; set; }
+
     public virtual Assistant? Assistant { get; set; }
 
     public virtual DocumentType DocumentType { get; set; } = null!;
@@ -34,4 +36,6 @@ public partial class Document
     public virtual Pharmacist? Pharmacist { get; set; }
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+
+    public virtual User? User { get; set; }
 }

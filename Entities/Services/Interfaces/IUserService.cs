@@ -1,5 +1,4 @@
 ﻿using DTO;
-using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Entities.Services.Interfaces
 {
-    public interface IPharmacistService
+    public interface IUserService
     {
-        //Task<int> AddUserAsync(UserDTO dto);
+        Task<int> AddUserAsync(UserDTO dto);
     }
 }

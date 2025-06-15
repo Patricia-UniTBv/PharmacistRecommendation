@@ -116,6 +116,10 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasOne(d => d.Pharmacist).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.PharmacistId)
                 .HasConstraintName("FK_Document_Pharmacist");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Documents)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Document_User");
         });
 
         modelBuilder.Entity<DocumentType>(entity =>
@@ -356,10 +360,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.Ncm)
+                .HasMaxLength(20)
+                .HasColumnName("NCM");
+            entity.Property(e => e.PasswordHash).HasMaxLength(100);
             entity.Property(e => e.PersonalId).HasMaxLength(20);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.UserType).HasMaxLength(20);
+            entity.Property(e => e.Role).HasMaxLength(20);
             entity.Property(e => e.Username).HasMaxLength(50);
 
             entity.HasOne(d => d.Pharmacy).WithMany(p => p.Users)

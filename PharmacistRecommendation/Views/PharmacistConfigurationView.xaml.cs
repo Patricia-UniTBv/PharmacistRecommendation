@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Views;
+using DTO;
 using PharmacistRecommendation.ViewModels;
 namespace PharmacistRecommendation.Views;
 
@@ -8,5 +9,11 @@ public partial class PharmacistConfigurationView : Popup
     {
         InitializeComponent();
         BindingContext = vm;
+
+        vm.CloseRequested += OnCloseRequested;
+    }
+    private void OnCloseRequested(UserDTO? result)
+    {
+        this.Close(result); 
     }
 }

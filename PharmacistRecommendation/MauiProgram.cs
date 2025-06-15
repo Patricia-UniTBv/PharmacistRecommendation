@@ -39,6 +39,12 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
             builder.Services.AddSingleton<IEmailService, EmailService>();
 
+            builder.Services.AddSingleton<IPharmacistService, PharmacistService>(); // de sters
+            builder.Services.AddSingleton<IPharmacistRepository, PharmacistRepository>(); // de sters
+
+            builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
             builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 
 

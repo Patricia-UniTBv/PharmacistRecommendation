@@ -15,7 +15,7 @@ public partial class User
 
     public string? Username { get; set; }
 
-    public string? Password { get; set; }
+    public string PasswordHash { get; set; } = null!;
 
     public string? Email { get; set; }
 
@@ -23,11 +23,15 @@ public partial class User
 
     public int PharmacyId { get; set; }
 
-    public string UserType { get; set; } = null!;
+    public string? Ncm { get; set; }
+
+    public string? Role { get; set; }
 
     public virtual Administrator? Administrator { get; set; }
 
     public virtual Assistant? Assistant { get; set; }
+
+    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
 
     public virtual Pharmacist? Pharmacist { get; set; }
 

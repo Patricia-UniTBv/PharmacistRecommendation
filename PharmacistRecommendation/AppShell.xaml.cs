@@ -21,17 +21,14 @@ namespace PharmacistRecommendation
 
         private async void OnAddPharmacistClicked(object sender, EventArgs e)
         {
-            // creezi ViewModel-ul prin DI
             var vm = ServiceHelper.GetService<PharmacistConfigurationViewModel>();
             var popup = new PharmacistConfigurationView(vm);
 
-            // rulează pe pagina curentă
-            var result = await Shell.Current.CurrentPage.ShowPopupAsync(popup)
-                              as PharmacistDTO;
+            var result = await App.Current.MainPage.ShowPopupAsync(popup);
 
-            if (result is null) return;   // utilizatorul a închis fără salvare
 
-            // TODO: salvează în DB …
+            if (result is null) return;   
+
         }
 
     }
