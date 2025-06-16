@@ -59,6 +59,8 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\calendar.png" />
+	  <None Remove="Resources\Images\delete.png" />
+	  <None Remove="Resources\Images\pen.png" />
 	  <None Remove="Resources\Images\view.png" />
 	</ItemGroup>
 
@@ -96,6 +98,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\PharmacistConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\UsersManagementView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

@@ -12,6 +12,7 @@ namespace PharmacistRecommendation
         {
             InitializeComponent();
             Routing.RegisterRoute("monitoring", typeof(MonitoringView));
+            Routing.RegisterRoute("users_management", typeof(UsersManagementView));
         }
 
         private async void OnMonitClicked(object sender, EventArgs e)
@@ -30,6 +31,12 @@ namespace PharmacistRecommendation
             if (result is null) return;   
 
         }
+
+        private async void OnUsersManagementClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("users_management");
+        }
+
 
     }
 }

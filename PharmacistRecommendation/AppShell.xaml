@@ -22,7 +22,8 @@
         </MenuBarItem>
 
         <MenuBarItem Text="Configurări">
-            <MenuFlyoutItem Text="Adăugare Farmacist" Clicked="OnAddPharmacistClicked"/>
+            <MenuFlyoutItem Text="Adăugare farmacist" Clicked="OnAddPharmacistClicked"/>
+            <MenuFlyoutItem Text="Listă asistenți" Clicked="OnUsersManagementClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Ajutor">

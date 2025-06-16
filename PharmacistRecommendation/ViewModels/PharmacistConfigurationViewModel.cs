@@ -14,11 +14,17 @@ namespace PharmacistRecommendation.ViewModels
     public partial class PharmacistConfigurationViewModel : ObservableObject
     {
         private readonly IUserService _userService;
+
         public event Action<UserDTO?>? CloseRequested;
+        public enum UserFormMode { Add, Edit }
+
+        public UserFormMode Mode { get; private set; }
+
 
         public PharmacistConfigurationViewModel(IUserService userService)
         {
             _userService = userService;
+            Mode = UserFormMode.Add;
         }
 
         [ObservableProperty] private string lastName = string.Empty;
@@ -29,7 +35,20 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string? username;
         [ObservableProperty] private string? password;
         [ObservableProperty] private bool isPassword = true;
+        private int Id { get; set; } = 0;
 
+        public void LoadFrom(UserDTO dto)
+        {
+            Id = dto.Id;
+            FirstName = dto.FirstName;
+            LastName = dto.LastName;
+            Email = dto.Email;
+            PhoneNr = dto.Phone;
+            Username = dto.Username;
+            Ncm = dto.Ncm;
+
+            Mode = UserFormMode.Edit;
+        }
 
         [RelayCommand]
         private async Task SaveAsync()
@@ -47,17 +66,21 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Password) || !Regex.IsMatch(Password,
-                    @"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$"))
+            if (Mode == UserFormMode.Add || !string.IsNullOrWhiteSpace(Password))
             {
-                await Shell.Current.DisplayAlert("Eroare",
-                    "Parola trebuie să aibă cel puțin 6 caractere, o literă mare, o cifră și un caracter special.",
-                    "OK");
-                return;
+                if (string.IsNullOrWhiteSpace(Password) || !Regex.IsMatch(Password,
+                        @"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$"))
+                {
+                    await Shell.Current.DisplayAlert("Eroare",
+                        "Parola trebuie să aibă cel puțin 6 caractere, o literă mare, o cifră și un caracter special.",
+                        "OK");
+                    return;
+                }
             }
 
             var dto = new UserDTO
             {
+                Id = Id,
                 FirstName = FirstName.Trim(),
                 LastName = LastName.Trim(),
                 Ncm = Ncm?.Trim(),
@@ -70,8 +93,18 @@ namespace PharmacistRecommendation.ViewModels
             };
             try
             {
-                int newId = await _userService.AddUserAsync(dto);
-                await Shell.Current.DisplayAlert("Succes", "Farmacist adăugat cu succes! " + newId, "OK");
+                if (Mode == UserFormMode.Edit)
+                {
+                    await _userService.UpdateUserAsync(dto);
+                    await Shell.Current.DisplayAlert("Succes", "Datele au fost actualizate cu succes! ", "OK");
+                }
+                else
+                {
+                    int newId = await _userService.AddUserAsync(dto);
+                    await Shell.Current.DisplayAlert("Succes", "Farmacist adăugat cu succes! ", "OK");
+                }
+
+              
             }
             catch (Exception ex)
             {
@@ -83,7 +116,6 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task CancelAsync()
         {
-            await Shell.Current.GoToAsync("..");
             CloseRequested?.Invoke(null);
         }
 
