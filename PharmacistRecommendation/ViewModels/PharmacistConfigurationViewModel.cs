@@ -28,6 +28,7 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string? phoneNr;
         [ObservableProperty] private string? username;
         [ObservableProperty] private string? password;
+        [ObservableProperty] private bool isPassword = true;
 
 
         [RelayCommand]

@@ -59,6 +59,7 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\calendar.png" />
+	  <None Remove="Resources\Images\view.png" />
 	</ItemGroup>
 
 	<ItemGroup>

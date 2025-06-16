@@ -16,4 +16,16 @@ public partial class PharmacistConfigurationView : Popup
     {
         this.Close(result); 
     }
+    private async void OnShowPasswordClicked(object sender, EventArgs e)
+    {
+        if (BindingContext is PharmacistConfigurationViewModel vm)
+        {
+            vm.IsPassword = false; 
+
+            await Task.Delay(3000);
+
+            vm.IsPassword = true; 
+        }
+    }
+
 }
