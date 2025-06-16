@@ -36,21 +36,21 @@
                     <Entry Placeholder="Username"  Text="{Binding Username}"  TextColor="Black"/>
                     <HorizontalStackLayout>
                         <Entry x:Name="PasswordEntry"
-           Text="{Binding Password}"
-           IsPassword="{Binding IsPassword, Mode=TwoWay}"
-           Placeholder="Parolă"
-           WidthRequest="250"
-           TextColor="Black" />
+                               Text="{Binding Password}"
+                               IsPassword="{Binding IsPassword, Mode=TwoWay}"
+                               Placeholder="Parolă"
+                               WidthRequest="250"
+                               TextColor="Black" />
 
                         <ImageButton Source="view.png"
-             Clicked="OnShowPasswordClicked"
-             BackgroundColor="Transparent"
-             WidthRequest="20"
-             HeightRequest="20"
-             Aspect="AspectFit"
-             Scale="0.5"
-             Padding="0"
-             HorizontalOptions="End"/>
+                                     Clicked="OnShowPasswordClicked"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="20"
+                                     HeightRequest="20"
+                                     Aspect="AspectFit"
+                                     Scale="0.5"
+                                     Padding="0"
+                                     HorizontalOptions="End"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
