@@ -27,12 +27,19 @@
                    Margin="0,0,0,16"/>
 
             <ScrollView Grid.Row="1">
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="3">
                     <Entry Placeholder="Nume"      Text="{Binding LastName}"      TextColor="Black"/>
                     <Entry Placeholder="Prenume"   Text="{Binding FirstName}"   TextColor="Black"/>
-                    <Entry Placeholder="NCM"       Text="{Binding Ncm}"       TextColor="Black"/>
+                    <Entry Placeholder="NCM (serie și număr)"       Text="{Binding Ncm}"       TextColor="Black"/>
                     <Entry Placeholder="Email"     Text="{Binding Email}"     Keyboard="Email"      TextColor="Black"/>
                     <Entry Placeholder="Telefon"   Text="{Binding PhoneNr}"   Keyboard="Telephone"  TextColor="Black"/>
+                    <HorizontalStackLayout Spacing="3" Margin="0,0,0,0">
+                        <CheckBox IsChecked="{Binding IsAssistant, Mode=TwoWay}" />
+                        <Label Text="Este asistent/a"
+                               VerticalOptions="Center"
+                               TextColor="Black" />
+                    </HorizontalStackLayout>
+
                     <Entry Placeholder="Username"  Text="{Binding Username}"  TextColor="Black"/>
                     <HorizontalStackLayout>
                         <Entry x:Name="PasswordEntry"
@@ -63,7 +70,7 @@
                         Command="{Binding SaveCommand}"
                         BackgroundColor="Green"
                         TextColor="White"/>
-                <Button Text="Renunță"
+                <Button Text="Închide"
                         Command="{Binding CancelCommand}"
                         BackgroundColor="Red"
                         TextColor="White"/>

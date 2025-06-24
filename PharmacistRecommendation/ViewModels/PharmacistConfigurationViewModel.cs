@@ -33,9 +33,34 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string? email;
         [ObservableProperty] private string? phoneNr;
         [ObservableProperty] private string? username;
+        [ObservableProperty] private string? role = "Pharmacist";
+        [ObservableProperty] private bool isAssistant;
         [ObservableProperty] private string? password;
         [ObservableProperty] private bool isPassword = true;
         private int Id { get; set; } = 0;
+
+        partial void OnIsAssistantChanged(bool value)
+        {
+            Role = value ? "Assistant" : "Pharmacist";
+        }
+
+        partial void OnFirstNameChanged(string? value)
+        {
+            UpdateUsername();
+        }
+
+        partial void OnLastNameChanged(string? value)
+        {
+            UpdateUsername();
+        }
+
+        private void UpdateUsername()
+        {
+            if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+            {
+                Username = $"{LastName.Trim().ToLower()}.{FirstName.Trim().ToLower()}";
+            }
+        }
 
         public void LoadFrom(UserDTO dto)
         {
@@ -88,7 +113,7 @@ namespace PharmacistRecommendation.ViewModels
                 Phone = PhoneNr?.Trim(),
                 Username = Username?.Trim(),
                 Password = Password, 
-                Role = "Pharmacist",
+                Role = Role,
                 PharmacyId = 1 // to be replaced
             };
             try
@@ -101,7 +126,7 @@ namespace PharmacistRecommendation.ViewModels
                 else
                 {
                     int newId = await _userService.AddUserAsync(dto);
-                    await Shell.Current.DisplayAlert("Succes", "Farmacist adăugat cu succes! ", "OK");
+                    await Shell.Current.DisplayAlert("Succes", "Utilizator adăugat cu succes! ", "OK");
                 }
 
               
