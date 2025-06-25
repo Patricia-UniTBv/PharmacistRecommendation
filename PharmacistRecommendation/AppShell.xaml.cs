@@ -15,6 +15,18 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("users_management", typeof(UsersManagementView));
         }
 
+        private async void OnNewCardClicked(object sender,  EventArgs e)
+        {
+            var vm = ServiceHelper.GetService<CardConfigurationViewModel>();
+            var popup = new CardConfigurationView(vm);
+
+            var result = await App.Current.MainPage.ShowPopupAsync(popup);
+
+
+            if (result is null) return;
+        }
+
+
         private async void OnMonitClicked(object sender, EventArgs e)
         {
             await GoToAsync("monitoring");

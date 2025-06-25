@@ -60,6 +60,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\Images\calendar.png" />
 	  <None Remove="Resources\Images\delete.png" />
+	  <None Remove="Resources\Images\down_arrow.png" />
 	  <None Remove="Resources\Images\pen.png" />
 	  <None Remove="Resources\Images\view.png" />
 	</ItemGroup>
@@ -94,6 +95,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\CardConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\MonitoringView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

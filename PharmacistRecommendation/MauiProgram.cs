@@ -28,10 +28,12 @@ namespace PharmacistRecommendation
 
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();
+            builder.Services.AddTransient<CardConfigurationView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
             builder.Services.AddTransient<UsersManagementViewModel>();
+            builder.Services.AddTransient<CardConfigurationViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -42,11 +44,11 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
             builder.Services.AddSingleton<IEmailService, EmailService>();
 
-            builder.Services.AddSingleton<IPharmacistService, PharmacistService>(); // de sters
-            builder.Services.AddSingleton<IPharmacistRepository, PharmacistRepository>(); // de sters
-
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+            builder.Services.AddSingleton<IPharmacyCardService, PharmacyCardService>();
+            builder.Services.AddSingleton<IPharmacyCardRepository, PharmacyCardRepository>();
 
             builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 

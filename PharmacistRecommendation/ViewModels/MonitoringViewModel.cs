@@ -101,7 +101,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         var dto = new MonitoringDTO
         {
-            PatientId = 1, // de inlocuit cu PatientId
+            PatientId = PatientId, // de inlocuit cu PatientId
             CardId = null,               
             MonitoringDate = DateTime.Now,
             MonitoringType = SelectedMonitoringType,
@@ -153,42 +153,55 @@ public partial class MonitoringViewModel : ObservableObject
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }
+
     [RelayCommand]
     private async Task SendEmailAsync()
     {
-        var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId,
-            StartDate, EndDate);
-
-        
         var patient = await _patientService.GetByIdAsync(PatientId);
-        var to = new[] {""};
-        if (patientEmail == null)
+        if (patient == null)
+        {
+            await Shell.Current.DisplayAlert("Eroare", "Pacientul nu a fost găsit în sistem.", "OK");
+            return;
+        }
+
+        string patientEmail = patient.Email?.Trim();
+        if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
         {
             patientEmail = await Shell.Current.DisplayPromptAsync(
-            title: "Adresă e-mail",
-            message: $"Pacientul {patient.LastName} {patient.FirstName} nu are e-mail salvat.\nIntrodu adresa:",
-            accept: "OK",
-            cancel: "Renunță",
-            placeholder: "ex: ion.popescu@mail.com");
-            to = new[] { patientEmail };
+                title: "Adresă e-mail",
+                message: $"Pacientul {patient.LastName} {patient.FirstName} nu are e-mail salvat.\nIntrodu adresa:",
+                accept: "OK",
+                cancel: "Renunță",
+                placeholder: "ex: ion.popescu@mail.com");
+
+            if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
+            {
+                await Shell.Current.DisplayAlert("Anulat", "Email invalid sau trimiterea a fost anulată.", "OK");
+                return;
+            }
         }
-        else
+
+        var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId, StartDate, EndDate);
+
+        string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
+        string body = $"Buna ziua,%0A%0AAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.%0A%0AVă mulțumim!";
+
+        // Nu mai scapi nimic la întâmplare: encodezi manual doar dacă e nevoie
+        var mailtoUrl = $"mailto:{patientEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
+        System.Diagnostics.Debug.WriteLine(mailtoUrl);
+
+        try
         {
-            to = new[] { patientEmail };
+            await Launcher.Default.OpenAsync(mailtoUrl);
+            await Shell.Current.DisplayAlert("Atașează fișierul", $"Emailul este pregătit, dar trebuie să atașezi manual PDF-ul:\n{pdfPath}", "OK");
         }
-
-        
-        var subject = $"Raport monitorizare – {patient.LastName} {patient.FirstName}";
-        var body = $"""
-                       Bună ziua,
-
-                       Atașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.
-
-                       Vă mulțumim!
-                       """; // DE ADAUGAT NUMELE FARMACIEI 
-
-        await _emailService.ComposeAsync(subject, body, to, new[] { pdfPath });
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Eroare", $"Trimiterea a eșuat: {ex.Message}", "OK");
+        }
     }
+
+
     private int LoggedInUserId =>
         Preferences.Get("LoggedInUserId", 1);// de inlocuit 1 cu 0
 }

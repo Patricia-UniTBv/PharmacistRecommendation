@@ -6,7 +6,7 @@
 
     <Shell.MenuBarItems>
         <MenuBarItem Text="Card">
-            <MenuFlyoutItem Text="Adaugă Card" />
+            <MenuFlyoutItem Text="Card Nou" Clicked="OnNewCardClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Monitorizare" >

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="PharmacistRecommendation.Views.CardConfigurationView"
+             CanBeDismissedByTappingOutsideOfPopup="False">
+    <Frame BackgroundColor="White"
+           CornerRadius="12"
+           Padding="24,24,24,8"
+           WidthRequest="500"
+           HeightRequest="650"
+           HasShadow="True"
+           HorizontalOptions="Center"
+           VerticalOptions="Center">
+
+        <Grid RowDefinitions="Auto,* ,Auto">
+
+            <Label Grid.Row="0"
+                   Text="Adăugare Card Pacient"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   TextColor="Black"
+                   Margin="0,0,0,16"/>
+
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="3">
+                    <Entry Placeholder="Card nr." Text="{Binding CardNumber}" TextColor="Black"/>
+                    <Entry Placeholder="Nume client" Text="{Binding LastName}" TextColor="Black"/>
+                    <Entry Placeholder="Prenume client" Text="{Binding FirstName}" TextColor="Black"/>
+                    <Entry Placeholder="CNP" Text="{Binding CNP}" Keyboard="Numeric" TextColor="Black"/>
+                    <Entry Placeholder="CID (autogenerat)" Text="{Binding CID}" IsReadOnly="True" TextColor="Gray"/>
+
+                    <Button Text="Generează CID"
+                            Command="{Binding GenerateCidCommand}"
+                            BackgroundColor="LightGray"
+                            TextColor="Black"
+                            Margin="0,4"
+                            WidthRequest="100"
+                            HeightRequest="16"
+                            HorizontalOptions="Start"/>
+
+                    <Entry Placeholder="Telefon" Text="{Binding Phone}" Keyboard="Telephone" TextColor="Black"/>
+                    <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" TextColor="Black"/>
+
+                    <DatePicker Date="{Binding Birthdate}" TextColor="Black"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+                        <Label Text="Gen" FontAttributes="Bold" TextColor="Black"/>
+                        <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#EEEEEE" HeightRequest="42">
+                            <Picker SelectedItem="{Binding Gender}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="Black">
+                                <Picker.Items>
+                                    <x:String>Feminin</x:String>
+                                    <x:String>Masculin</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <HorizontalStackLayout Grid.Row="2"
+                                   Spacing="16"
+                                   HorizontalOptions="End">
+                <Button Text="Salvează"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="Green"
+                        TextColor="White"/>
+                <Button Text="Închide"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White"/>
+            </HorizontalStackLayout>
+
+        </Grid>
+    </Frame>
+</toolkit:Popup>
