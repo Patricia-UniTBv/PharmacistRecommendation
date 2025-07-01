@@ -76,7 +76,7 @@ namespace PharmacistRecommendation.ViewModels
                 );
 
                 await Shell.Current.DisplayAlert("Succes", "Cardul pacientului a fost salvat!", "OK");
-                CloseRequested?.Invoke(null);
+                //CloseRequested?.Invoke(null);
             }
             catch (Exception ex)
             {

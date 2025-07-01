@@ -62,16 +62,20 @@
             </ScrollView>
 
             <HorizontalStackLayout Grid.Row="2"
-                                   Spacing="16"
-                                   HorizontalOptions="End">
+                       Spacing="16"
+                       HorizontalOptions="End">
+                <Button Text="Printează"
+            BackgroundColor="Blue"
+            TextColor="White"
+            Clicked="OnPrintClicked"/>
                 <Button Text="Salvează"
-                        Command="{Binding SaveCommand}"
-                        BackgroundColor="Green"
-                        TextColor="White"/>
+            Command="{Binding SaveCommand}"
+            BackgroundColor="Green"
+            TextColor="White"/>
                 <Button Text="Închide"
-                        Command="{Binding CancelCommand}"
-                        BackgroundColor="Red"
-                        TextColor="White"/>
+            Command="{Binding CancelCommand}"
+            BackgroundColor="Red"
+            TextColor="White"/>
             </HorizontalStackLayout>
 
         </Grid>
