@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using PharmacistRecommendation.Models;
 
-namespace Entities.Data;
+namespace PharmacistRecommendation.Data;
 
 public partial class PharmacistRecommendationDbContext : DbContext
 {
@@ -226,6 +226,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.HasIndex(e => e.Cnp, "IX_Patient_PersonalId");
 
+            entity.Property(e => e.Birthdate).HasColumnType("datetime");
             entity.Property(e => e.Cid)
                 .HasMaxLength(20)
                 .HasColumnName("CID");

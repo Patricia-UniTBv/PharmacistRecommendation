@@ -18,7 +18,7 @@ namespace Entities.Services
             _repository = repository;
         }
 
-        public async Task<PharmacyCard> CreateCardAsync(string code, int pharmacyId, string firstName, string lastName, string? cnp, string? cid, string? email, string? phone, string? gender, DateOnly? birthdate)
+        public async Task<PharmacyCard> CreateCardAsync(string code, int pharmacyId, string firstName, string lastName, string? cnp, string? cid, string? email, string? phone, string? gender, DateTime? birthdate)
         {
             //var cid = GenerateCidFromCnp(cnp);
 

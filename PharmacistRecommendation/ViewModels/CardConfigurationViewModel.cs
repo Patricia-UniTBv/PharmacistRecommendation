@@ -17,7 +17,7 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string phone;
         [ObservableProperty] private string email;
         [ObservableProperty] private string gender = null;
-        [ObservableProperty] private DateOnly birthdate;
+        [ObservableProperty] private DateTime birthdate;
         
         public List<string> GenderOptions { get; } = new() { "Feminin", "Masculin", "Altul" };
 

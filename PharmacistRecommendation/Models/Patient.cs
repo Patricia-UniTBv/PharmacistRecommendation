@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Entities.Models;
+namespace PharmacistRecommendation.Models;
 
 public partial class Patient
 {
