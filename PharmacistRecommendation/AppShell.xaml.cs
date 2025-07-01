@@ -13,17 +13,20 @@ namespace PharmacistRecommendation
             InitializeComponent();
             Routing.RegisterRoute("monitoring", typeof(MonitoringView));
             Routing.RegisterRoute("users_management", typeof(UsersManagementView));
+            Routing.RegisterRoute("new_card", typeof(CardConfigurationView));
         }
 
         private async void OnNewCardClicked(object sender,  EventArgs e)
         {
-            var vm = ServiceHelper.GetService<CardConfigurationViewModel>();
-            var popup = new CardConfigurationView(vm);
+            //var vm = ServiceHelper.GetService<CardConfigurationViewModel>();
+            //var popup = new CardConfigurationView(vm);
 
-            var result = await App.Current.MainPage.ShowPopupAsync(popup);
+            //var result = await App.Current.MainPage.ShowPopupAsync(popup);
 
 
-            if (result is null) return;
+            //if (result is null) return;
+
+            await GoToAsync("new_card");
         }
 
 

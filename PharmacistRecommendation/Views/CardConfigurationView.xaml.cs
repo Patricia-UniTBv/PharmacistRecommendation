@@ -7,19 +7,19 @@ using System.Windows.Forms;
 
 namespace PharmacistRecommendation.Views;
 
-public partial class CardConfigurationView : Popup
+public partial class CardConfigurationView : ContentPage
 {
 	public CardConfigurationView(CardConfigurationViewModel vm)
 	{
 		InitializeComponent();
         BindingContext = vm;
 
-        vm.CloseRequested += OnCloseRequested;
+       // vm.CloseRequested += OnCloseRequested;
     }
-    private void OnCloseRequested(PharmacyCardDTO? result)
-    {
-        this.Close(result);
-    }
+    //private void OnCloseRequested(PharmacyCardDTO? result)
+    //{
+    //    this.Close(result);
+    //}
 
     private void OnPrintClicked(object sender, EventArgs e)
     {

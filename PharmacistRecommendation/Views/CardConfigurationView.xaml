@@ -1,83 +1,97 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="PharmacistRecommendation.Views.CardConfigurationView"
-             CanBeDismissedByTappingOutsideOfPopup="False">
-    <Frame BackgroundColor="White"
-           CornerRadius="12"
-           Padding="24,24,24,8"
-           WidthRequest="500"
-           HeightRequest="650"
-           HasShadow="True"
-           HorizontalOptions="Center"
-           VerticalOptions="Center">
+<ContentPage  
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="PharmacistRecommendation.Views.CardConfigurationView"
+    Padding="20">
 
-        <Grid RowDefinitions="Auto,* ,Auto">
+    <Grid RowDefinitions="Auto, * , Auto" RowSpacing="10">
 
-            <Label Grid.Row="0"
-                   Text="Adăugare Card Pacient"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   TextColor="Black"
-                   Margin="0,0,0,16"/>
+        <Label 
+      Grid.Row="0"
+      Text="Adăugare Card Pacient"
+      FontSize="24"
+      FontAttributes="Bold"
+      HorizontalOptions="Center"
+      TextColor="Black" />
 
-            <ScrollView Grid.Row="1">
-                <VerticalStackLayout Spacing="3">
-                    <Entry Placeholder="Card nr." Text="{Binding CardNumber}" TextColor="Black"/>
-                    <Entry Placeholder="Nume client" Text="{Binding LastName}" TextColor="Black"/>
-                    <Entry Placeholder="Prenume client" Text="{Binding FirstName}" TextColor="Black"/>
-                    <Entry Placeholder="CNP" Text="{Binding Cnp}" Keyboard="Numeric" TextColor="Black"/>
-                    <Entry Placeholder="CID (autogenerat)" Text="{Binding Cid}" IsReadOnly="True" TextColor="Gray"/>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="12">
 
+                <Entry Placeholder="Card nr." 
+               Text="{Binding CardNumber}" />
+
+                <Entry Placeholder="Nume client" 
+               Text="{Binding LastName}" />
+
+                <Entry Placeholder="Prenume client" 
+               Text="{Binding FirstName}" />
+
+                <Entry Placeholder="CNP" 
+               Text="{Binding Cnp}" 
+               Keyboard="Numeric" />
+
+                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Entry Placeholder="CID (autogenerat)" 
+                 Text="{Binding Cid}" 
+                 IsReadOnly="True" 
+                 HorizontalOptions="FillAndExpand" />
                     <Button Text="Generează CID"
-                            Command="{Binding GenerateCidCommand}"
-                            BackgroundColor="LightGray"
-                            TextColor="Black"
-                            Margin="0,4"
-                            WidthRequest="100"
-                            HeightRequest="16"
-                            HorizontalOptions="Start"/>
+                  Command="{Binding GenerateCidCommand}"
+                  WidthRequest="130"
+                  BackgroundColor="Gray"/>
+                </HorizontalStackLayout>
 
-                    <Entry Placeholder="Telefon" Text="{Binding Phone}" Keyboard="Telephone" TextColor="Black"/>
-                    <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" TextColor="Black"/>
+                <Entry Placeholder="Telefon" 
+               Text="{Binding Phone}" 
+               Keyboard="Telephone" />
 
-                    <DatePicker Date="{Binding Birthdate}" TextColor="Black"/>
+                <Entry Placeholder="Email" 
+               Text="{Binding Email}" 
+               Keyboard="Email" />
 
-                    <VerticalStackLayout Grid.Column="1" Spacing="5">
-                        <Label Text="Gen" FontAttributes="Bold" TextColor="Black"/>
-                        <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#EEEEEE" HeightRequest="42">
-                            <Picker SelectedItem="{Binding Gender}"
+                <Label Text="Data nașterii" 
+                       FontAttributes="Bold" 
+                       TextColor="Black" />
+                <DatePicker Date="{Binding Birthdate}" />
+
+                <Label Text="Gen" 
+                       FontAttributes="Bold" 
+                       TextColor="Black" />
+                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#EEEEEE" HeightRequest="42">
+                    <Picker SelectedItem="{Binding Gender}"
                                     BackgroundColor="Transparent"
                                     TextColor="Black">
-                                <Picker.Items>
-                                    <x:String>Feminin</x:String>
-                                    <x:String>Masculin</x:String>
-                                </Picker.Items>
-                            </Picker>
-                        </Border>
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-            </ScrollView>
+                        <Picker.Items>
+                            <x:String>Feminin</x:String>
+                            <x:String>Masculin</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
 
-            <HorizontalStackLayout Grid.Row="2"
-                       Spacing="16"
-                       HorizontalOptions="End">
-                <Button Text="Printează"
-            BackgroundColor="Blue"
-            TextColor="White"
-            Clicked="OnPrintClicked"/>
-                <Button Text="Salvează"
-            Command="{Binding SaveCommand}"
-            BackgroundColor="Green"
-            TextColor="White"/>
-                <Button Text="Închide"
-            Command="{Binding CancelCommand}"
-            BackgroundColor="Red"
-            TextColor="White"/>
-            </HorizontalStackLayout>
+        <HorizontalStackLayout 
+      Grid.Row="2"
+      Spacing="16"
+      HorizontalOptions="End">
 
-        </Grid>
-    </Frame>
-</toolkit:Popup>
+            <Button Text="Printează"
+              BackgroundColor="Blue"
+              TextColor="White"
+              Clicked="OnPrintClicked" />
+
+            <Button Text="Salvează"
+              Command="{Binding SaveCommand}"
+              BackgroundColor="Green"
+              TextColor="White" />
+
+            <Button Text="Închide"
+              Command="{Binding CancelCommand}"
+              BackgroundColor="Red"
+              TextColor="White" />
+
+        </HorizontalStackLayout>
+
+    </Grid>
+</ContentPage>
