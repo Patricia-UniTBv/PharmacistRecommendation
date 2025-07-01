@@ -2,11 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DTO;
 using Entities.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PharmacistRecommendation.Helpers;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -16,8 +12,8 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string cardNumber;
         [ObservableProperty] private string firstName;
         [ObservableProperty] private string lastName;
-        [ObservableProperty] private string CNP;
-        [ObservableProperty] private string CID;
+        [ObservableProperty] private string cnp;
+        [ObservableProperty] private string cid;
         [ObservableProperty] private string phone;
         [ObservableProperty] private string email;
         [ObservableProperty] private string gender = null;
@@ -33,16 +29,27 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         [RelayCommand]
-        private void GenerateCid()
+        private async Task GenerateCid()
         {
-            //if (!string.IsNullOrWhiteSpace(Cnp) && Cnp.Length == 13)
-            //{
-            //    Cid = "CID" + Cnp.Substring(Cnp.Length - 6); // Poți înlocui cu un generator CNASS real
-            //}
-            //else
-            //{
-            //    Shell.Current.DisplayAlert("Eroare", "Introduceți un CNP valid (13 caractere).", "OK");
-            //}
+            if (string.IsNullOrWhiteSpace(Cnp) || Cnp.Length != 13)
+            {
+                await Shell.Current.DisplayAlert("Eroare", "Introduceți un CNP valid (13 caractere).", "OK");
+                return;
+            }
+
+            try
+            {
+                var cid = CidGen.GetCidHash(Cnp); 
+
+                if (!string.IsNullOrEmpty(cid))
+                    Cid = cid;
+                else
+                    await Shell.Current.DisplayAlert("Eroare", "Nu s-a putut genera CID-ul.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Eroare neașteptată", ex.Message, "OK");
+            }
         }
 
         [RelayCommand]
@@ -60,7 +67,8 @@ namespace PharmacistRecommendation.ViewModels
                     pharmacyId: 1, // to be modified with the actual id!!!
                     firstName: FirstName,
                     lastName: LastName,
-                    cnp: CNP,
+                    cnp: Cnp,
+                    cid: Cid,
                     email: Email,
                     phone: Phone, 
                     gender: Gender,

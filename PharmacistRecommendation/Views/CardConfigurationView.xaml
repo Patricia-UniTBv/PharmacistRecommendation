@@ -28,8 +28,8 @@
                     <Entry Placeholder="Card nr." Text="{Binding CardNumber}" TextColor="Black"/>
                     <Entry Placeholder="Nume client" Text="{Binding LastName}" TextColor="Black"/>
                     <Entry Placeholder="Prenume client" Text="{Binding FirstName}" TextColor="Black"/>
-                    <Entry Placeholder="CNP" Text="{Binding CNP}" Keyboard="Numeric" TextColor="Black"/>
-                    <Entry Placeholder="CID (autogenerat)" Text="{Binding CID}" IsReadOnly="True" TextColor="Gray"/>
+                    <Entry Placeholder="CNP" Text="{Binding Cnp}" Keyboard="Numeric" TextColor="Black"/>
+                    <Entry Placeholder="CID (autogenerat)" Text="{Binding Cid}" IsReadOnly="True" TextColor="Gray"/>
 
                     <Button Text="Generează CID"
                             Command="{Binding GenerateCidCommand}"

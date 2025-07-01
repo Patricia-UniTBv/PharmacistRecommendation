@@ -18,7 +18,7 @@ namespace Entities.Services
             _repository = repository;
         }
 
-        public async Task<PharmacyCard> CreateCardAsync(string code, int pharmacyId, string firstName, string lastName, string? cnp, string? email, string? phone, string? gender, DateOnly? birthdate)
+        public async Task<PharmacyCard> CreateCardAsync(string code, int pharmacyId, string firstName, string lastName, string? cnp, string? cid, string? email, string? phone, string? gender, DateOnly? birthdate)
         {
             //var cid = GenerateCidFromCnp(cnp);
 
@@ -27,7 +27,7 @@ namespace Entities.Services
                 FirstName = firstName,
                 LastName = lastName,
                 Cnp = cnp,
-                Cid = "123",// to implement GenerateCID
+                Cid = cid,
                 Email = email,
                 Phone = phone,
                 Gender = gender,

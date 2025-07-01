@@ -37,8 +37,8 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<Platforms>AnyCPU;x64;ARM32;x86</Platforms>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -58,11 +58,38 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Windows\CidGen64.dll" />
+	  <None Remove="Platforms\Windows\msvcp100.dll" />
+	  <None Remove="Platforms\Windows\msvcr100.dll" />
 	  <None Remove="Resources\Images\calendar.png" />
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\down_arrow.png" />
 	  <None Remove="Resources\Images\pen.png" />
 	  <None Remove="Resources\Images\view.png" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">
+		<None Update="NativeLibraries\CidGen64.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="NativeLibraries\msvcr100.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="NativeLibraries\msvcp100.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Content Include="Platforms\Windows\CidGen64.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Platforms\Windows\msvcp100.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Platforms\Windows\msvcr100.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -107,6 +134,18 @@
 	  <MauiXaml Update="Views\UsersManagementView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Libraries\CidGen64.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Libraries\msvcp100.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Libraries\msvcr100.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
