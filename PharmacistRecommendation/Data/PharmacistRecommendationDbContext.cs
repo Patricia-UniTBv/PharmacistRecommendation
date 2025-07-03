@@ -272,11 +272,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.ToTable("Pharmacy");
 
             entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.Cui)
+                .HasMaxLength(20)
+                .HasColumnName("CUI");
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Logo).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.TaxId).HasMaxLength(20);
         });
 
         modelBuilder.Entity<PharmacyCard>(entity =>

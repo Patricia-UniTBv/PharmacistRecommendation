@@ -275,7 +275,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Logo).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.TaxId).HasMaxLength(20);
+            entity.Property(e => e.CUI).HasMaxLength(20);
+            entity.Property(e => e.ConsentTemplate).HasColumnType("nvarchar(max)");
         });
 
         modelBuilder.Entity<PharmacyCard>(entity =>

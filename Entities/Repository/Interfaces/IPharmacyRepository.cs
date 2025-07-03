@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Entities.Repository.Interfaces
 {
-    public interface IPharmacistRepository
+    public interface IPharmacyRepository
     {
-        Task<int> AddAsync(Pharmacist entity);
+        Task<Pharmacy> GetById(int pharmacyId);
     }
 }

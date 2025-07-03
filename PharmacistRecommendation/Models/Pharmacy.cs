@@ -11,13 +11,15 @@ public partial class Pharmacy
 
     public string? Address { get; set; }
 
-    public string? TaxId { get; set; }
+    public string? Cui { get; set; }
 
     public string? Email { get; set; }
 
     public string? Phone { get; set; }
 
     public string? Logo { get; set; }
+
+    public string? ConsentTemplate { get; set; }
 
     public virtual ICollection<EmailConfiguration> EmailConfigurations { get; set; } = new List<EmailConfiguration>();
 
