@@ -10,5 +10,6 @@ namespace Entities.Repository.Interfaces
     public interface IPharmacyRepository
     {
         Task<Pharmacy> GetById(int pharmacyId);
+        Task UpdatePharmacyAsync(Pharmacy pharmacy);
     }
 }

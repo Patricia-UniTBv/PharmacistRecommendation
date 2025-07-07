@@ -23,5 +23,11 @@ namespace Entities.Repository
             return await _context.Pharmacies
                   .Where(p => p.Id == pharmacyId).FirstAsync();
         }
+
+        public async Task UpdatePharmacyAsync(Pharmacy pharmacy)
+        {
+            _context.Pharmacies.Update(pharmacy);
+            await _context.SaveChangesAsync();
+        }
     }
 }

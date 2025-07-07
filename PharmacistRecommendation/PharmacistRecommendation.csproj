@@ -125,6 +125,9 @@
 	  <MauiXaml Update="Views\CardConfigurationView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\GdprConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\MonitoringView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

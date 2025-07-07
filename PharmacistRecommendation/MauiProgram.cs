@@ -29,11 +29,13 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();
             builder.Services.AddTransient<CardConfigurationView>();
+            builder.Services.AddTransient<GdprConfigurationView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
             builder.Services.AddTransient<UsersManagementViewModel>();
             builder.Services.AddTransient<CardConfigurationViewModel>();
+            builder.Services.AddTransient<GdprConfigurationViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();

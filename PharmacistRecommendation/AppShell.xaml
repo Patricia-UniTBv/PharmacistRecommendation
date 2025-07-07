@@ -24,6 +24,7 @@
         <MenuBarItem Text="Configurări">
             <MenuFlyoutItem Text="Adăugare utilizator" Clicked="OnAddPharmacistClicked"/>
             <MenuFlyoutItem Text="Listă utilizatori" Clicked="OnUsersManagementClicked"/>
+            <MenuFlyoutItem Text="Modificare document GDPR" Clicked="OnGdprConfigClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Ajutor">

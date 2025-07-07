@@ -154,7 +154,7 @@ namespace PharmacistRecommendation.ViewModels
             g.DrawString(_consentDecl, fontText, Brushes.Black, rect);
 
             g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 100));
-            g.DrawString("Nume: ______________________", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 80));
+            g.DrawString("Nume: __________________________", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 80));
             g.DrawString("Semnătura: ______________________", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 60));
         }
     }
