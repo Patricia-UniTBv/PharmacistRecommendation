@@ -27,7 +27,5 @@ public partial class Pharmacist
 
     public virtual ICollection<Assistant> Assistants { get; set; } = new List<Assistant>();
 
-    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
-
     public virtual User IdNavigation { get; set; } = null!;
 }

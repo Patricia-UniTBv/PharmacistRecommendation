@@ -30,6 +30,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<UsersManagementView>();
             builder.Services.AddTransient<CardConfigurationView>();
             builder.Services.AddTransient<GdprConfigurationView>();
+            builder.Services.AddTransient<MixedActIssuanceView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();

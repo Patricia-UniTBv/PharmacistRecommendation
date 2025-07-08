@@ -14,7 +14,7 @@
         </MenuBarItem>
 
         <MenuBarItem Text="Emitere Documente">
-            <MenuFlyoutItem Text="Emite Document" />
+            <MenuFlyoutItem Text="Emitere Act Mixt"  Clicked="OnMixedIssuanceClicked" />
         </MenuBarItem>
 
         <MenuBarItem Text="Rapoarte">

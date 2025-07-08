@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
+             Title="MixedActIssuanceView">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="20">
+            <!-- Header -->
+            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                <Label Text="Issue Mixed Act" FontSize="28" FontAttributes="Bold" />
+                <Button Text="New Recommendation" Command="{Binding NewRecommendationCommand}" />
+                <Button Text="Import Data" Command="{Binding ImportDataCommand}" />
+            </HorizontalStackLayout>
+
+            <!-- Patient and Caregiver Details -->
+            <Frame CornerRadius="16" Padding="12" BorderColor="#d9e1ec">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                    <Entry Grid.Column="0" Placeholder="Patient Name" Text="{Binding PatientName}" />
+                    <Entry Grid.Column="1" Placeholder="Patient CNP/CID" Text="{Binding PatientCnp}" />
+
+                    <Entry Grid.Row="1" Grid.Column="0" Placeholder="Caregiver Name" Text="{Binding CaregiverName}" />
+                    <Entry Grid.Row="1" Grid.Column="1" Placeholder="Caregiver CNP/CID" Text="{Binding CaregiverCnp}" />
+                </Grid>
+            </Frame>
+
+            <!-- Diagnosis -->
+            <Entry Placeholder="Diagnosis Provided by Patient/Caregiver" Text="{Binding ProvidedDiagnosis}" />
+
+            <!-- Patient's Medications -->
+            <Entry Placeholder="Medications Used by Patient" Text="{Binding PatientMedications}" />
+
+            <!-- Prescription Section -->
+            <Frame CornerRadius="12" Padding="8" BorderColor="#d9e1ec">
+                <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto">
+                    <Entry Grid.Column="0" Placeholder="Doctor Stamp" Text="{Binding DoctorStamp}" />
+                    <Entry Grid.Column="1" Placeholder="Prescription Series" Text="{Binding PrescriptionSeries}" />
+                    <Entry Grid.Column="2" Placeholder="Prescription Number" Text="{Binding PrescriptionNumber}" />
+                    <Entry Grid.Column="3" Placeholder="Prescription Diagnosis" Text="{Binding PrescriptionDiagnosis}" />
+                </Grid>
+            </Frame>
+
+            <!-- Symptoms / Suspicions / Pharmacist's Observations -->
+            <Frame CornerRadius="12" Padding="10" BorderColor="#d9e1ec">
+                <VerticalStackLayout Spacing="8">
+                    <Entry Placeholder="Symptoms" Text="{Binding Symptoms}" />
+                    <Entry Placeholder="Suspicion" Text="{Binding Suspicion}" />
+                    <Entry Placeholder="Pharmacist Observations" Text="{Binding PharmacistObservations}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Medications with Prescription -->
+            <Label Text="Medications Dispensed with Prescription" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding MedicationsWithPrescription}" HeightRequest="140">
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="30,*,60,60,60,60,100">
+                        <Label Text="#" />
+                        <Label Text="Medication" />
+                        <Label Text="Morning" />
+                        <Label Text="Noon" />
+                        <Label Text="Evening" />
+                        <Label Text="Night" />
+                        <Label Text="Administration" />
+                    </Grid>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="30,*,60,60,60,60,100,50">
+                            <Label Text="{Binding Index}" />
+                            <Entry Text="{Binding Name}" />
+                            <Entry Text="{Binding Morning}" />
+                            <Entry Text="{Binding Noon}" />
+                            <Entry Text="{Binding Evening}" />
+                            <Entry Text="{Binding Night}" />
+                            <Entry Text="{Binding AdministrationMode}" />
+                            <!--<Button Text="Delete" Command="{Binding Source={RelativeSource AncestorType={x:Type local:ViewModel}}, Path=DeleteWithPrescriptionCommand}" CommandParameter="{Binding .}" />-->
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button Text="Add Medication" Command="{Binding AddWithPrescriptionCommand}" />
+
+            <!-- Medications without Prescription -->
+            <Label Text="Medications Dispensed without Prescription" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" HeightRequest="140">
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="30,*,60,60,60,60,100">
+                        <Label Text="#" />
+                        <Label Text="Medication" />
+                        <Label Text="Morning" />
+                        <Label Text="Noon" />
+                        <Label Text="Evening" />
+                        <Label Text="Night" />
+                        <Label Text="Administration" />
+                    </Grid>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="30,*,60,60,60,60,100,50">
+                            <Label Text="{Binding Index}" />
+                            <Entry Text="{Binding Name}" />
+                            <Entry Text="{Binding Morning}" />
+                            <Entry Text="{Binding Noon}" />
+                            <Entry Text="{Binding Evening}" />
+                            <Entry Text="{Binding Night}" />
+                            <Entry Text="{Binding AdministrationMode}" />
+                            <!--<Button Text="Delete" Command="{Binding Source={RelativeSource AncestorType={x:Type local:ViewModel}}, Path=DeleteWithoutPrescriptionCommand}" CommandParameter="{Binding .}" />-->
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button Text="Add Medication" Command="{Binding AddWithoutPrescriptionCommand}" />
+
+            <!-- Recommendation to Doctor -->
+            <Editor Placeholder="Notes to Doctor" Text="{Binding NotesToDoctor}" HeightRequest="60" />
+
+            <!-- Pharmacist's Recommendation (Patient) -->
+            <Editor Placeholder="Pharmacist's Recommendation (for patient)" Text="{Binding PharmacistRecommendation}" HeightRequest="60" />
+
+            <!-- Pharmaceutical Service Dropdown -->
+            <Picker Title="Pharmaceutical Service" ItemsSource="{Binding PharmaceuticalServices}" SelectedItem="{Binding SelectedPharmaceuticalService}" />
+
+            <!-- Bottom Buttons -->
+            <HorizontalStackLayout Spacing="16" Padding="0,20,0,0">
+                <Button Text="Save" Command="{Binding SaveCommand}" StyleClass="PrimaryButton"/>
+                <Button Text="Print" Command="{Binding PrintCommand}" IsEnabled="{Binding CanPrint}" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

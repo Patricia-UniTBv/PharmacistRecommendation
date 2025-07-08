@@ -16,8 +16,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Administrator> Administrators { get; set; }
-
     public virtual DbSet<Assistant> Assistants { get; set; }
 
     public virtual DbSet<Document> Documents { get; set; }
@@ -54,20 +52,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Administrator>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Administ__3214EC07312306EA");
-
-            entity.ToTable("Administrator");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Administrator)
-                .HasForeignKey<Administrator>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Administrator_User");
-        });
-
         modelBuilder.Entity<Assistant>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Assistan__3214EC07261C8567");
@@ -100,10 +84,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.FilePath).HasMaxLength(255);
             entity.Property(e => e.Title).HasMaxLength(100);
 
-            entity.HasOne(d => d.Assistant).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.AssistantId)
-                .HasConstraintName("FK_Document_Assistant");
-
             entity.HasOne(d => d.DocumentType).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.DocumentTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -112,10 +92,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasOne(d => d.Patient).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.PatientId)
                 .HasConstraintName("FK_Document_Patient");
-
-            entity.HasOne(d => d.Pharmacist).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.PharmacistId)
-                .HasConstraintName("FK_Document_Pharmacist");
 
             entity.HasOne(d => d.User).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.UserId)
