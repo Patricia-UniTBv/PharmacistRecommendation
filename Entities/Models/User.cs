@@ -27,13 +27,7 @@ public partial class User
 
     public string? Role { get; set; }
 
-    public virtual Administrator? Administrator { get; set; }
-
-    public virtual Assistant? Assistant { get; set; }
-
     public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
-
-    public virtual Pharmacist? Pharmacist { get; set; }
 
     public virtual Pharmacy Pharmacy { get; set; } = null!;
 }

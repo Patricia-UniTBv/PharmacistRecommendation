@@ -104,7 +104,7 @@ namespace PharmacistRecommendation.ViewModels
             _consentDecl = _pharmacy.ConsentTemplate
                 .Replace("{PharmacyName}", _pharmacy.Name)
                 .Replace("{PharmacyAddress}", _pharmacy.Address)
-                .Replace("{PharmacyFiscalCode}", _pharmacy.CUI);
+                .Replace("{PharmacyFiscalCode}", _pharmacy.Cui);
 
             using var pd = new PrintDocument();
             pd.DefaultPageSettings.Landscape = false;

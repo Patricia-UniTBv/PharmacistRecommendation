@@ -16,10 +16,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Administrator> Administrators { get; set; }
-
-    public virtual DbSet<Assistant> Assistants { get; set; }
-
     public virtual DbSet<Document> Documents { get; set; }
 
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
@@ -35,8 +31,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
     public virtual DbSet<Monitoring> Monitorings { get; set; }
 
     public virtual DbSet<Patient> Patients { get; set; }
-
-    public virtual DbSet<Pharmacist> Pharmacists { get; set; }
 
     public virtual DbSet<Pharmacy> Pharmacies { get; set; }
 
@@ -54,39 +48,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Administrator>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Administ__3214EC07312306EA");
-
-            entity.ToTable("Administrator");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Administrator)
-                .HasForeignKey<Administrator>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Administrator_User");
-        });
-
-        modelBuilder.Entity<Assistant>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Assistan__3214EC07261C8567");
-
-            entity.ToTable("Assistant");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Assistant)
-                .HasForeignKey<Assistant>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Assistant_User");
-
-            entity.HasOne(d => d.SupervisorPharmacist).WithMany(p => p.Assistants)
-                .HasForeignKey(d => d.SupervisorPharmacistId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Assistant_Pharmacist");
-        });
-
         modelBuilder.Entity<Document>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Document__3214EC07A42E023C");
@@ -100,10 +61,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.FilePath).HasMaxLength(255);
             entity.Property(e => e.Title).HasMaxLength(100);
 
-            entity.HasOne(d => d.Assistant).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.AssistantId)
-                .HasConstraintName("FK_Document_Assistant");
-
             entity.HasOne(d => d.DocumentType).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.DocumentTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -112,10 +69,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasOne(d => d.Patient).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.PatientId)
                 .HasConstraintName("FK_Document_Patient");
-
-            entity.HasOne(d => d.Pharmacist).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.PharmacistId)
-                .HasConstraintName("FK_Document_Pharmacist");
 
             entity.HasOne(d => d.User).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.UserId)
@@ -226,6 +179,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.HasIndex(e => e.Cnp, "IX_Patient_PersonalId");
 
+            entity.Property(e => e.Birthdate).HasColumnType("datetime");
             entity.Property(e => e.Cid)
                 .HasMaxLength(20)
                 .HasColumnName("CID");
@@ -239,31 +193,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Phone).HasMaxLength(20);
         });
 
-        modelBuilder.Entity<Pharmacist>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Pharmaci__3214EC07D59DC098");
-
-            entity.ToTable("Pharmacist");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.ActivationCheck).HasDefaultValue(false);
-            entity.Property(e => e.Active).HasDefaultValue(true);
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.FirstName).HasMaxLength(50);
-            entity.Property(e => e.LastName).HasMaxLength(50);
-            entity.Property(e => e.Ncm)
-                .HasMaxLength(50)
-                .HasColumnName("NCM");
-            entity.Property(e => e.Password).HasMaxLength(50);
-            entity.Property(e => e.Phone).HasMaxLength(50);
-            entity.Property(e => e.Username).HasMaxLength(50);
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Pharmacist)
-                .HasForeignKey<Pharmacist>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Pharmacist_User");
-        });
-
         modelBuilder.Entity<Pharmacy>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Pharmacy__3214EC075262534F");
@@ -271,12 +200,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.ToTable("Pharmacy");
 
             entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.Cui)
+                .HasMaxLength(20)
+                .HasColumnName("CUI");
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Logo).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.CUI).HasMaxLength(20);
-            entity.Property(e => e.ConsentTemplate).HasColumnType("nvarchar(max)");
         });
 
         modelBuilder.Entity<PharmacyCard>(entity =>
