@@ -16,6 +16,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
     {
     }
 
+    public virtual DbSet<AdministrationMode> AdministrationModes { get; set; }
+
     public virtual DbSet<Document> Documents { get; set; }
 
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
@@ -48,6 +50,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AdministrationMode>(entity =>
+        {
+            entity.ToTable("AdministrationMode");
+
+            entity.Property(e => e.Name).HasMaxLength(20);
+        });
+
         modelBuilder.Entity<Document>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Document__3214EC07A42E023C");
@@ -263,13 +272,22 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("PrescriptionMedication");
 
-            entity.Property(e => e.Dosage).HasMaxLength(100);
-            entity.Property(e => e.Instructions).HasMaxLength(200);
-            entity.Property(e => e.Quantity).HasDefaultValue(1);
+            entity.Property(e => e.Concentration).HasMaxLength(50);
+            entity.Property(e => e.DiseaseCode).HasMaxLength(20);
+            entity.Property(e => e.Dose).HasMaxLength(20);
+            entity.Property(e => e.Evening).HasMaxLength(20);
+            entity.Property(e => e.Morning).HasMaxLength(20);
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Night).HasMaxLength(20);
+            entity.Property(e => e.Noon).HasMaxLength(20);
+            entity.Property(e => e.PharmaceuticalForm).HasMaxLength(20);
+
+            entity.HasOne(d => d.AdministrationMode).WithMany(p => p.PrescriptionMedications)
+                .HasForeignKey(d => d.AdministrationModeId)
+                .HasConstraintName("FK_PrescriptionMedication_AdministrationMode");
 
             entity.HasOne(d => d.Medication).WithMany(p => p.PrescriptionMedications)
                 .HasForeignKey(d => d.MedicationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrescriptionMedication_Medication");
 
             entity.HasOne(d => d.Prescription).WithMany(p => p.PrescriptionMedications)

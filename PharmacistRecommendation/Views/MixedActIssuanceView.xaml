@@ -119,13 +119,13 @@
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
                             <Grid ColumnDefinitions="36,*,110,110,110,110,110,60">
-                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#36317f" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
                                 <Label Grid.Column="7" Text=" " />
                             </Grid>
                         </CollectionView.Header>
@@ -143,16 +143,18 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Button Text="Adaugă medicament"
-                Command="{Binding AddMedicationWithPrescriptionCommand}"
-                Margin="0,2,0,0"
-                FontSize="13"
-                HeightRequest="32"
-                CornerRadius="8"
-                BackgroundColor="#ece8fa"
-                TextColor="#36317f"/>
                 </VerticalStackLayout>
             </Frame>
+            <Button Text="Adaugă medicament"
+                    Command="{Binding AddMedicationWithPrescriptionCommand}"
+                    Margin="0,2,0,0"
+                    FontSize="13"
+                    HeightRequest="32"
+                    WidthRequest="160"
+                    HorizontalOptions="Start"
+                    CornerRadius="8"
+                    BackgroundColor="#ece8fa"
+                    TextColor="#34495E"/>
 
             <!-- Medications Without Prescription -->
             <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222"/>
@@ -161,13 +163,13 @@
                     <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
                         <CollectionView.Header>
                             <Grid ColumnDefinitions="36,*,80,80,80,80,110,60">
-                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
-                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#36317f"/>
+                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Text=" " />
                             </Grid>
                         </CollectionView.Header>
@@ -185,16 +187,19 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Button Text="Adaugă medicament"
-                            Command="{Binding AddMedicationWithoutPrescriptionCommand}"
-                            Margin="0,2,0,0"
-                            FontSize="13"
-                            HeightRequest="32"
-                            CornerRadius="8"
-                            BackgroundColor="#ece8fa"
-                            TextColor="#36317f"/>
+                   
                 </VerticalStackLayout>
             </Frame>
+            <Button Text="Adaugă medicament"
+         Command="{Binding AddMedicationWithoutPrescriptionCommand}"
+         Margin="0,2,0,0"
+         FontSize="13"
+         HeightRequest="32"
+         WidthRequest="160"
+         HorizontalOptions="Start"
+         CornerRadius="8"
+         BackgroundColor="#ece8fa"
+         TextColor="#34495E"/>
 
             <Editor Placeholder="Stimate coleg, cu privire la pacientul/pacienta care s-a prezentat în farmacie vă supun atenției următoarele:"
                     Text="{Binding NotesToDoctor}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />

@@ -57,7 +57,11 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPharmacyService, PharmacyService>();
             builder.Services.AddSingleton<IPharmacyRepository, PharmacyRepository>();
 
-            builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
+            builder.Services.AddSingleton<IPrescriptionRepository, PrescriptionRepository>();
+            builder.Services.AddSingleton<IPrescriptionService, PrescriptionService>();
+
+            builder.Services.AddSingleton<IPrescriptionMedicationRepository, PrescriptionMedicationRepository>();
+            builder.Services.AddSingleton<IPrescriptionMedicationService, PrescriptionMedicationService>();
 
 
 
