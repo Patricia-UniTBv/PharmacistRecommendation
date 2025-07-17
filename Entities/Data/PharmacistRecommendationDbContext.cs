@@ -248,13 +248,25 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.HasIndex(e => new { e.Series, e.Number }, "IX_Prescription_SeriesNumber");
 
+            entity.Property(e => e.CaregiverCnp).HasMaxLength(20);
+            entity.Property(e => e.CaregiverName).HasMaxLength(50);
+            entity.Property(e => e.DiagnosisMentionedByPatient).HasMaxLength(200);
             entity.Property(e => e.Diagnostic).HasMaxLength(200);
+            entity.Property(e => e.DoctorStamp).HasMaxLength(20);
             entity.Property(e => e.FillDate).HasColumnType("datetime");
             entity.Property(e => e.IssueDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.NotesToDoctor).HasMaxLength(200);
             entity.Property(e => e.Number).HasMaxLength(20);
+            entity.Property(e => e.PatientCnp).HasMaxLength(20);
+            entity.Property(e => e.PatientName).HasMaxLength(50);
+            entity.Property(e => e.PharmaceuticalService).HasMaxLength(50);
+            entity.Property(e => e.PharmacistObservations).HasMaxLength(200);
+            entity.Property(e => e.PharmacistRecommendation).HasMaxLength(200);
             entity.Property(e => e.Series).HasMaxLength(20);
+            entity.Property(e => e.Suspicion).HasMaxLength(200);
+            entity.Property(e => e.Symptoms).HasMaxLength(200);
 
             entity.HasOne(d => d.Document).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.DocumentId)

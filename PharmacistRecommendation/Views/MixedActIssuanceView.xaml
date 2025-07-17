@@ -248,7 +248,7 @@
 
             <HorizontalStackLayout Spacing="14" Padding="0,8,0,0">
                 <Button Text="Salvează"
-                        Command="{Binding SaveAsyncCommand}"
+                        Command="{Binding SaveCommand}"
                         FontSize="14"
                         HeightRequest="34"
                         CornerRadius="8"

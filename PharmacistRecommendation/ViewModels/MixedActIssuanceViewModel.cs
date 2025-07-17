@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Entities.Models;
+using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers.Services;
 using System;
 using System.Collections.Generic;
@@ -14,34 +16,36 @@ namespace PharmacistRecommendation.ViewModels
     {
         private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
 
+        private readonly IPrescriptionService _prescriptionService;
+
         [ObservableProperty]
-        string cardNumber;
+        string? cardNumber;
         [ObservableProperty]
-        string patientName;
+        string? patientName;
         [ObservableProperty]
-        string patientCnp;
+        string? patientCnp;
         [ObservableProperty]
-        string caregiverName;
+        string? caregiverName;
         [ObservableProperty]
-        string caregiverCnp;
+        string? caregiverCnp;
         [ObservableProperty]
-        string patientDiagnosis;
+        string? patientDiagnosis;
         [ObservableProperty]
-        string usedMedications;
+        string? usedMedications;
         [ObservableProperty]
-        string doctorStamp;
+        string? doctorStamp;
         [ObservableProperty]
-        string prescriptionSeries;
+        string? prescriptionSeries;
         [ObservableProperty]
-        string prescriptionNumber;
+        string? prescriptionNumber;
         [ObservableProperty]
-        string prescriptionDiagnosis;
+        string? prescriptionDiagnosis;
         [ObservableProperty]
-        string symptoms;
+        string? symptoms;
         [ObservableProperty]
-        string suspicion;
+        string? suspicion;
         [ObservableProperty]
-        string pharmacistObservations;
+        string? pharmacistObservations;
         [ObservableProperty]
         ObservableCollection<PrescriptionDrugModel> medicationsWithPrescription = new();
         [ObservableProperty]
@@ -73,9 +77,9 @@ namespace PharmacistRecommendation.ViewModels
             // a se încărca din DB  !!!!!!!
         };
 
-        public MixedActIssuanceViewModel()
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService)
         {
-            // Optionally: load pharma services from DB
+            _prescriptionService = prescriptionService;
         }
 
         [RelayCommand]
@@ -91,14 +95,12 @@ namespace PharmacistRecommendation.ViewModels
                 }
                 var import = PrescriptionImportService.ImportFromXml(filePath);
 
-                // Populate fields
                 PatientCnp = import.PatientCnp;
                 PrescriptionSeries = import.PrescriptionSeries;
                 PrescriptionNumber = import.PrescriptionNumber;
                 DoctorStamp = import.DoctorStamp;
                 PrescriptionDiagnosis = import.Diagnosis;
 
-                // Table
                 MedicationsWithPrescription.Clear();
                 foreach (var drug in import.Drugs)
                 {
@@ -111,25 +113,79 @@ namespace PharmacistRecommendation.ViewModels
                 await ShowAlert($"Eroare la import: {ex.Message}");
             }
         }
-
         [RelayCommand]
         private async Task SaveAsync()
         {
-            // Simple example validation
-            if (string.IsNullOrWhiteSpace(PatientCnp) ||
-                string.IsNullOrWhiteSpace(PrescriptionNumber) ||
-                MedicationsWithPrescription.Count == 0)
+            // Ex: la ce câmpuri vrei să NU fie nulle/empty
+            if (string.IsNullOrWhiteSpace(PatientName))
             {
-                await ShowAlert("Completează toate datele obligatorii și adaugă cel puțin un medicament cu rețetă.");
+                await ShowAlert("Completează numele pacientului!");
                 return;
             }
-            // TODO: Save logic (DB, file, etc)
-            await ShowAlert("Datele au fost salvate cu succes!");
+            if (string.IsNullOrWhiteSpace(PatientCnp))
+            {
+                await ShowAlert("Completează CNP-ul pacientului!");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(PrescriptionNumber))
+            {
+                await ShowAlert("Completează numărul rețetei!");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(PrescriptionSeries))
+            {
+                await ShowAlert("Completează seria rețetei!");
+                return;
+            }
+            if (MedicationsWithPrescription.Count == 0)
+            {
+                await ShowAlert("Adaugă cel puțin un medicament cu rețetă!");
+                return;
+            }
+
+            // Mapping către entitățile pentru DB
+            var prescription = new Prescription
+            {
+                PatientName = this.PatientName,
+                PatientCnp = this.PatientCnp,
+                CaregiverName = this.CaregiverName,
+                CaregiverCnp = this.CaregiverCnp,
+                Number = this.PrescriptionNumber,
+                Series = this.PrescriptionSeries,
+                Diagnostic = this.PrescriptionDiagnosis,
+                DiagnosisMentionedByPatient = this.PatientDiagnosis,
+                Symptoms = this.Symptoms,
+                Suspicion = this.Suspicion,
+                PharmacistObservations = this.PharmacistObservations,
+                NotesToDoctor = this.NotesToDoctor,
+                PharmacistRecommendation = this.PharmacistRecommendation,
+                PharmaceuticalService = this.SelectedPharmaceuticalService,
+                DoctorStamp = this.DoctorStamp,
+                IssueDate = DateTime.Now, // sau din UI
+                PrescriptionMedications = this.MedicationsWithPrescription
+                    .Select(m => new PrescriptionMedication
+                    {
+                        Name = m.Name,
+                        Concentration = m.Concentration,
+                        PharmaceuticalForm = m.PharmaceuticalForm,
+                        Dose = m.Dose,
+                        DiseaseCode = m.DiseaseCode,
+                        Morning = m.Morning,
+                        Noon = m.Noon,
+                        Evening = m.Evening,
+                        Night = m.Night,
+                        // etc.
+                    })
+                    .ToList()
+            };
+
+            await _prescriptionService.AddPrescriptionAsync(prescription);
+            await ShowAlert("Rețeta a fost salvată cu succes!");
         }
+
 
         public void FilterMedications(string searchText, PrescriptionDrugModel drug)
         {
-            // nu schimba referința, doar Clear + Add
             drug.FilteredMedications.Clear();
             if (string.IsNullOrWhiteSpace(searchText))
             {
@@ -150,7 +206,6 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         public void SelectMedication(string medName)
         {
-            // Găsește toate rândurile, ascunde listele, dar adaugă denumirea pe rândul care are acea sugestie deschisă
             foreach (var drug in MedicationsWithPrescription)
             {
                 if (drug.ShowSuggestions && drug.FilteredMedications.Contains(medName))
