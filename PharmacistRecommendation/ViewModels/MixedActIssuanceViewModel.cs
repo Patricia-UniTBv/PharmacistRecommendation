@@ -12,7 +12,7 @@ namespace PharmacistRecommendation.ViewModels
 {
     public partial class MixedActIssuanceViewModel : ObservableObject
     {
-        private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp"; // can be set from configuration in the future
+        private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
 
         [ObservableProperty]
         string cardNumber;
@@ -56,6 +56,22 @@ namespace PharmacistRecommendation.ViewModels
         string selectedPharmaceuticalService;
         [ObservableProperty]
         bool canPrint = false;
+
+        public ObservableCollection<string> AllMedications { get; } = new()
+        {
+            "Paracetamol 1",
+            "Paracetamol 2",
+            "Algocalmin",
+            "Nurofen",
+            "Ibuprofen",
+            "Aspirin",
+            "Diclofenac",
+            "Ketoprofen",
+            "Metamizol",
+            "Tramadol",
+            "Codeine"
+            // a se încărca din DB  !!!!!!!
+        };
 
         public MixedActIssuanceViewModel()
         {
@@ -111,6 +127,43 @@ namespace PharmacistRecommendation.ViewModels
             await ShowAlert("Datele au fost salvate cu succes!");
         }
 
+        public void FilterMedications(string searchText, PrescriptionDrugModel drug)
+        {
+            // nu schimba referința, doar Clear + Add
+            drug.FilteredMedications.Clear();
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                drug.ShowSuggestions = false;
+                return;
+            }
+
+            var filtered = AllMedications
+                .Where(m => m.StartsWith(searchText, StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+
+            foreach (var med in filtered)
+                drug.FilteredMedications.Add(med);
+
+            drug.ShowSuggestions = filtered.Any();
+        }
+
+        [RelayCommand]
+        public void SelectMedication(string medName)
+        {
+            // Găsește toate rândurile, ascunde listele, dar adaugă denumirea pe rândul care are acea sugestie deschisă
+            foreach (var drug in MedicationsWithPrescription)
+            {
+                if (drug.ShowSuggestions && drug.FilteredMedications.Contains(medName))
+                {
+                    drug.Name = medName;
+                    drug.ShowSuggestions = false;
+                    drug.FilteredMedications.Clear();
+                    break;
+                }
+            }
+        }
+
+
         [RelayCommand]
         private void AddMedicationWithPrescription()
         {
@@ -121,6 +174,20 @@ namespace PharmacistRecommendation.ViewModels
         private void AddMedicationWithoutPrescription()
         {
             MedicationsWithoutPrescription.Add(new PrescriptionDrugModel { Index = MedicationsWithoutPrescription.Count + 1 });
+        }
+
+        [RelayCommand]
+        void DeleteMedicationWithPrescription(PrescriptionDrugModel item)
+        {
+            if (item != null && MedicationsWithPrescription.Contains(item))
+            {
+                MedicationsWithPrescription.Remove(item);
+                // Re-index remaining items
+                for (int i = 0; i < MedicationsWithPrescription.Count; i++)
+                {
+                    MedicationsWithPrescription[i].Index = i + 1;
+                }
+            }
         }
 
         [RelayCommand]

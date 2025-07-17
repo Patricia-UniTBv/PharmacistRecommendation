@@ -1,7 +1,9 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PharmacistRecommendation.ViewModels"
     x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
+    x:Name="MixedActIssuance"
     BackgroundColor="White">
 
     <ScrollView>
@@ -54,10 +56,10 @@
             </Frame>
 
 
-            <Label Text="Diagnostic menționat de pacient/aparținător" TextColor="Black"/>
+            <Label Text="Diagnostic menționat de pacient/aparținător" TextColor="Black" FontAttributes="Bold"/>
             <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}" />
 
-            <Label Text="Medicamente utilizate de pacient" TextColor="Black"/>
+            <Label Text="Medicamente utilizate de pacient" TextColor="Black" FontAttributes="Bold"/>
             <Entry Placeholder="Medicamente utilizate de pacient" Text="{Binding UsedMedications}" />
 
             <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White">
@@ -111,51 +113,84 @@
                 </Grid>
             </Frame>
 
-
             <!-- Medications With Prescription -->
             <Label Text="Medicamente eliberate cu rețetă" FontAttributes="Bold" Margin="0,4" TextColor="#222"/>
             <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,110,110,110,110,110,60">
-                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                <Label Grid.Column="7" Text=" " />
+                            <Grid ColumnDefinitions="36,*,80,80,80,80,110,60">
+                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Text=" " />
                             </Grid>
                         </CollectionView.Header>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="50,*,110,110,110,110,110,60" Padding="2">
+                                <Grid ColumnDefinitions="36,*,110,110,110,110,110,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <Entry Grid.Column="1" Text="{Binding DisplayText}" Placeholder="Medicament" BackgroundColor="White" TextColor="Black" />
-                                    <Entry Grid.Column="2" Text="{Binding Morning}" Keyboard="Numeric" BackgroundColor="White" />
-                                    <Entry Grid.Column="3" Text="{Binding Noon}" Keyboard="Numeric" BackgroundColor="White" />
-                                    <Entry Grid.Column="4" Text="{Binding Evening}" Keyboard="Numeric" BackgroundColor="White" />
-                                    <Entry Grid.Column="5" Text="{Binding Night}" Keyboard="Numeric" BackgroundColor="White" />
-                                    <Entry Grid.Column="6" Text="{Binding AdministrationMode}" BackgroundColor="White" />
+                                    <StackLayout Grid.Column="1" Orientation="Vertical">
+                                        <Entry
+                                Text="{Binding Name}"
+                                TextChanged="OnMedicationNameTextChanged"
+                                Placeholder="Nume medicament"/>
+                                        <CollectionView ItemsSource="{Binding FilteredMedications}" 
+                                            IsVisible="{Binding ShowSuggestions}" 
+                                            HeightRequest="220"
+                                            BackgroundColor="Yellow">
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Label Text="{Binding .}" FontSize="16" BackgroundColor="LightPink">
+                                                        <Label.GestureRecognizers>
+                                                            <TapGestureRecognizer 
+                                                    Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
+                                                    CommandParameter="{Binding .}"/>
+                                                        </Label.GestureRecognizers>
+                                                    </Label>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </StackLayout>
+                                    <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="4" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="5" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="6" Text="{Binding AdministrationMode}" BackgroundColor="White"/>
+                                    <StackLayout Grid.Column="7" Orientation="Horizontal" Spacing="4">
+                                        <Button Text="✕"
+                                                TextColor="Red"
+                                                Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                                CommandParameter="{Binding .}"
+                                                HeightRequest="28"
+                                                WidthRequest="28"
+                                                BackgroundColor="#faf6f6"
+                                                ToolTipProperties.Text="Șterge medicament"/>
+                                    </StackLayout>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </VerticalStackLayout>
             </Frame>
-            <Button Text="Adaugă medicament"
-                    Command="{Binding AddMedicationWithPrescriptionCommand}"
-                    Margin="0,2,0,0"
-                    FontSize="13"
-                    HeightRequest="32"
-                    WidthRequest="160"
-                    HorizontalOptions="Start"
-                    CornerRadius="8"
-                    BackgroundColor="#ece8fa"
-                    TextColor="#34495E"/>
 
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
+                <Button Text="Adaugă medicament"
+            Command="{Binding AddMedicationWithPrescriptionCommand}"
+            FontSize="13"
+            HeightRequest="32"
+            WidthRequest="160"
+            CornerRadius="8"
+            BackgroundColor="#ece8fa"
+            TextColor="#34495E"/>
+
+            </StackLayout>
+            
             <!-- Medications Without Prescription -->
             <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222"/>
             <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
@@ -175,13 +210,13 @@
                         </CollectionView.Header>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="36,*,80,80,80,80,110,60" Padding="2">
+                                <Grid ColumnDefinitions="60,*,110,110,100,90,100,60" Padding="2">
                                     <Label Text="{Binding Index}" VerticalOptions="Center"/>
-                                    <Entry Text="{Binding Name}" Placeholder="Medicament" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Morning}" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Noon}" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Evening}" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Night}" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Text="{Binding Name}" Placeholder="Denumire medicament" BackgroundColor="White"/>
+                                    <Entry Text="{Binding Morning}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
+                                    <Entry Text="{Binding Noon}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
+                                    <Entry Text="{Binding Evening}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
+                                    <Entry Text="{Binding Night}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
                                     <Entry Text="{Binding AdministrationMode}" BackgroundColor="White"/>
                                 </Grid>
                             </DataTemplate>

@@ -62,7 +62,6 @@ namespace PharmacistRecommendation.Helpers.Services
                     PharmaceuticalForm = drugNode.Attributes["pharmaceuticalForm"]?.InnerText,
                     Dose = drugNode.Attributes["dose"]?.InnerText,
                     DiseaseCode = drugNode.Attributes["diseaseCode"]?.InnerText,
-                    // Optionally map Morning/Noon/Evening/Night/AdministrationMode if you want to parse the dose string
                 };
                 model.Drugs.Add(drug);
             }

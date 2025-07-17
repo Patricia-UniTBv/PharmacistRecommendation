@@ -1,24 +1,55 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.Helpers.Services
 {
-    public class PrescriptionDrugModel
+    public partial class PrescriptionDrugModel : ObservableObject
     {
-        public int Index { get; set; }
-        public string DisplayText { get; set; }
-        public string Name { get; set; }
-        public string Concentration { get; set; }
-        public string PharmaceuticalForm { get; set; }
-        public string Morning { get; set; }
-        public string Noon { get; set; }
-        public string Evening { get; set; }
-        public string Night { get; set; }
-        public string AdministrationMode { get; set; }
-        public string Dose { get; set; }
-        public string DiseaseCode { get; set; }
+        [ObservableProperty]
+        int index;
+
+        [ObservableProperty]
+        string name = string.Empty;
+
+        [ObservableProperty]
+        string displayText = string.Empty;
+
+        [ObservableProperty]
+        string concentration = string.Empty;
+
+        [ObservableProperty]
+        string pharmaceuticalForm = string.Empty;
+
+        [ObservableProperty]
+        string diseaseCode = string.Empty;
+
+        [ObservableProperty]
+        string dose = string.Empty;
+
+        [ObservableProperty]
+        string morning = string.Empty;
+
+        [ObservableProperty]
+        string noon = string.Empty;
+
+        [ObservableProperty]
+        string evening = string.Empty;
+
+        [ObservableProperty]
+        string night = string.Empty;
+
+        [ObservableProperty]
+        string administrationMode = string.Empty;
+
+        [ObservableProperty]
+        ObservableCollection<string> filteredMedications = new();
+
+        [ObservableProperty]
+        bool showSuggestions = false;
     }
 }
