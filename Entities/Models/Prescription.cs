@@ -47,7 +47,7 @@ public partial class Prescription
 
     public virtual Document? Document { get; set; }
 
-    public virtual Patient Patient { get; set; } = null!;
+    public virtual Patient? Patient { get; set; }
 
     public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();
 }

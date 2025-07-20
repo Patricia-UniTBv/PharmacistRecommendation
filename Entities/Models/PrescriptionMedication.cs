@@ -13,14 +13,6 @@ public partial class PrescriptionMedication
 
     public string Name { get; set; } = null!;
 
-    public string? Concentration { get; set; }
-
-    public string? PharmaceuticalForm { get; set; }
-
-    public string? Dose { get; set; }
-
-    public string? DiseaseCode { get; set; }
-
     public string? Morning { get; set; }
 
     public string? Noon { get; set; }
@@ -30,6 +22,8 @@ public partial class PrescriptionMedication
     public string? Night { get; set; }
 
     public int? AdministrationModeId { get; set; }
+
+    public bool? IsWithPrescription { get; set; }
 
     public virtual AdministrationMode? AdministrationMode { get; set; }
 

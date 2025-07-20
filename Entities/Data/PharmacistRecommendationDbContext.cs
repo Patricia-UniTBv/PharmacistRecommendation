@@ -274,7 +274,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.HasOne(d => d.Patient).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.PatientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Prescription_Patient");
         });
 
@@ -284,15 +283,11 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("PrescriptionMedication");
 
-            entity.Property(e => e.Concentration).HasMaxLength(50);
-            entity.Property(e => e.DiseaseCode).HasMaxLength(20);
-            entity.Property(e => e.Dose).HasMaxLength(20);
             entity.Property(e => e.Evening).HasMaxLength(20);
             entity.Property(e => e.Morning).HasMaxLength(20);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Night).HasMaxLength(20);
             entity.Property(e => e.Noon).HasMaxLength(20);
-            entity.Property(e => e.PharmaceuticalForm).HasMaxLength(20);
 
             entity.HasOne(d => d.AdministrationMode).WithMany(p => p.PrescriptionMedications)
                 .HasForeignKey(d => d.AdministrationModeId)

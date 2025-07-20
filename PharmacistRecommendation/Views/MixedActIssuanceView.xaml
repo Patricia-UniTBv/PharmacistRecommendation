@@ -119,7 +119,7 @@
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,80,80,80,80,110,60">
+                            <Grid ColumnDefinitions="36,*,110,110,110,110,110,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
@@ -197,7 +197,7 @@
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,80,80,80,80,110,60">
+                            <Grid ColumnDefinitions="60,*,110,110,100,90,100,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
@@ -211,13 +211,44 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="60,*,110,110,100,90,100,60" Padding="2">
-                                    <Label Text="{Binding Index}" VerticalOptions="Center"/>
-                                    <Entry Text="{Binding Name}" Placeholder="Denumire medicament" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Morning}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Noon}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Evening}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
-                                    <Entry Text="{Binding Night}" Keyboard="Numeric" Placeholder="Cantitate" BackgroundColor="White"/>
-                                    <Entry Text="{Binding AdministrationMode}" BackgroundColor="White"/>
+                                    <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+                                    <StackLayout Grid.Column="1" Orientation="Vertical">
+                                        <Entry
+                                Text="{Binding Name}"
+                                TextChanged="OnMedicationNameTextChanged"
+                                Placeholder="Nume medicament"/>
+                                        <CollectionView ItemsSource="{Binding FilteredMedications}" 
+                                IsVisible="{Binding ShowSuggestions}" 
+                                HeightRequest="220"
+                                BackgroundColor="Yellow">
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Label Text="{Binding .}" FontSize="16" BackgroundColor="LightPink">
+                                                        <Label.GestureRecognizers>
+                                                            <TapGestureRecognizer 
+                                            Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
+                                            CommandParameter="{Binding .}"/>
+                                                        </Label.GestureRecognizers>
+                                                    </Label>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </StackLayout>
+                                    <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="4" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="5" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="6" Text="{Binding AdministrationMode}" BackgroundColor="White"/>
+                                    <StackLayout Grid.Column="7" Orientation="Horizontal" Spacing="4">
+                                        <Button Text="✕"
+                                                TextColor="Red"
+                                                Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                                CommandParameter="{Binding .}"
+                                                HeightRequest="28"
+                                                WidthRequest="28"
+                                                BackgroundColor="#faf6f6"
+                                                ToolTipProperties.Text="Șterge medicament"/>
+                                    </StackLayout>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -242,9 +273,15 @@
             <Editor Placeholder="Recomandarea farmacistului (medicamentele sunt destinate doar persoanei pentru care au fost eliberate):"
                     Text="{Binding PharmacistRecommendation}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />
 
-            <Picker Title="Serviciu farmaceutic"
-                    ItemsSource="{Binding PharmaceuticalServices}"
-                    SelectedItem="{Binding SelectedPharmaceuticalService}" />
+            <HorizontalStackLayout Spacing="0" VerticalOptions="Center">
+                <Image Source="down_arrow.png" Margin="0,10,0,7" WidthRequest="20" HeightRequest="20" VerticalOptions="End"/>
+                <Picker Title="Serviciu farmaceutic"
+            ItemsSource="{Binding PharmaceuticalServices}"
+            SelectedItem="{Binding SelectedPharmaceuticalService}" 
+            WidthRequest="220"
+            />
+            </HorizontalStackLayout>
+
 
             <HorizontalStackLayout Spacing="14" Padding="0,8,0,0">
                 <Button Text="Salvează"

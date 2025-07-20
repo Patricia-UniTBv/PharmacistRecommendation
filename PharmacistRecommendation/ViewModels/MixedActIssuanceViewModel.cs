@@ -55,9 +55,9 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         string pharmacistRecommendation;
         [ObservableProperty]
-        ObservableCollection<string> pharmaceuticalServices = new() { "Consiliere", "Eliberare rețetă", "Supraveghere tratament" };
+        ObservableCollection<string> pharmaceuticalServices = new() { "Aderență la tratament", "Consiliere farmaceutică" };
         [ObservableProperty]
-        string selectedPharmaceuticalService;
+        string selectedPharmaceuticalService = "Aderență la tratament";
         [ObservableProperty]
         bool canPrint = false;
 
@@ -116,7 +116,6 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
-            // Ex: la ce câmpuri vrei să NU fie nulle/empty
             if (string.IsNullOrWhiteSpace(PatientName))
             {
                 await ShowAlert("Completează numele pacientului!");
@@ -143,7 +142,6 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
-            // Mapping către entitățile pentru DB
             var prescription = new Prescription
             {
                 PatientName = this.PatientName,
@@ -161,22 +159,30 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacistRecommendation = this.PharmacistRecommendation,
                 PharmaceuticalService = this.SelectedPharmaceuticalService,
                 DoctorStamp = this.DoctorStamp,
-                IssueDate = DateTime.Now, // sau din UI
+                IssueDate = DateTime.Now, 
                 PrescriptionMedications = this.MedicationsWithPrescription
-                    .Select(m => new PrescriptionMedication
-                    {
-                        Name = m.Name,
-                        Concentration = m.Concentration,
-                        PharmaceuticalForm = m.PharmaceuticalForm,
-                        Dose = m.Dose,
-                        DiseaseCode = m.DiseaseCode,
-                        Morning = m.Morning,
-                        Noon = m.Noon,
-                        Evening = m.Evening,
-                        Night = m.Night,
-                        // etc.
-                    })
-                    .ToList()
+         .Select(m => new PrescriptionMedication
+         {
+             Name = m.Name,
+             Morning = m.Morning,
+             Noon = m.Noon,
+             Evening = m.Evening,
+             Night = m.Night,
+             IsWithPrescription = true
+         })
+         .Concat(
+             this.MedicationsWithoutPrescription
+                 .Select(m => new PrescriptionMedication
+                 {
+                     Name = m.Name,
+                     Morning = m.Morning,
+                     Noon = m.Noon,
+                     Evening = m.Evening,
+                     Night = m.Night,
+                     IsWithPrescription = false
+                 })
+         )
+         .ToList()
             };
 
             await _prescriptionService.AddPrescriptionAsync(prescription);
@@ -237,10 +243,22 @@ namespace PharmacistRecommendation.ViewModels
             if (item != null && MedicationsWithPrescription.Contains(item))
             {
                 MedicationsWithPrescription.Remove(item);
-                // Re-index remaining items
                 for (int i = 0; i < MedicationsWithPrescription.Count; i++)
                 {
                     MedicationsWithPrescription[i].Index = i + 1;
+                }
+            }
+        }
+
+        [RelayCommand]
+        void DeleteMedicationWithoutPrescription(PrescriptionDrugModel item)
+        {
+            if (item != null && MedicationsWithoutPrescription.Contains(item))
+            {
+                MedicationsWithoutPrescription.Remove(item);
+                for (int i = 0; i < MedicationsWithoutPrescription.Count; i++)
+                {
+                    MedicationsWithoutPrescription[i].Index = i + 1;
                 }
             }
         }
