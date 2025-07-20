@@ -16,6 +16,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("new_card", typeof(CardConfigurationView));
             Routing.RegisterRoute("gdpr_configuration", typeof(GdprConfigurationView));
             Routing.RegisterRoute("mixed_issuance", typeof(MixedActIssuanceView));
+            Routing.RegisterRoute("administration_modes", typeof (AdministrationModesView));
         }
 
         private async void OnNewCardClicked(object sender,  EventArgs e)
@@ -54,6 +55,11 @@ namespace PharmacistRecommendation
         private async void OnGdprConfigClicked(object sender, EventArgs e)
         {
             await GoToAsync("gdpr_configuration");
+        }
+
+        private async void OnAdministrationModesClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("administration_modes");
         }
 
     }

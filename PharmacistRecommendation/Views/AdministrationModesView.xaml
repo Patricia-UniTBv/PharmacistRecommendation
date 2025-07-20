@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PharmacistRecommendation.Views.AdministrationModesView"
+             x:Name="administration_modes_page">
+    <VerticalStackLayout Padding="14">
+        <HorizontalStackLayout Spacing="8" Margin="0,0,0,8">
+            <Entry Placeholder="Nume" Text="{Binding SearchText}" WidthRequest="180"/>
+            <Button Text="Caută" Command="{Binding SearchCommand}" BackgroundColor="#34495E"/>
+            <Button Text="Adaugă" Command="{Binding AddCommand}" BackgroundColor="#34495E" />
+        </HorizontalStackLayout>
+        <CollectionView ItemsSource="{Binding Modes}" SelectionMode="Single" SelectedItem="{Binding SelectedMode}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="3*,50,90,90" Padding="0" Margin="20,0,60,14">
+                        <Entry Grid.Column="0" Text="{Binding Name, Mode=TwoWay}" Placeholder="Nume mod administrare"/>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}" VerticalOptions="Center" Color="#5E89AD"/>
+                        <Button Grid.Column="2" Text="Editează" BackgroundColor="#34495E"
+                                Command="{Binding BindingContext.EditCommand, Source={x:Reference administration_modes_page}}"
+                                CommandParameter="{Binding .}"
+                                Margin="0,0,5,0"/>
+                        <Button Grid.Column="3" Text="Șterge" BackgroundColor="#8E0621"
+                                Command="{Binding BindingContext.DeleteCommand, Source={x:Reference administration_modes_page}}"
+                                CommandParameter="{Binding .}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

@@ -9,5 +9,7 @@ public partial class AdministrationMode
 
     public string Name { get; set; } = null!;
 
+    public bool? IsActive { get; set; }
+
     public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();
 }
