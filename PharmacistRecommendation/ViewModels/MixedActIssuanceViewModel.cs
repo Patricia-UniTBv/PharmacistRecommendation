@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Entities.Models;
+using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers.Services;
 using System;
@@ -17,6 +18,7 @@ namespace PharmacistRecommendation.ViewModels
         private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
 
         private readonly IPrescriptionService _prescriptionService;
+        private readonly IAdministrationModeService _administrationModeService;
 
         [ObservableProperty]
         string? cardNumber;
@@ -59,6 +61,10 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         string selectedPharmaceuticalService = "Aderență la tratament";
         [ObservableProperty]
+        ObservableCollection<AdministrationMode> administrationModes = new();
+        [ObservableProperty]
+        AdministrationMode? selectedAdministrationMode;
+        [ObservableProperty]
         bool canPrint = false;
 
         public ObservableCollection<string> AllMedications { get; } = new()
@@ -77,9 +83,11 @@ namespace PharmacistRecommendation.ViewModels
             // a se încărca din DB  !!!!!!!
         };
 
-        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService)
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService)
         {
             _prescriptionService = prescriptionService;
+            _administrationModeService = administrationModeService;
+            LoadAdministrationModes();
         }
 
         [RelayCommand]
@@ -113,6 +121,7 @@ namespace PharmacistRecommendation.ViewModels
                 await ShowAlert($"Eroare la import: {ex.Message}");
             }
         }
+
         [RelayCommand]
         private async Task SaveAsync()
         {
@@ -224,7 +233,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-
         [RelayCommand]
         private void AddMedicationWithPrescription()
         {
@@ -266,18 +274,11 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private void NewRecommendation()
         {
-            // Reset all fields
             CardNumber = PatientName = PatientCnp = CaregiverName = CaregiverCnp = PatientDiagnosis = UsedMedications = "";
             DoctorStamp = PrescriptionSeries = PrescriptionNumber = PrescriptionDiagnosis = "";
             Symptoms = Suspicion = PharmacistObservations = NotesToDoctor = PharmacistRecommendation = "";
             MedicationsWithPrescription.Clear();
             MedicationsWithoutPrescription.Clear();
-        }
-
-        [RelayCommand]
-        private void Close()
-        {
-            // Close page logic, depends on your navigation setup
         }
 
         [RelayCommand]
@@ -288,8 +289,13 @@ namespace PharmacistRecommendation.ViewModels
 
         private Task ShowAlert(string message)
         {
-            // Use Shell.Current if available, else adapt for your platform
             return Shell.Current?.DisplayAlert("Info", message, "OK") ?? Task.CompletedTask;
+        }
+
+        private async void LoadAdministrationModes()
+        {
+            var modes = await _administrationModeService.GetAllAsync();
+            AdministrationModes = new ObservableCollection<AdministrationMode>(modes);
         }
     }
 }
