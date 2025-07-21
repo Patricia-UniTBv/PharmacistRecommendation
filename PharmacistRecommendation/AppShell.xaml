@@ -14,7 +14,9 @@
         </MenuBarItem>
 
         <MenuBarItem Text="Emitere Documente">
-            <MenuFlyoutItem Text="Emitere Act Mixt"  Clicked="OnMixedIssuanceClicked" />
+            <MenuFlyoutItem Text="Emitere act mixt"  Clicked="OnMixedIssuanceClicked" />
+            <MenuFlyoutItem Text="Emitere act consecutiv prescripției" Clicked="OnPrescriptionOnlyClicked" />
+            <MenuFlyoutItem Text="Emitere act propriu" Clicked="OnWithoutPrescriptionClicked" />
         </MenuBarItem>
 
         <MenuBarItem Text="Rapoarte">

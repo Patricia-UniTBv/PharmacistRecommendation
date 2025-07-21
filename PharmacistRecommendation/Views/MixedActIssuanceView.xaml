@@ -8,11 +8,9 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="18" Spacing="12" BackgroundColor="White">
-
-            <!-- Top Bar -->
             <HorizontalStackLayout Spacing="10" Padding="0,0,0,8">
                
-                <Label Text="Emitere act mixt"
+                <Label Text="{Binding PageTitle}"
                        FontSize="19"
                        FontAttributes="Bold"
                        VerticalOptions="Center"
@@ -64,22 +62,18 @@
 
             <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
-                    <!-- Parafa medic -->
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
                         <Label Text="Parafa medic" TextColor="Black"/>
                         <Entry Placeholder="Parafa medic" Text="{Binding DoctorStamp}" />
                     </VerticalStackLayout>
-                    <!-- Seria -->
                     <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
                         <Label Text="Seria" TextColor="Black"/>
                         <Entry Placeholder="Seria" Text="{Binding PrescriptionSeries}"/>
                     </VerticalStackLayout>
-                    <!-- Număr -->
                     <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
                         <Label Text="Număr" TextColor="Black"/>
                         <Entry Placeholder="Număr" Text="{Binding PrescriptionNumber}"/>
                     </VerticalStackLayout>
-                    <!-- Diagnostic -->
                     <VerticalStackLayout Grid.Column="3" Spacing="4" BackgroundColor="White">
                         <Label Text="Diagnostic" TextColor="Black"/>
                         <Entry Placeholder="Diagnostic" Text="{Binding PrescriptionDiagnosis}"/>
@@ -89,21 +83,18 @@
 
             <Frame CornerRadius="10" BorderColor="#ececec" Padding="12" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16" BackgroundColor="White">
-                    <!-- Simptomatologie -->
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
                         <Label Text="Simptomatologie" TextColor="Black"/>
                         <Entry Placeholder="Simptomatologie" 
                    Text="{Binding Symptoms}" 
                    BackgroundColor="White"/>
                     </VerticalStackLayout>
-                    <!-- Suspiciune -->
                     <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
                         <Label Text="Suspiciune" TextColor="Black"/>
                         <Entry Placeholder="Suspiciune" 
                    Text="{Binding Suspicion}" 
                    BackgroundColor="White" />
                     </VerticalStackLayout>
-                    <!-- Constatările farmacistului -->
                     <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
                         <Label Text="Constatările farmacistului" TextColor="Black"/>
                         <Entry Placeholder="Constatările farmacistului" 
@@ -114,8 +105,8 @@
             </Frame>
 
             <!-- Medications With Prescription -->
-            <Label Text="Medicamente eliberate cu rețetă" FontAttributes="Bold" Margin="0,4" TextColor="#222"/>
-            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
+            <Label Text="Medicamente eliberate cu rețetă" FontAttributes="Bold" Margin="0,4" TextColor="#222" IsVisible="{Binding ShowWithPrescription}"/>
+            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}">
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
@@ -185,6 +176,7 @@
             <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
                 <Button Text="Adaugă medicament"
             Command="{Binding AddMedicationWithPrescriptionCommand}"
+            IsVisible="{Binding ShowWithPrescription}" 
             FontSize="13"
             HeightRequest="32"
             WidthRequest="160"
@@ -195,10 +187,10 @@
             </StackLayout>
             
             <!-- Medications Without Prescription -->
-            <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222"/>
+            <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222" IsVisible="{Binding ShowWithoutPrescription}"/>
             <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
                 <VerticalStackLayout Spacing="6">
-                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
+                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White" IsVisible="{Binding ShowWithoutPrescription}">
                         <CollectionView.Header>
                             <Grid ColumnDefinitions="36,*,110,110,110,110,210,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
@@ -263,6 +255,7 @@
             </Frame>
             <Button Text="Adaugă medicament"
          Command="{Binding AddMedicationWithoutPrescriptionCommand}"
+         IsVisible="{Binding ShowWithoutPrescription}"
          Margin="0,2,0,0"
          FontSize="13"
          HeightRequest="32"
@@ -298,7 +291,7 @@
                         TextColor="#36317f"/>
                 <Button Text="Printează"
                         Command="{Binding PrintCommand}"
-                        IsEnabled="True"
+                        IsEnabled="{Binding IsPrintButtonEnabled}"
                         FontSize="14"
                         HeightRequest="34"
                         CornerRadius="8"

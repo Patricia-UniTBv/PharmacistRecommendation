@@ -100,7 +100,6 @@ namespace PharmacistRecommendation.Helpers
         private void DrawHeaderWithLogo(SD.Graphics g, float left, float y, float contentWidth, float logoSize, SD.Font titleFont, SD.Font subtitleFont)
         {
             var logoRect = new RectangleF(left, y, logoSize, logoSize);
-            // zona unde vrei să apară logo-ul (rectangleul tău)
             var symbolRect = new RectangleF(logoRect.X + 20, logoRect.Y, 60, 60);
             var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Images", "logo.png");
 
@@ -108,7 +107,6 @@ namespace PharmacistRecommendation.Helpers
             {
                 using (var logo = SD.Image.FromFile(logoPath))
                 {
-                    // calculează proporțional zona de desenat astfel încât să nu fie tăiat
                     float aspectImage = (float)logo.Width / logo.Height;
                     float aspectRect = symbolRect.Width / symbolRect.Height;
 
@@ -117,7 +115,6 @@ namespace PharmacistRecommendation.Helpers
 
                     if (aspectImage > aspectRect)
                     {
-                        // imaginea e mai lată, micșorează după lățime
                         drawWidth = symbolRect.Width;
                         drawHeight = symbolRect.Width / aspectImage;
                         drawX = symbolRect.X;
@@ -125,7 +122,6 @@ namespace PharmacistRecommendation.Helpers
                     }
                     else
                     {
-                        // imaginea e mai înaltă, micșorează după înălțime
                         drawHeight = symbolRect.Height;
                         drawWidth = symbolRect.Height * aspectImage;
                         drawX = symbolRect.X + (symbolRect.Width - drawWidth) / 2;

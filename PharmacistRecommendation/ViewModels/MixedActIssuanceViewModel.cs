@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.ViewModels
 {
+    [QueryProperty(nameof(Mode), "mode")]
     public partial class MixedActIssuanceViewModel : ObservableObject
     {
         private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
@@ -22,8 +23,31 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IAdministrationModeService _administrationModeService;
         private readonly IPharmacyService _pharmacyService;
 
-        private int pharmacyId { get; set; }
+        [ObservableProperty]
+        string mode;
 
+        partial void OnModeChanged(string value)
+        {
+            ShowWithPrescription = value == "both" || value == "withprescription";
+            ShowWithoutPrescription = value == "both" || value == "withoutprescription";
+
+            if(ShowWithPrescription && !ShowWithoutPrescription)
+            {
+                PageTitle = "Emitere act consecutiv prescripției";
+            }
+            else if(!ShowWithPrescription && ShowWithoutPrescription)
+            {
+                PageTitle = "Emitere act propriu";
+            }
+        }
+
+        private int pharmacyId { get; set; }
+        [ObservableProperty]
+        public bool showWithPrescription = true;
+        [ObservableProperty]
+        public bool showWithoutPrescription = true;
+        [ObservableProperty]
+        string pageTitle = "Emitere act mixt";
         [ObservableProperty]
         string? cardNumber;
         [ObservableProperty]
@@ -71,6 +95,8 @@ namespace PharmacistRecommendation.ViewModels
         AdministrationMode? administrationMode;
         [ObservableProperty]
         bool canPrint = false;
+        [ObservableProperty]
+        bool isPrintButtonEnabled = false;
 
         public ObservableCollection<string> AllMedications { get; } = new()
         {
@@ -103,25 +129,37 @@ namespace PharmacistRecommendation.ViewModels
         {
             try
             {
-                string filePath = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
-                if (filePath == null)
+                if (mode == "actpropriu") // IMPORT DIN CASA DE MARCAT
                 {
-                    await ShowAlert("Nu există fișier de importat.");
-                    return;
+                    // Import doar din bon
+                    //var lastBonFile = GetLastReceiptLogFile(caleBonuri); 
+                    //var medsFaraPrescriptie = ImportMedicationsFromReceiptLog(lastBonFile);
+
+                    //MedicationsWithoutPrescription = new ObservableCollection<MedicationModel>(
+                    //medsFaraPrescriptie.Select((m, i) => new MedicationModel { Name = m, Index = i + 1 }));
                 }
-                var import = PrescriptionImportService.ImportFromXml(filePath);
-
-                PatientCnp = import.PatientCnp;
-                PrescriptionSeries = import.PrescriptionSeries;
-                PrescriptionNumber = import.PrescriptionNumber;
-                DoctorStamp = import.DoctorStamp;
-                PrescriptionDiagnosis = import.Diagnosis;
-
-                MedicationsWithPrescription.Clear();
-                foreach (var drug in import.Drugs)
+                else if (mode == "mixed" || mode == "withprescription")
                 {
-                    drug.DisplayText = drug.Name + " " + drug.Concentration + " " + drug.PharmaceuticalForm + " " + drug.Dose;
-                    MedicationsWithPrescription.Add(drug);
+                    string filePath = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
+                    if (filePath == null)
+                    {
+                        await ShowAlert("Nu există fișier de importat.");
+                        return;
+                    }
+                    var import = PrescriptionImportService.ImportFromXml(filePath);
+
+                    PatientCnp = import.PatientCnp;
+                    PrescriptionSeries = import.PrescriptionSeries;
+                    PrescriptionNumber = import.PrescriptionNumber;
+                    DoctorStamp = import.DoctorStamp;
+                    PrescriptionDiagnosis = import.Diagnosis;
+
+                    MedicationsWithPrescription.Clear();
+                    foreach (var drug in import.Drugs)
+                    {
+                        drug.DisplayText = drug.Name + " " + drug.Concentration + " " + drug.PharmaceuticalForm + " " + drug.Dose;
+                        MedicationsWithPrescription.Add(drug);
+                    }
                 }
             }
             catch (Exception ex)
@@ -205,6 +243,7 @@ namespace PharmacistRecommendation.ViewModels
             };
 
             await _prescriptionService.AddPrescriptionAsync(prescription);
+            IsPrintButtonEnabled = true;
             await ShowAlert("Rețeta a fost salvată cu succes!");
         }
 

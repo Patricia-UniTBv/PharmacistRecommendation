@@ -144,6 +144,9 @@
 	  <MauiXaml Update="Views\MonitoringView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\OwnActIssuanceView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\PharmacistConfigurationView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -35,6 +35,16 @@ namespace PharmacistRecommendation
             await GoToAsync("mixed_issuance");
         }
 
+        private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
+        }
+        private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
+        }
+
+
         private async void OnAddPharmacistClicked(object sender, EventArgs e)
         {
             var vm = ServiceHelper.GetService<PharmacistConfigurationViewModel>();
