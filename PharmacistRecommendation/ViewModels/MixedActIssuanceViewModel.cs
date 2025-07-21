@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.Helpers.Services;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace PharmacistRecommendation.ViewModels
 
         private readonly IPrescriptionService _prescriptionService;
         private readonly IAdministrationModeService _administrationModeService;
+        private readonly IPharmacyService _pharmacyService;
+
+        private int pharmacyId { get; set; }
 
         [ObservableProperty]
         string? cardNumber;
@@ -57,13 +61,14 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         string pharmacistRecommendation;
         [ObservableProperty]
-        ObservableCollection<string> pharmaceuticalServices = new() { "Aderență la tratament", "Consiliere farmaceutică" };
+        ObservableCollection<string> pharmaceuticalServices = new() { "Aderență la tratament", "Administrare medicamente", "Consiliere", "Consiliere dispozitive medicale", "Consiliere OTC", "Consiliere RX", "Consiliere suplimente", 
+        "Farmacovigilenta", "Masurare parametri biologici", "Preparare medicamente", "Teste rapide", "Vaccinare"};
         [ObservableProperty]
         string selectedPharmaceuticalService = "Aderență la tratament";
         [ObservableProperty]
         ObservableCollection<AdministrationMode> administrationModes = new();
         [ObservableProperty]
-        AdministrationMode? selectedAdministrationMode;
+        AdministrationMode? administrationMode;
         [ObservableProperty]
         bool canPrint = false;
 
@@ -83,11 +88,14 @@ namespace PharmacistRecommendation.ViewModels
             // a se încărca din DB  !!!!!!!
         };
 
-        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService)
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService)
         {
             _prescriptionService = prescriptionService;
             _administrationModeService = administrationModeService;
+            _pharmacyService = pharmacyService;
             LoadAdministrationModes();
+
+            pharmacyId = 1; // a se modifica cu ID-ul farmaciei curente!!
         }
 
         [RelayCommand]
@@ -177,6 +185,7 @@ namespace PharmacistRecommendation.ViewModels
              Noon = m.Noon,
              Evening = m.Evening,
              Night = m.Night,
+             AdministrationModeId = m.AdministrationMode?.Id,
              IsWithPrescription = true
          })
          .Concat(
@@ -188,6 +197,7 @@ namespace PharmacistRecommendation.ViewModels
                      Noon = m.Noon,
                      Evening = m.Evening,
                      Night = m.Night,
+                     AdministrationModeId = m.AdministrationMode?.Id,
                      IsWithPrescription = false
                  })
          )
@@ -282,10 +292,62 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         [RelayCommand]
-        private void Print()
+        private async void Print()
         {
-            // Print logic
+            var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+
+            var medsWithPrescription = MedicationsWithPrescription.Select(m => new ActPrintDocument.MedicationLine
+            {
+                Name = m.Name,
+                Morning = m.Morning,
+                Noon = m.Noon,
+                Evening = m.Evening,
+                Night = m.Night,
+                AdministrationMode = m.AdministrationMode?.Name ?? "" 
+        }).ToList();
+
+            var medsWithoutPrescription = MedicationsWithoutPrescription.Select(m => new ActPrintDocument.MedicationLine
+            {
+                Name = m.Name,
+                Morning = m.Morning,
+                Noon = m.Noon,
+                Evening = m.Evening,
+                Night = m.Night,
+                AdministrationMode = m.AdministrationMode?.Name ?? ""
+    }).ToList();
+
+            var printDoc = new ActPrintDocument
+            {
+                PharmacyName = _pharmacy!.Name,
+                PharmacyAddress = _pharmacy.Address!,
+                PharmacyPhone = _pharmacy!.Phone!,
+                Series = this.PrescriptionSeries!,
+                Number = this.PrescriptionNumber!,
+                IssueDate = DateTime.Now,
+                PatientName = this.PatientName!,
+                PatientCnp = this.PatientCnp!,
+                CaregiverName = this.CaregiverName!,
+                CaregiverCnp = this.CaregiverCnp!,
+                DoctorStamp = this.DoctorStamp!,
+                Diagnostic = this.PrescriptionDiagnosis!,
+                DiagnosisMentioned = this.PatientDiagnosis!,
+                Symptoms = this.Symptoms!,
+                Suspicion = this.Suspicion!,
+                PharmacistObservations = this.PharmacistObservations!,
+                PharmacistRecommendation = this.PharmacistRecommendation,
+                PharmaceuticalService = this.SelectedPharmaceuticalService,
+                MedicationsWithPrescription = medsWithPrescription,
+                MedicationsWithoutPrescription = medsWithoutPrescription
+            };
+
+            var pd = new System.Windows.Forms.PrintDialog();
+            pd.Document = printDoc;
+            if (pd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                printDoc.Print();
+            }
         }
+
 
         private Task ShowAlert(string message)
         {

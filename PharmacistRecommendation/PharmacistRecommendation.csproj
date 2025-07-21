@@ -56,6 +56,9 @@
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
+	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\logo.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="Platforms\Windows\CidGen64.dll" />
@@ -64,6 +67,7 @@
 	  <None Remove="Resources\Images\calendar.png" />
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\down_arrow.png" />
+	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Images\pen.png" />
 	  <None Remove="Resources\Images\view.png" />
 	</ItemGroup>
@@ -89,6 +93,9 @@
 	  </Content>
 	  <Content Include="Platforms\Windows\msvcr100.dll">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Images\logo.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
 

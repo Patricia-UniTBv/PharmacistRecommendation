@@ -119,7 +119,7 @@
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,110,110,110,110,110,60">
+                            <Grid ColumnDefinitions="36,*,110,110,110,110,210,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
@@ -132,7 +132,7 @@
                         </CollectionView.Header>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="36,*,110,110,110,110,110,60" Padding="2">
+                                <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
                                     <StackLayout Grid.Column="1" Orientation="Vertical">
                                         <Entry
@@ -169,8 +169,8 @@
                                                 TextColor="Red"
                                                 Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
                                                 CommandParameter="{Binding .}"
-                                                HeightRequest="28"
-                                                WidthRequest="28"
+                                                HeightRequest="20"
+                                                WidthRequest="20"
                                                 BackgroundColor="#faf6f6"
                                                 ToolTipProperties.Text="Șterge medicament"/>
                                     </StackLayout>
@@ -200,7 +200,7 @@
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,110,110,110,110,110,60">
+                            <Grid ColumnDefinitions="36,*,110,110,110,110,210,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
@@ -213,7 +213,7 @@
                         </CollectionView.Header>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="36,*,110,110,110,110,110,60" Padding="2">
+                                <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
                                     <StackLayout Grid.Column="1" Orientation="Vertical">
                                         <Entry
@@ -224,7 +224,7 @@
                                 IsVisible="{Binding ShowSuggestions}" >
                                             <CollectionView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Label Text="{Binding .}" FontSize="16" BackgroundColor="LightPink">
+                                                    <Label Text="{Binding .}" FontSize="16">
                                                         <Label.GestureRecognizers>
                                                             <TapGestureRecognizer 
                                             Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
@@ -283,7 +283,7 @@
                 <Picker Title="Serviciu farmaceutic"
             ItemsSource="{Binding PharmaceuticalServices}"
             SelectedItem="{Binding SelectedPharmaceuticalService}" 
-            WidthRequest="220"
+            WidthRequest="420"
             />
             </HorizontalStackLayout>
 
@@ -298,7 +298,7 @@
                         TextColor="#36317f"/>
                 <Button Text="Printează"
                         Command="{Binding PrintCommand}"
-                        IsEnabled="{Binding CanPrint}"
+                        IsEnabled="True"
                         FontSize="14"
                         HeightRequest="34"
                         CornerRadius="8"
