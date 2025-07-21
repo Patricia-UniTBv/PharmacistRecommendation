@@ -12,8 +12,9 @@ namespace PharmacistRecommendation
             InitializeComponent();
             Current.UserAppTheme = AppTheme.Light;
 
-            // Get MainPage from dependency injection
-            MainPage = serviceProvider.GetRequiredService<MainPage>();
+            // Get MainPage from dependency injection and wrap it in NavigationPage
+            var mainPage = serviceProvider.GetRequiredService<MainPage>();
+            MainPage = new NavigationPage(mainPage);
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using Entities.Services.Interfaces;
+﻿using Entities.Data;
+using Entities.Repository;
+using Entities.Repository.Interfaces;
 using Entities.Services;
+using Entities.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
-using Entities.Repository.Interfaces;
-using Entities.Repository;
-using Entities.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace PharmacistRecommendation
 {
@@ -26,17 +26,34 @@ namespace PharmacistRecommendation
             // Configure DbContext with connection string
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));
-            // Add MainPage registration
-            builder.Services.AddTransient<MainPage>();
 
+            // Register pages
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<MedicationView>();
             builder.Services.AddTransient<CardioMonitoringView>();
+            builder.Services.AddTransient<TestConnectionView>();
+            builder.Services.AddTransient<ConflictResolutionView>();
+            builder.Services.AddTransient<AddEditMedicationView>();
+
+            // Register ViewModels
+            builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<CardioMonitoringViewModel>();
+            builder.Services.AddTransient<ConflictResolutionViewModel>();
+            builder.Services.AddTransient<AddEditMedicationViewModel>();
+
+            // Register Services
+            builder.Services.AddScoped<IMedicationService, MedicationService>();
+            builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
+            builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
             builder.Services.AddSingleton<ICardioMonitoringService, CardioMonitoringService>();
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
-            builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
             builder.Services.AddSingleton<IPatientService, PatientService>();
-            builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
+
+            // Register Repositories
+            builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
             builder.Services.AddScoped<ICardioMonitoringRepository, CardioMonitoringRepository>();
+            builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
+            builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
 #if DEBUG
             builder.Logging.AddDebug();

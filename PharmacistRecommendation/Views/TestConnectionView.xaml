@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PharmacistRecommendation.Views.TestConnectionView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
+             Title="Test Database Connection">
+    <ContentPage.BindingContext>
+        <vm:MedicationViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout Padding="20">
+        <Button Text="Test Database Connection" 
+                x:Name="TestButton"
+                Clicked="OnTestConnectionClicked" />
+        <Label x:Name="ResultLabel" 
+               Text="Click button to test connection"
+               FontSize="16" />
+        <CollectionView x:Name="MedicationsCollectionView"
+                        ItemsSource="{Binding Medications}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding CodCIM}" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="{Binding Denumire}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

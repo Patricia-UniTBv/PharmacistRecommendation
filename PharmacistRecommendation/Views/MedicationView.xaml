@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PharmacistRecommendation.Views.MedicationView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
+             x:DataType="viewmodels:MedicationViewModel"
+             Title="Configurari Medicamente"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Simple Color Palette -->
+            <Color x:Key="HeaderGray">#D3D3D3</Color>
+            <Color x:Key="BorderGray">#CCCCCC</Color>
+            <Color x:Key="TextGray">#333333</Color>
+            <Color x:Key="LightGray">#F5F5F5</Color>
+            <Color x:Key="ButtonGray">#E0E0E0</Color>
+
+            <!-- Simple Button Style -->
+            <Style x:Key="SimpleButton" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource ButtonGray}"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="Padding" Value="12,6"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+
+            <!-- Simple Entry Style -->
+            <Style x:Key="SimpleEntry" TargetType="Entry">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid BackgroundColor="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Stroke="{StaticResource BorderGray}" 
+                StrokeThickness="1"
+                BackgroundColor="{StaticResource HeaderGray}"
+                Padding="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" 
+                       Text="Lista Medicamente" 
+                       FontSize="14" 
+                       FontAttributes="Bold" 
+                       TextColor="{StaticResource TextGray}"
+                       VerticalOptions="Center"/>
+
+                <Button Grid.Column="1" 
+                        Text="Adauga" 
+                        Command="{Binding AddMedicationCommand}"
+                        Style="{StaticResource SimpleButton}"/>
+
+                <Button Grid.Column="2" 
+                        Text="Import CSV" 
+                        Command="{Binding ImportCsvCommand}"
+                        Style="{StaticResource SimpleButton}"/>
+            </Grid>
+        </Border>
+
+        <!-- Search -->
+        <Border Grid.Row="1" 
+                Stroke="{StaticResource BorderGray}" 
+                StrokeThickness="0,0,0,1"
+                BackgroundColor="{StaticResource LightGray}"
+                Padding="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" 
+                       Text="Nume:" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextGray}"
+                       VerticalOptions="Center" 
+                       Margin="0,0,4,0"/>
+
+                <Entry Grid.Column="1" 
+                       Text="{Binding SearchText}" 
+                       Placeholder="Caută medicament..." 
+                       Style="{StaticResource SimpleEntry}"/>
+
+                <Label Grid.Column="2" 
+                       Text="Cod:" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextGray}"
+                       VerticalOptions="Center" 
+                       Margin="8,0,4,0"/>
+
+                <Entry Grid.Column="3" 
+                       Text="{Binding SearchCode}" 
+                       Placeholder="Caută cod..." 
+                       Style="{StaticResource SimpleEntry}"/>
+
+                <Button Grid.Column="4" 
+                        Text="Caută" 
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SimpleButton}"
+                        Margin="4,2,0,2"/>
+            </Grid>
+        </Border>
+
+        <!-- Data Table -->
+        <Grid Grid.Row="2" BackgroundColor="White">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Table Header -->
+            <Border Grid.Row="0" 
+                    Stroke="{StaticResource BorderGray}" 
+                    StrokeThickness="1"
+                    BackgroundColor="{StaticResource HeaderGray}">
+                <Grid Padding="8,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" 
+                           Text="Cod CIM" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"/>
+
+                    <Label Grid.Column="1" 
+                           Text="Nume" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"/>
+
+                    <Label Grid.Column="2" 
+                           Text="Cod ATC" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"/>
+
+                    <Label Grid.Column="3" 
+                           Text="Acțiuni" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"
+                           HorizontalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Data List -->
+            <CollectionView Grid.Row="1" ItemsSource="{Binding Medications}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Medication">
+                        <Border Stroke="{StaticResource BorderGray}" 
+                                StrokeThickness="0,0,0,1"
+                                BackgroundColor="White">
+                            <Grid Padding="8,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Column="0" 
+                                       Text="{Binding CodCIM, FallbackValue='-'}" 
+                                       FontSize="11"
+                                       TextColor="{StaticResource TextGray}"
+                                       VerticalOptions="Center"/>
+
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Denumire, FallbackValue='{Binding Name}'}" 
+                                       FontSize="11"
+                                       TextColor="{StaticResource TextGray}"
+                                       VerticalOptions="Center"/>
+
+                                <Label Grid.Column="2" 
+                                       Text="{Binding CodATC, FallbackValue='-'}" 
+                                       FontSize="11"
+                                       TextColor="{StaticResource TextGray}"
+                                       VerticalOptions="Center"/>
+
+                                <StackLayout Grid.Column="3" 
+                                             Orientation="Horizontal" 
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center">
+                                    <Button Text="Editează" 
+                                            FontSize="10"
+                                            BackgroundColor="{StaticResource ButtonGray}"
+                                            TextColor="{StaticResource TextGray}"
+                                            CornerRadius="2"
+                                            HeightRequest="28"
+                                            Padding="8,4"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MedicationViewModel}}, Path=EditMedicationCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Margin="2,0"/>
+                                    <Button Text="Șterge" 
+                                            FontSize="10"
+                                            BackgroundColor="{StaticResource ButtonGray}"
+                                            TextColor="{StaticResource TextGray}"
+                                            CornerRadius="2"
+                                            HeightRequest="28"
+                                            Padding="8,4"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MedicationViewModel}}, Path=DeleteMedicationCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Margin="2,0"/>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- Loading Indicator -->
+        <Grid Grid.Row="0" 
+              Grid.RowSpan="3"
+              BackgroundColor="#80FFFFFF"
+              IsVisible="{Binding IsLoading}">
+            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                                   Color="{StaticResource TextGray}"
+                                   WidthRequest="40" 
+                                   HeightRequest="40"/>
+                <Label Text="Se încarcă..." 
+                       TextColor="{StaticResource TextGray}"
+                       FontSize="12"
+                       HorizontalOptions="Center"
+                       Margin="0,8,0,0"/>
+            </StackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>
