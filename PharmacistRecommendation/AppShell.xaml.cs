@@ -32,7 +32,7 @@ namespace PharmacistRecommendation
 
         private async void OnMixedIssuanceClicked(object sender, EventArgs e)
         {
-            await GoToAsync("mixed_issuance");
+            await GoToAsync("mixed_issuance?mode=mixed");
         }
 
         private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)

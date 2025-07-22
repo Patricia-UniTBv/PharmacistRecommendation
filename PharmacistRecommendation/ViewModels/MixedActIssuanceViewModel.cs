@@ -18,6 +18,7 @@ namespace PharmacistRecommendation.ViewModels
     public partial class MixedActIssuanceViewModel : ObservableObject
     {
         private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
+        private const string ReceiptsPath = @"C:\Users\Patricia\Desktop\Casa de marcat";
 
         private readonly IPrescriptionService _prescriptionService;
         private readonly IAdministrationModeService _administrationModeService;
@@ -28,14 +29,14 @@ namespace PharmacistRecommendation.ViewModels
 
         partial void OnModeChanged(string value)
         {
-            ShowWithPrescription = value == "both" || value == "withprescription";
-            ShowWithoutPrescription = value == "both" || value == "withoutprescription";
+            ShowWithPrescription = value == "mixed" || value == "withprescription";
+            ShowWithoutPrescription = value == "mixed" || value == "withoutprescription";
 
-            if(ShowWithPrescription && !ShowWithoutPrescription)
+            if (ShowWithPrescription && !ShowWithoutPrescription)
             {
                 PageTitle = "Emitere act consecutiv prescripției";
             }
-            else if(!ShowWithPrescription && ShowWithoutPrescription)
+            else if (!ShowWithPrescription && ShowWithoutPrescription)
             {
                 PageTitle = "Emitere act propriu";
             }
@@ -79,13 +80,13 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         ObservableCollection<PrescriptionDrugModel> medicationsWithPrescription = new();
         [ObservableProperty]
-        ObservableCollection<PrescriptionDrugModel> medicationsWithoutPrescription = new();
+        ObservableCollection<ReceiptDrugModel> medicationsWithoutPrescription = new();
         [ObservableProperty]
         string notesToDoctor;
         [ObservableProperty]
         string pharmacistRecommendation;
         [ObservableProperty]
-        ObservableCollection<string> pharmaceuticalServices = new() { "Aderență la tratament", "Administrare medicamente", "Consiliere", "Consiliere dispozitive medicale", "Consiliere OTC", "Consiliere RX", "Consiliere suplimente", 
+        ObservableCollection<string> pharmaceuticalServices = new() { "Aderență la tratament", "Administrare medicamente", "Consiliere", "Consiliere dispozitive medicale", "Consiliere OTC", "Consiliere RX", "Consiliere suplimente",
         "Farmacovigilenta", "Masurare parametri biologici", "Preparare medicamente", "Teste rapide", "Vaccinare"};
         [ObservableProperty]
         string selectedPharmaceuticalService = "Aderență la tratament";
@@ -129,16 +130,25 @@ namespace PharmacistRecommendation.ViewModels
         {
             try
             {
-                if (mode == "actpropriu") // IMPORT DIN CASA DE MARCAT
+                if (mode == "mixed" || mode == "withoutprescription")
                 {
-                    // Import doar din bon
-                    //var lastBonFile = GetLastReceiptLogFile(caleBonuri); 
-                    //var medsFaraPrescriptie = ImportMedicationsFromReceiptLog(lastBonFile);
 
-                    //MedicationsWithoutPrescription = new ObservableCollection<MedicationModel>(
-                    //medsFaraPrescriptie.Select((m, i) => new MedicationModel { Name = m, Index = i + 1 }));
+                    var lastFolder = ReceiptImportService.GetLastDatedFolder(ReceiptsPath);
+                    if (lastFolder == null)
+                    {
+                        await ShowAlert("Nu există fișier de importat.");
+                        return;
+                    }
+                    string logFile = ReceiptImportService.FindTextOrLogFile(lastFolder);
+                    var import = ReceiptImportService.ImportLastReceipt(logFile);
+
+                    MedicationsWithoutPrescription.Clear();
+                    foreach (var drug in import.Medications)
+                    {
+                        MedicationsWithoutPrescription.Add(drug);
+                    }
                 }
-                else if (mode == "mixed" || mode == "withprescription")
+                if (mode == "mixed" || mode == "withprescription")
                 {
                     string filePath = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
                     if (filePath == null)
@@ -157,7 +167,6 @@ namespace PharmacistRecommendation.ViewModels
                     MedicationsWithPrescription.Clear();
                     foreach (var drug in import.Drugs)
                     {
-                        drug.DisplayText = drug.Name + " " + drug.Concentration + " " + drug.PharmaceuticalForm + " " + drug.Dose;
                         MedicationsWithPrescription.Add(drug);
                     }
                 }
@@ -214,7 +223,7 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacistRecommendation = this.PharmacistRecommendation,
                 PharmaceuticalService = this.SelectedPharmaceuticalService,
                 DoctorStamp = this.DoctorStamp,
-                IssueDate = DateTime.Now, 
+                IssueDate = DateTime.Now,
                 PrescriptionMedications = this.MedicationsWithPrescription
          .Select(m => new PrescriptionMedication
          {
@@ -291,7 +300,7 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private void AddMedicationWithoutPrescription()
         {
-            MedicationsWithoutPrescription.Add(new PrescriptionDrugModel { Index = MedicationsWithoutPrescription.Count + 1 });
+            MedicationsWithoutPrescription.Add(new ReceiptDrugModel { Index = MedicationsWithoutPrescription.Count + 1 });
         }
 
         [RelayCommand]
@@ -308,7 +317,7 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         [RelayCommand]
-        void DeleteMedicationWithoutPrescription(PrescriptionDrugModel item)
+        void DeleteMedicationWithoutPrescription(ReceiptDrugModel item)
         {
             if (item != null && MedicationsWithoutPrescription.Contains(item))
             {
@@ -342,8 +351,8 @@ namespace PharmacistRecommendation.ViewModels
                 Noon = m.Noon,
                 Evening = m.Evening,
                 Night = m.Night,
-                AdministrationMode = m.AdministrationMode?.Name ?? "" 
-        }).ToList();
+                AdministrationMode = m.AdministrationMode?.Name ?? ""
+            }).ToList();
 
             var medsWithoutPrescription = MedicationsWithoutPrescription.Select(m => new ActPrintDocument.MedicationLine
             {
@@ -353,7 +362,7 @@ namespace PharmacistRecommendation.ViewModels
                 Evening = m.Evening,
                 Night = m.Night,
                 AdministrationMode = m.AdministrationMode?.Name ?? ""
-    }).ToList();
+            }).ToList();
 
             var printDoc = new ActPrintDocument
             {

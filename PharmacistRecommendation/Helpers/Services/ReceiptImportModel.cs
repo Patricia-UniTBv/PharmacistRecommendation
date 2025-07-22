@@ -8,7 +8,7 @@ namespace PharmacistRecommendation.Helpers.Services
 {
     public class ReceiptImportModel
     {
-        public List<string> Medications { get; set; } = new List<string>();
+        public List<ReceiptDrugModel> Medications { get; set; } = new List<ReceiptDrugModel>();
     }
 
 }

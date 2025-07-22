@@ -28,6 +28,11 @@ namespace PharmacistRecommendation.Helpers
         public string? PharmaceuticalService { get; set; }
         public List<MedicationLine> MedicationsWithPrescription { get; set; } = new();
         public List<MedicationLine> MedicationsWithoutPrescription { get; set; } = new();
+        private int currentMedicationWithPrescriptionIndex = 0;
+        private int currentMedicationWithoutPrescriptionIndex = 0;
+        private bool printingWithPrescription = true;
+        private bool isFirstPage = true;
+
 
         public class MedicationLine
         {
@@ -42,7 +47,6 @@ namespace PharmacistRecommendation.Helpers
         protected override void OnPrintPage(PrintPageEventArgs e)
         {
             var g = e.Graphics;
-            float dpiX = g.DpiX, dpiY = g.DpiY;
             float left = 40, top = 40;
             float right = e.PageBounds.Width - 40;
             float y = top;
@@ -55,47 +59,124 @@ namespace PharmacistRecommendation.Helpers
             using var fontSection = new SD.Font("Arial", 12f, FontStyle.Bold);
             using var fontSmall = new SD.Font("Arial", 8f, FontStyle.Regular);
 
-            float lineHeight = fontText.GetHeight(g) * 1.4f;
+            float lineHeight = fontText.GetHeight(g) * 1.2f;
             float sectionSpacing = lineHeight * 1.2f;
             float logoSize = 80f;
 
             string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
-            DrawHeaderWithLogo(g, left, y, contentWidth, logoSize, fontTitle, fontSubtitle);
-            y += logoSize + 15f;
-
-            using (var grayBrush = new SolidBrush(SD.Color.FromArgb(100, 100, 100)))
+            if ((MedicationsWithPrescription == null || MedicationsWithPrescription.Count == 0) && printingWithPrescription)
             {
-                g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontBold, Brushes.Black, left, y);
-                g.DrawString($"Serie: {Safe(Series)} / Nr: {Safe(Number)}", fontBold, Brushes.Black, right - 200, y);
+                printingWithPrescription = false;
             }
-            y += lineHeight * 1.5f;
 
-            y = DrawInformationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
 
-            y = DrawPatientSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+            if (isFirstPage)
+            {
+                DrawHeaderWithLogo(g, left, y, contentWidth, logoSize, fontTitle, fontSubtitle);
+                y += logoSize + 15f;
 
-            y = DrawMedicalDetailsSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+                using (var grayBrush = new SolidBrush(SD.Color.FromArgb(100, 100, 100)))
+                {
+                    g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontBold, Brushes.Black, left, y);
+                    //g.DrawString($"Serie: {Safe(Series)} / Nr: {Safe(Number)}", fontBold, Brushes.Black, right - 200, y);
+                }
+                y += lineHeight * 1.5f;
 
-            if (MedicationsWithPrescription?.Count > 0)
+                y = DrawInformationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+                y = DrawPatientSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+                y = DrawMedicalDetailsSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+
+                isFirstPage = false;
+            }
+
+            // Calculează cât spațiu a mai rămas pe pagină
+            float availableHeight = e.PageBounds.Height - y - 110; // 110 pentru footer și eventuale margini
+            float rowHeight = fontText.GetHeight(g) * 3.5f;
+            int medicationsPerPage = (int)((availableHeight - sectionSpacing * 2) / rowHeight);
+
+            // 1. Paginare pentru "cu rețetă"
+            if (printingWithPrescription && MedicationsWithPrescription?.Count > 0)
             {
                 y += sectionSpacing;
+                var medsToDraw = MedicationsWithPrescription
+                    .Skip(currentMedicationWithPrescriptionIndex)
+                    .Take(medicationsPerPage)
+                    .ToList();
+
                 y = DrawMedicationSection(g, left, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
-                                        MedicationsWithPrescription, fontSection, fontText, fontBold);
+                                          medsToDraw, fontSection, fontText, fontBold);
+
+                currentMedicationWithPrescriptionIndex += medsToDraw.Count;
+
+                if (currentMedicationWithPrescriptionIndex < MedicationsWithPrescription.Count)
+                {
+                    e.HasMorePages = true;
+                    return;
+                }
+                else
+                {
+                    // Doar dacă lista fără rețetă conține ceva, treci la următoarea secțiune
+                    if (MedicationsWithoutPrescription != null && MedicationsWithoutPrescription.Count > 0)
+                    {
+                        printingWithPrescription = false;
+                        currentMedicationWithPrescriptionIndex = 0;
+                        e.HasMorePages = true;
+                        return;
+                    }
+                    else
+                    {
+                        // Niciun tabel de continuat, deci finalizezi documentul aici!
+                        currentMedicationWithPrescriptionIndex = 0;
+                        printingWithPrescription = true;
+                        // Recomandare și footer pe ultima pagină
+                        y += sectionSpacing;
+                        y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
+                        DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
+                        e.HasMorePages = false;
+                        return;
+                    }
+                }
             }
 
-            if (MedicationsWithoutPrescription?.Count > 0)
+            // 2. Paginare pentru "fără rețetă"
+            if (!printingWithPrescription && MedicationsWithoutPrescription?.Count > 0)
             {
-                y += sectionSpacing;
+                if (currentMedicationWithoutPrescriptionIndex == 0)
+                    y += sectionSpacing;
+
+                var medsToDraw = MedicationsWithoutPrescription
+                    .Skip(currentMedicationWithoutPrescriptionIndex)
+                    .Take(medicationsPerPage)
+                    .ToList();
+
                 y = DrawMedicationSection(g, left, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
-                                        MedicationsWithoutPrescription, fontSection, fontText, fontBold);
+                                          medsToDraw, fontSection, fontText, fontBold);
+
+                currentMedicationWithoutPrescriptionIndex += medsToDraw.Count;
+
+                if (currentMedicationWithoutPrescriptionIndex < MedicationsWithoutPrescription.Count)
+                {
+                    e.HasMorePages = true;
+                    return;
+                }
+                else
+                {
+                    // Toate medicamentele sunt desenate, urmează secțiunea de recomandare și footer
+                    currentMedicationWithoutPrescriptionIndex = 0;
+                }
             }
 
+            // 3. Secțiune recomandare și footer DOAR pe ultima pagină!
             y += sectionSpacing;
             y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-
             DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
+
+            // Reset pentru printare viitoare
+            printingWithPrescription = true;
+            e.HasMorePages = false;
         }
+
 
         private void DrawHeaderWithLogo(SD.Graphics g, float left, float y, float contentWidth, float logoSize, SD.Font titleFont, SD.Font subtitleFont)
         {
@@ -193,6 +274,10 @@ namespace PharmacistRecommendation.Helpers
 
             g.DrawString($"Parafă medic: {DoctorStamp}", textFont, Brushes.Black, left + 10, y);
             y += lineHeight;
+            g.DrawString($"Serie: {Series}", textFont, Brushes.Black, left + 10, y);
+            y += lineHeight;
+            g.DrawString($"Număr: {Number}", textFont, Brushes.Black, left + 10, y);
+            y += lineHeight;
             g.DrawString($"Diagnostic: {Diagnostic}", textFont, Brushes.Black, left + 10, y);
             y += lineHeight;
             g.DrawString($"Diagnostic menționat: {DiagnosisMentioned}", textFont, Brushes.Black, left + 10, y);
@@ -215,7 +300,7 @@ namespace PharmacistRecommendation.Helpers
             var bgColor = title.Contains("REȚETĂ") ? SD.Color.FromArgb(255, 240, 245) : SD.Color.FromArgb(240, 248, 255);
 
             g.DrawString(title, sectionFont, new SolidBrush(titleColor), left + 10, y + 5);
-            y += sectionFont.GetHeight(g) * 1.5f;
+            y += sectionFont.GetHeight(g) * 1.9f;
 
             y = DrawEnhancedMedicationsTable(g, left, y, contentWidth, medications, textFont, headerFont);
 
@@ -225,10 +310,10 @@ namespace PharmacistRecommendation.Helpers
         private float DrawEnhancedMedicationsTable(SD.Graphics g, float left, float y, float tableWidth,
                                                  List<MedicationLine> medications, SD.Font font, SD.Font headerFont)
         {
-            float[] colWidths = { 50, 220, 90, 80, 80, 80, 180 };
+            float[] colWidths = { 50, 220, 100, 80, 80, 80, 180 };
             float x = left;
             float headerHeight = headerFont.GetHeight(g) * 1.8f;
-            float rowHeight = font.GetHeight(g) * 2.2f;
+            float rowHeight = font.GetHeight(g) * 2.9f;
             string[] headers = { "NR\nCRT", "MEDICAMENT", "DIMINEAȚA", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMINISTRARE" };
 
             for (int i = 0; i < headers.Length; i++)

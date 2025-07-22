@@ -31,23 +31,23 @@
             <Frame CornerRadius="14" BorderColor="#e0e3e9" Padding="14" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="Auto">
                     <VerticalStackLayout Grid.Column="0">
-                        <Label Text="Card nr." TextColor="Black"/>
+                        <Label Text="Nr. card" TextColor="Black" FontAttributes="Bold"/>
                         <Entry Placeholder="Card nr." Text="{Binding CardNumber}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="Pacient" TextColor="Black"/>
+                        <Label Text="Pacient" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Pacient" Text="{Binding PatientName}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2">
-                        <Label Text="CNP/CID pacient" TextColor="Black"/>
+                        <Label Text="CNP/CID pacient" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="CNP/CID pacient" Text="{Binding PatientCnp}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="3">
-                        <Label Text="Aparținător" TextColor="Black"/>
+                        <Label Text="Aparținător" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Aparținător" Text="{Binding CaregiverName}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="4">
-                        <Label Text="CNP/CID aparținător" TextColor="Black"/>
+                        <Label Text="CNP/CID aparținător" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="CNP/CID aparținător" Text="{Binding CaregiverCnp}" />
                     </VerticalStackLayout>
                 </Grid>
@@ -63,19 +63,19 @@
             <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
-                        <Label Text="Parafa medic" TextColor="Black"/>
+                        <Label Text="Parafa medic" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Parafa medic" Text="{Binding DoctorStamp}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
-                        <Label Text="Seria" TextColor="Black"/>
+                        <Label Text="Seria" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Seria" Text="{Binding PrescriptionSeries}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
-                        <Label Text="Număr" TextColor="Black"/>
+                        <Label Text="Număr" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Număr" Text="{Binding PrescriptionNumber}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="3" Spacing="4" BackgroundColor="White">
-                        <Label Text="Diagnostic" TextColor="Black"/>
+                        <Label Text="Diagnostic" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Diagnostic" Text="{Binding PrescriptionDiagnosis}"/>
                     </VerticalStackLayout>
                 </Grid>
@@ -84,19 +84,19 @@
             <Frame CornerRadius="10" BorderColor="#ececec" Padding="12" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16" BackgroundColor="White">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
-                        <Label Text="Simptomatologie" TextColor="Black"/>
+                        <Label Text="Simptomatologie" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Simptomatologie" 
                    Text="{Binding Symptoms}" 
                    BackgroundColor="White"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
-                        <Label Text="Suspiciune" TextColor="Black"/>
+                        <Label Text="Suspiciune" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Suspiciune" 
                    Text="{Binding Suspicion}" 
                    BackgroundColor="White" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
-                        <Label Text="Constatările farmacistului" TextColor="Black"/>
+                        <Label Text="Constatările farmacistului" TextColor="Black"  FontAttributes="Bold"/>
                         <Entry Placeholder="Constatările farmacistului" 
                    Text="{Binding PharmacistObservations}" 
                    BackgroundColor="White"/>
@@ -291,7 +291,7 @@
                         TextColor="#36317f"/>
                 <Button Text="Printează"
                         Command="{Binding PrintCommand}"
-                        IsEnabled="{Binding IsPrintButtonEnabled}"
+                        IsEnabled="{Binding It sPrintButtonEnabled}"
                         FontSize="14"
                         HeightRequest="34"
                         CornerRadius="8"
