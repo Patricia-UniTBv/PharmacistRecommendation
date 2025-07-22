@@ -291,7 +291,7 @@
                         TextColor="#36317f"/>
                 <Button Text="Printează"
                         Command="{Binding PrintCommand}"
-                        IsEnabled="{Binding It sPrintButtonEnabled}"
+                        IsEnabled="{Binding IsPrintButtonEnabled}"
                         FontSize="14"
                         HeightRequest="34"
                         CornerRadius="8"
