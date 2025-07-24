@@ -17,12 +17,13 @@ namespace PharmacistRecommendation.ViewModels
     [QueryProperty(nameof(Mode), "mode")]
     public partial class MixedActIssuanceViewModel : ObservableObject
     {
-        private const string PrescriptionsPath = @"C:\Users\Patricia\Desktop\Statie_temp";
-        private const string ReceiptsPath = @"C:\Users\Patricia\Desktop\Casa de marcat";
+        private string PrescriptionsPath { get; set; }
+        private string ReceiptsPath { get; set; }
 
         private readonly IPrescriptionService _prescriptionService;
         private readonly IAdministrationModeService _administrationModeService;
         private readonly IPharmacyService _pharmacyService;
+        private readonly IImportConfigurationService _importService;
 
         [ObservableProperty]
         string mode;
@@ -115,11 +116,13 @@ namespace PharmacistRecommendation.ViewModels
             // a se încărca din DB  !!!!!!!
         };
 
-        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService)
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService)
         {
             _prescriptionService = prescriptionService;
             _administrationModeService = administrationModeService;
             _pharmacyService = pharmacyService;
+            _importService = importService;
+
             LoadAdministrationModes();
 
             pharmacyId = 1; // a se modifica cu ID-ul farmaciei curente!!
@@ -128,6 +131,17 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task ImportDataAsync()
         {
+            var imp = await _importService.GetById(pharmacyId);
+            if(imp == null)
+            {
+                await ShowAlert("Configurați calea directoarelor!");
+            }
+            else
+            {
+                ReceiptsPath = imp.ReceiptPath!;
+                PrescriptionsPath = imp.PrescriptionPath!;
+            }
+
             try
             {
                 if (mode == "mixed" || mode == "withoutprescription")
@@ -170,6 +184,19 @@ namespace PharmacistRecommendation.ViewModels
                         MedicationsWithPrescription.Add(drug);
                     }
                 }
+                if (mode == "mixed")
+                {
+                    var prescriptionNames = MedicationsWithPrescription.Select(m => m.Name).ToHashSet();
+
+                    var filtered = MedicationsWithoutPrescription
+                        .Where(m => !prescriptionNames.Contains(m.Name))
+                        .ToList();
+
+                    MedicationsWithoutPrescription.Clear();
+                    foreach (var med in filtered)
+                        MedicationsWithoutPrescription.Add(med);
+                }
+
             }
             catch (Exception ex)
             {

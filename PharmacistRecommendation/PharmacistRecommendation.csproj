@@ -138,6 +138,9 @@
 	  <MauiXaml Update="Views\GdprConfigurationView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\ImportConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\MixedActIssuanceView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -17,6 +17,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("gdpr_configuration", typeof(GdprConfigurationView));
             Routing.RegisterRoute("mixed_issuance", typeof(MixedActIssuanceView));
             Routing.RegisterRoute("administration_modes", typeof (AdministrationModesView));
+            Routing.RegisterRoute("import_configuration", typeof(ImportConfigurationView));
         }
 
         private async void OnNewCardClicked(object sender,  EventArgs e)
@@ -44,7 +45,6 @@ namespace PharmacistRecommendation
             await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
         }
 
-
         private async void OnAddPharmacistClicked(object sender, EventArgs e)
         {
             var vm = ServiceHelper.GetService<PharmacistConfigurationViewModel>();
@@ -70,6 +70,11 @@ namespace PharmacistRecommendation
         private async void OnAdministrationModesClicked(object sender, EventArgs e)
         {
             await GoToAsync("administration_modes");
+        }
+
+        private async void OnImportConfigClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("import_configuration");
         }
 
     }

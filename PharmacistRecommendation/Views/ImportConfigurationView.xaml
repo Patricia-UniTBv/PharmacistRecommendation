@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PharmacistRecommendation.Views.ImportConfigurationView">
+    <VerticalStackLayout Padding="24" Spacing="16">
+        <Label Text="Cale director rețete:" FontAttributes="Bold"/>
+        <Entry Text="{Binding PrescriptionPath, Mode=TwoWay}" Placeholder="Calea către rețete" />
+
+        <Label Text="Cale director bonuri" FontAttributes="Bold"/>
+        <Entry Text="{Binding ReceiptPath, Mode=TwoWay}" Placeholder="Calea către bonuri" />
+
+        <Button Text="Salvează" Command="{Binding SaveCommand}" WidthRequest="100" HorizontalOptions="Start" BackgroundColor="#ece8fa"
+TextColor="#36317f" />
+        <Label Text="{Binding Message}" TextColor="Green"/>
+    </VerticalStackLayout>
+</ContentPage>

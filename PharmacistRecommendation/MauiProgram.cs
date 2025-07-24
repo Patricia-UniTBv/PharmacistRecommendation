@@ -32,6 +32,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<GdprConfigurationView>();
             builder.Services.AddTransient<MixedActIssuanceView>();
             builder.Services.AddTransient<AdministrationModesView>();
+            builder.Services.AddTransient<ImportConfigurationView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
@@ -40,6 +41,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<GdprConfigurationViewModel>();
             builder.Services.AddTransient<MixedActIssuanceViewModel>();
             builder.Services.AddTransient<AdministrationModesViewModel>();
+            builder.Services.AddTransient<ImportConfigurationViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -68,7 +70,8 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IAdministrationModeRepository, AdministrationModeRepository>();
             builder.Services.AddSingleton<IAdministrationModeService, AdministrationModeService>();
 
-
+            builder.Services.AddSingleton<IImportConfigurationRepository, ImportConfigurationRepository>();
+            builder.Services.AddSingleton<IImportConfigurationService, ImportConfigurationService>();
 
 #if DEBUG
             builder.Logging.AddDebug();

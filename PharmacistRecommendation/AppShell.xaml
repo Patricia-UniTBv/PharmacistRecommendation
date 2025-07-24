@@ -28,6 +28,7 @@
             <MenuFlyoutItem Text="Listă utilizatori" Clicked="OnUsersManagementClicked"/>
             <MenuFlyoutItem Text="Modificare document GDPR" Clicked="OnGdprConfigClicked"/>
             <MenuFlyoutItem Text="Moduri administrare" Clicked="OnAdministrationModesClicked"/>
+            <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Ajutor">

@@ -54,7 +54,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
         {
             entity.ToTable("AdministrationMode");
 
-            entity.Property(e => e.Name).HasMaxLength(20);
+            entity.Property(e => e.Name).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Document>(entity =>
@@ -117,8 +117,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("ImportConfiguration");
 
-            entity.Property(e => e.ImportPath).HasMaxLength(255);
             entity.Property(e => e.PrescriptionPath).HasMaxLength(255);
+            entity.Property(e => e.ReceiptPath).HasMaxLength(255);
 
             entity.HasOne(d => d.Pharmacy).WithMany(p => p.ImportConfigurations)
                 .HasForeignKey(d => d.PharmacyId)
