@@ -82,8 +82,8 @@ namespace Entities.Repository
             existingMedication.DCI = medication.DCI;
             existingMedication.FormaFarmaceutica = medication.FormaFarmaceutica;
             existingMedication.Concentratia = medication.Concentratia;
-            existingMedication.FirmaProducatoare = medication.FirmaProducatoare; // UPDATED: was Firma
-            existingMedication.FirmaDetinatoare = medication.FirmaDetinatoare; // NEW FIELD
+            existingMedication.FirmaProducatoare = medication.FirmaProducatoare;
+            existingMedication.FirmaDetinatoare = medication.FirmaDetinatoare;
             existingMedication.ActiuneTerapeutica = medication.ActiuneTerapeutica;
             existingMedication.Prescriptie = medication.Prescriptie;
             existingMedication.NrData = medication.NrData;
@@ -94,8 +94,8 @@ namespace Entities.Repository
             existingMedication.Diez = medication.Diez;
             existingMedication.Stea = medication.Stea;
             existingMedication.Triunghi = medication.Triunghi;
-            existingMedication.Dreptunghi = medication.Dreptunghi; // NEW FIELD
-            existingMedication.PreviousCodCIM = medication.PreviousCodCIM; // NEW FIELD
+            existingMedication.Dreptunghi = medication.Dreptunghi;
+            existingMedication.PreviousCodCIM = medication.PreviousCodCIM;
             existingMedication.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -111,7 +111,6 @@ namespace Entities.Repository
             if (medication == null)
                 throw new Exception("Medication not found");
 
-            // Hard delete since we removed the IsActive system
             _context.Medications.Remove(medication);
             await _context.SaveChangesAsync();
         }

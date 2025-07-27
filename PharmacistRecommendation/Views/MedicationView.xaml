@@ -3,7 +3,6 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
-             xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
              x:DataType="viewmodels:MedicationViewModel"
              Title="Configurari Medicamente"
              BackgroundColor="White">
@@ -81,7 +80,7 @@
         <!-- Search -->
         <Border Grid.Row="1" 
                 Stroke="{StaticResource BorderGray}" 
-                StrokeThickness="0,0,0,1"
+                StrokeThickness="1"
                 BackgroundColor="{StaticResource LightGray}"
                 Padding="8">
             <Grid>
@@ -90,6 +89,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
@@ -117,7 +117,25 @@
                        Placeholder="Caută cod..." 
                        Style="{StaticResource SimpleEntry}"/>
 
-                <Button Grid.Column="4" 
+                <!-- Filter moved to the left of Cauta button -->
+                <Picker Grid.Column="4"
+                        SelectedIndex="{Binding SelectedFilter}"
+                        FontSize="12"
+                        BackgroundColor="{StaticResource ButtonGray}"
+                        TextColor="{StaticResource TextGray}"
+                        HeightRequest="32"
+                        WidthRequest="120"
+                        Margin="4,2,0,2">
+                    <Picker.Items>
+                        <x:String>Toate</x:String>
+                        <x:String>Active</x:String>
+                        <x:String>Inactive</x:String>
+                        <x:String>Manual</x:String>
+                        <x:String>CSV</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <Button Grid.Column="5" 
                         Text="Caută" 
                         Command="{Binding SearchCommand}"
                         Style="{StaticResource SimpleButton}"
@@ -142,6 +160,8 @@
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="120"/>
                     </Grid.ColumnDefinitions>
 
@@ -164,6 +184,20 @@
                            TextColor="{StaticResource TextGray}"/>
 
                     <Label Grid.Column="3" 
+                           Text="Status" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"
+                           HorizontalOptions="Center"/>
+
+                    <Label Grid.Column="4" 
+                           Text="Sursa" 
+                           FontSize="12" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextGray}"
+                           HorizontalOptions="Center"/>
+
+                    <Label Grid.Column="5" 
                            Text="Acțiuni" 
                            FontSize="12" 
                            FontAttributes="Bold"
@@ -175,37 +209,68 @@
             <!-- Data List -->
             <CollectionView Grid.Row="1" ItemsSource="{Binding Medications}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Medication">
+                    <!-- Enhanced DataTemplate with clickable status -->
+                    <DataTemplate x:DataType="viewmodels:MedicationDisplayItem">
                         <Border Stroke="{StaticResource BorderGray}" 
-                                StrokeThickness="0,0,0,1"
-                                BackgroundColor="White">
+                                StrokeThickness="1"
+                                BackgroundColor="White"
+                                Margin="0,1">
                             <Grid Padding="8,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Column="0" 
-                                       Text="{Binding CodCIM, FallbackValue='-'}" 
+                                       Text="{Binding CodCIM}" 
                                        FontSize="11"
                                        TextColor="{StaticResource TextGray}"
                                        VerticalOptions="Center"/>
 
-                                <Label Grid.Column="1" 
-                                       Text="{Binding Denumire, FallbackValue='{Binding Name}'}" 
-                                       FontSize="11"
-                                       TextColor="{StaticResource TextGray}"
-                                       VerticalOptions="Center"/>
+                                <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Denumire}" 
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextGray}"/>
+                                    <Label Text="{Binding DCI}" 
+                                           FontSize="10"
+                                           TextColor="#6C757D"
+                                           Margin="0,2,0,0"/>
+                                </StackLayout>
 
                                 <Label Grid.Column="2" 
-                                       Text="{Binding CodATC, FallbackValue='-'}" 
+                                       Text="{Binding CodATC}" 
                                        FontSize="11"
                                        TextColor="{StaticResource TextGray}"
                                        VerticalOptions="Center"/>
 
-                                <StackLayout Grid.Column="3" 
+                                <!-- Clickable Status -->
+                                <Button Grid.Column="3" 
+                                        Text="{Binding StatusText}"
+                                        FontSize="10"
+                                        FontAttributes="Bold"
+                                        TextColor="{Binding StatusColor}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="Transparent"
+                                        Command="{Binding ToggleStatusCommand}"
+                                        CommandParameter="{Binding .}"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Padding="4,2"/>
+
+                                <!-- Source Display -->
+                                <Label Grid.Column="4" 
+                                       Text="{Binding SourceText}"
+                                       FontSize="10"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding SourceColor}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+
+                                <StackLayout Grid.Column="5" 
                                              Orientation="Horizontal" 
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center">

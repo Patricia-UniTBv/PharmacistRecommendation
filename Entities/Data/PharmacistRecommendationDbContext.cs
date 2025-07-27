@@ -211,6 +211,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.PreviousCodCIM).HasMaxLength(50); 
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<MedicationDocument>(entity =>

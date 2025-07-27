@@ -66,6 +66,37 @@ namespace Entities.Services
             if (!result.HasErrors)
             {
                 await ExecuteDatabaseOperations(result);
+                
+                // NEW: Handle inactive medications
+                try
+                {
+                    // Detect which medications should become inactive
+                    var inactiveCodCIMs = await DetectInactiveMedicationsAsync(csvData);
+                    
+                    // Mark them as inactive
+                    if (inactiveCodCIMs.Any())
+                    {
+                        var inactiveCount = await MarkMedicationsAsInactiveAsync(inactiveCodCIMs);
+                        result.Warnings.Add($"Marked {inactiveCount} medications as inactive (not found in new import)");
+                    }
+
+                    // Mark medications as active if they're back in the import
+                    var activeCodCIMs = csvData
+                        .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
+                        .Select(row => row.CodCIM!)
+                        .Distinct()
+                        .ToList();
+
+                    var reactivatedCount = await MarkMedicationsAsActiveAsync(activeCodCIMs);
+                    if (reactivatedCount > 0)
+                    {
+                        result.Warnings.Add($"Reactivated {reactivatedCount} medications (found again in import)");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.Errors.Add($"Error processing inactive medications: {ex.Message}");
+                }
             }
 
             return result;
@@ -131,6 +162,62 @@ namespace Entities.Services
             }
 
             return result;
+        }
+
+        public async Task<List<string>> DetectInactiveMedicationsAsync(List<CsvMedicationRow> newImportData)
+        {
+            // Get all existing medications from CSV imports
+            var existingCsvMedications = await _medicationRepository.GetByDataSourceAsync("CSV_Import");
+            
+            // Get CodCIMs from the new import
+            var newCodCIMs = newImportData
+                .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
+                .Select(row => row.CodCIM!)
+                .Distinct()
+                .ToList();
+
+            // Find medications that exist in database but NOT in new import
+            var inactiveCodCIMs = existingCsvMedications
+                .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && 
+                           !newCodCIMs.Contains(m.CodCIM))
+                .Select(m => m.CodCIM!)
+                .ToList();
+
+            return inactiveCodCIMs;
+        }
+
+        public async Task<int> MarkMedicationsAsInactiveAsync(List<string> codCIMsToMarkInactive)
+        {
+            var medicationsToUpdate = await _medicationRepository.GetAllAsync();
+            var medicationsToMarkInactive = medicationsToUpdate
+                .Where(m => codCIMsToMarkInactive.Contains(m.CodCIM) && m.IsActive)
+                .ToList();
+
+            foreach (var medication in medicationsToMarkInactive)
+            {
+                medication.IsActive = false;
+                medication.UpdatedAt = DateTime.Now;
+                await _medicationRepository.UpdateAsync(medication);
+            }
+
+            return medicationsToMarkInactive.Count;
+        }
+
+        public async Task<int> MarkMedicationsAsActiveAsync(List<string> codCIMsToMarkActive)
+        {
+            var medicationsToUpdate = await _medicationRepository.GetAllAsync();
+            var medicationsToMarkActive = medicationsToUpdate
+                .Where(m => codCIMsToMarkActive.Contains(m.CodCIM) && !m.IsActive)
+                .ToList();
+
+            foreach (var medication in medicationsToMarkActive)
+            {
+                medication.IsActive = true;
+                medication.UpdatedAt = DateTime.Now;
+                await _medicationRepository.UpdateAsync(medication);
+            }
+
+            return medicationsToMarkActive.Count;
         }
 
         private async Task ProcessCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications, 

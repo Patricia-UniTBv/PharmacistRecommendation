@@ -85,6 +85,10 @@ namespace Entities.Models
         [StringLength(50)]
         public string? Dreptunghi { get; set; }
 
+        // NEW: Add IsActive property
+        [Column("IsActive")]
+        public bool IsActive { get; set; } = true;
+
         //System columns
         [Column("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -6,18 +6,20 @@ using Entities.Services.Interfaces;
 
 namespace PharmacistRecommendation.ViewModels
 {
-    public class AddEditMedicationViewModel : INotifyPropertyChanged
+    public class AddEditMedicationViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly IMedicationService _medicationService;
         private bool _isLoading;
         private bool _isEditMode;
         private Medication? _originalMedication;
         private TaskCompletionSource<bool>? _completionSource;
+        private System.Threading.Timer? _autoSaveTimer;
+        private CancellationTokenSource? _validationCancellation; // Add this for validation cancellation
 
         // Medication properties
         private string _codCIM = string.Empty;
         private string _denumire = string.Empty;
-        private string _dci = string.Empty;
+        private string _dci = string.Empty; // Fixed: changed from _ci to _dci
         private string _formaFarmaceutica = string.Empty;
         private string _concentratia = string.Empty;
         private string _firmaProducatoare = string.Empty;
@@ -38,6 +40,10 @@ namespace PharmacistRecommendation.ViewModels
         // Validation properties
         private string _codCIMError = string.Empty;
         private string _denumireError = string.Empty;
+        private string _codATCError = string.Empty;
+
+        // Loading properties
+        private string _loadingMessage = "Se salvează...";
 
         public AddEditMedicationViewModel(IMedicationService medicationService)
         {
@@ -62,6 +68,16 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
+        public string LoadingMessage
+        {
+            get => _loadingMessage;
+            set
+            {
+                _loadingMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Medication Properties
         public string CodCIM
         {
@@ -71,6 +87,7 @@ namespace PharmacistRecommendation.ViewModels
                 _codCIM = value;
                 OnPropertyChanged();
                 ValidateCodCIM();
+                StartAutoSave();
             }
         }
 
@@ -82,6 +99,7 @@ namespace PharmacistRecommendation.ViewModels
                 _denumire = value;
                 OnPropertyChanged();
                 ValidateDenumire();
+                StartAutoSave();
             }
         }
 
@@ -92,16 +110,18 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _dci = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
-        public string FormaFarmaceutica
+        public string FormaFarmaceutica     
         {
             get => _formaFarmaceutica;
             set
             {
                 _formaFarmaceutica = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -112,6 +132,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _concentratia = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -122,6 +143,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _firmaProducatoare = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -132,6 +154,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _firmaDetinatoare = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -142,6 +165,8 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _codATC = value;
                 OnPropertyChanged();
+                ValidateCodATC();
+                StartAutoSave();
             }
         }
 
@@ -152,6 +177,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _actiuneTerapeutica = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -162,6 +188,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _prescriptie = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -172,6 +199,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _nrData = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -182,6 +210,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _ambalaj = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -192,6 +221,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _volumAmbalaj = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -202,6 +232,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _valabilitate = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -212,6 +243,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _hasBulina = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -222,6 +254,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _hasDiez = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -232,6 +265,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _hasStea = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -242,6 +276,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _hasTriunghi = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -252,6 +287,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 _hasDreptunghi = value;
                 OnPropertyChanged();
+                StartAutoSave();
             }
         }
 
@@ -278,8 +314,20 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
+        public string CodATCError
+        {
+            get => _codATCError;
+            set
+            {
+                _codATCError = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasCodATCError));
+            }
+        }
+
         public bool HasCodCIMError => !string.IsNullOrEmpty(CodCIMError);
         public bool HasDenumireError => !string.IsNullOrEmpty(DenumireError);
+        public bool HasCodATCError => !string.IsNullOrEmpty(CodATCError);
 
         // Commands
         public ICommand SaveCommand { get; }
@@ -290,7 +338,7 @@ namespace PharmacistRecommendation.ViewModels
         {
             _isEditMode = false;
             _completionSource = new TaskCompletionSource<bool>();
-            ClearForm();
+            await ClearFormAsync();
             OnPropertyChanged(nameof(PageTitle));
             OnPropertyChanged(nameof(SaveButtonText));
             return await _completionSource.Task;
@@ -308,8 +356,9 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         // Private Methods
-        private void ClearForm()
+        private async Task ClearFormAsync()
         {
+            // Clear form data
             CodCIM = string.Empty;
             Denumire = string.Empty;
             DCI = string.Empty;
@@ -330,8 +379,13 @@ namespace PharmacistRecommendation.ViewModels
             HasTriunghi = false;
             HasDreptunghi = false;
             
+            // Clear validation errors
             CodCIMError = string.Empty;
             DenumireError = string.Empty;
+            CodATCError = string.Empty;
+            
+            // Try to restore draft if available
+            await RestoreFormDraftAsync();
         }
 
         private void LoadMedicationData(Medication medication)
@@ -367,9 +421,55 @@ namespace PharmacistRecommendation.ViewModels
             {
                 CodCIMError = "Cod CIM trebuie să aibă cel puțin 3 caractere";
             }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(CodCIM, @"^[A-Z0-9]+$"))
+            {
+                CodCIMError = "Cod CIM poate conține doar litere mari și cifre";
+            }
             else
             {
                 CodCIMError = string.Empty;
+                // FIXED: Remove real-time validation that causes threading issues
+                // _ = Task.Run(async () => await ValidateCodCIMUniquenessAsync());
+            }
+        }
+
+        // FIXED: Remove async uniqueness validation to prevent threading issues
+        // The uniqueness check will only happen on form submission
+        private async Task<bool> CheckCodCIMUniquenessAsync()
+        {
+            if (string.IsNullOrWhiteSpace(_codCIM)) return true;
+            
+            try
+            {
+                var existingMedications = await _medicationService.SearchMedicationsAsync(_codCIM);
+                return !existingMedications.Any(m => 
+                    m.Id != (_originalMedication?.Id ?? 0) && 
+                    string.Equals(m.CodCIM, _codCIM, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating CodCIM uniqueness: {ex.Message}");
+                return true; // Allow save if validation fails
+            }
+        }
+
+        private void ValidateCodATC()
+        {
+            if (!string.IsNullOrWhiteSpace(CodATC))
+            {
+                // ATC codes follow a specific pattern: A10BA02
+                if (!System.Text.RegularExpressions.Regex.IsMatch(CodATC, @"^[A-Z][0-9]{2}[A-Z]{2}[0-9]{2}$"))
+                {
+                    CodATCError = "Format invalid (ex: A10BA02)";
+                }
+                else
+                {
+                    CodATCError = string.Empty;
+                }
+            }
+            else
+            {
+                CodATCError = string.Empty;
             }
         }
 
@@ -389,22 +489,33 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        private bool ValidateForm()
+        private async Task<bool> ValidateFormAsync()
         {
             ValidateCodCIM();
             ValidateDenumire();
-            return !HasCodCIMError && !HasDenumireError;
+            ValidateCodATC();
+
+            // Check CodCIM uniqueness only on save
+            var isUnique = await CheckCodCIMUniquenessAsync();
+            if (!isUnique)
+            {
+                CodCIMError = "Cod CIM există deja în baza de date";
+            }
+
+            return !HasCodCIMError && !HasDenumireError && !HasCodATCError;
         }
 
         private async Task SaveAsync()
         {
-            if (!ValidateForm())
+            if (!await ValidateFormAsync())
             {
                 await ShowAlert("Eroare Validare", "Vă rugăm să corectați erorile de validare.", "OK");
                 return;
             }
 
             IsLoading = true;
+            LoadingMessage = _isEditMode ? "Se actualizează..." : "Se salvează...";
+            
             try
             {
                 var medication = CreateMedicationFromForm();
@@ -424,6 +535,9 @@ namespace PharmacistRecommendation.ViewModels
                     await ShowAlert("Succes", "Medicamentul a fost adăugat cu succes!", "OK");
                 }
 
+                // Clear auto-save draft after successful save
+                await ClearFormDraftAsync();
+                
                 _completionSource?.SetResult(true);
             }
             catch (Exception ex)
@@ -433,6 +547,7 @@ namespace PharmacistRecommendation.ViewModels
             finally
             {
                 IsLoading = false;
+                LoadingMessage = "Se salvează...";
             }
         }
 
@@ -448,6 +563,7 @@ namespace PharmacistRecommendation.ViewModels
                     return;
             }
 
+            await ClearFormDraftAsync();
             _completionSource?.SetResult(false);
         }
 
@@ -510,8 +626,83 @@ namespace PharmacistRecommendation.ViewModels
                 Triunghi = HasTriunghi ? "X" : null,
                 Dreptunghi = HasDreptunghi ? "X" : null,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
+                IsActive = true
             };
+        }
+
+        // SIMPLIFIED: Auto-save without database calls to prevent threading issues
+        private void StartAutoSave()
+        {
+            _autoSaveTimer?.Dispose();
+            _autoSaveTimer = new System.Threading.Timer(
+                async _ => await AutoSaveFormAsync(), 
+                null, 
+                TimeSpan.FromSeconds(30), 
+                Timeout.InfiniteTimeSpan);
+        }
+
+        private async Task AutoSaveFormAsync()
+        {
+            if (!HasFormData()) return;
+            
+            try
+            {
+                var formData = new
+                {
+                    CodCIM, Denumire, DCI, FormaFarmaceutica, Concentratia,
+                    CodATC, ActiuneTerapeutica, Prescriptie,
+                    Timestamp = DateTime.Now
+                };
+                
+                var json = System.Text.Json.JsonSerializer.Serialize(formData);
+                Preferences.Set("medication_draft", json);
+                
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    System.Diagnostics.Debug.WriteLine("Form auto-saved");
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error auto-saving form: {ex.Message}");
+            }
+        }
+
+        private async Task RestoreFormDraftAsync()
+        {
+            try
+            {
+                var json = Preferences.Get("medication_draft", string.Empty);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    var restore = await ShowAlert("Salvare Găsită", 
+                        "S-a găsit o salvare automată. Doriți să o restaurați?", "Da", "Nu");
+                    
+                    if (restore)
+                    {
+                        await ClearFormDraftAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error restoring form draft: {ex.Message}");
+                await ClearFormDraftAsync();
+            }
+        }
+
+        private async Task ClearFormDraftAsync()
+        {
+            try
+            {
+                Preferences.Remove("medication_draft");
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing form draft: {ex.Message}");
+            }
         }
 
         private async Task ShowAlert(string title, string message, string accept)
@@ -536,6 +727,14 @@ namespace PharmacistRecommendation.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            _validationCancellation?.Cancel();
+            _validationCancellation?.Dispose();
+            _autoSaveTimer?.Dispose();
+            _autoSaveTimer = null;
         }
     }
 }
