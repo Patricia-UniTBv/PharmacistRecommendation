@@ -12,6 +12,7 @@ public partial class ImportConfiguration
     public string? PrescriptionPath { get; set; }
 
     public string? ReceiptPath { get; set; }
+    //public string? ImportPath { get; set; } 
 
     //public string? ImportPath { get; set; } 
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+//using PharmacistRecommendation.Models;
 
 namespace Entities.Data;
 
@@ -132,12 +133,33 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("Medication");
 
-            entity.HasIndex(e => e.AtcCode, "IX_Medication_AtcCode");
-
-            entity.Property(e => e.AtcCode).HasMaxLength(20);
-            entity.Property(e => e.Description).HasMaxLength(200);
-            entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.PharmaceuticalForm).HasMaxLength(100);
+            entity.HasIndex(e => e.CodCIM, "IX_Medication_CodCIM");
+        
+            // Romanian medication fields
+            entity.Property(e => e.CodCIM).HasMaxLength(50);
+            entity.Property(e => e.Denumire).HasMaxLength(500);
+            entity.Property(e => e.DCI).HasMaxLength(255);
+            entity.Property(e => e.FormaFarmaceutica).HasMaxLength(255);
+            entity.Property(e => e.Concentratia).HasMaxLength(100);
+            entity.Property(e => e.FirmaProducatoare).HasMaxLength(255); 
+            entity.Property(e => e.FirmaDetinatoare).HasMaxLength(255); 
+            entity.Property(e => e.CodATC).HasMaxLength(50);
+            entity.Property(e => e.ActiuneTerapeutica).HasMaxLength(255);
+            entity.Property(e => e.Prescriptie).HasMaxLength(100);
+            entity.Property(e => e.NrData).HasMaxLength(100);
+            entity.Property(e => e.Ambalaj).HasMaxLength(255);
+            entity.Property(e => e.VolumAmbalaj).HasMaxLength(100);
+            entity.Property(e => e.Valabilitate).HasMaxLength(100);
+            entity.Property(e => e.Bulina).HasMaxLength(50);
+            entity.Property(e => e.Diez).HasMaxLength(50);
+            entity.Property(e => e.Stea).HasMaxLength(50);
+            entity.Property(e => e.Triunghi).HasMaxLength(50);
+            entity.Property(e => e.Dreptunghi).HasMaxLength(50);         
+            entity.Property(e => e.DataSource).HasMaxLength(50).HasDefaultValue("Manual");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.PreviousCodCIM).HasMaxLength(50); 
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<MedicationDocument>(entity =>
