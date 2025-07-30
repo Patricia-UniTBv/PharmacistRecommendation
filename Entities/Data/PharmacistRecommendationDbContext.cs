@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
-//using PharmacistRecommendation.Models;
 
 namespace Entities.Data;
 
@@ -18,31 +17,20 @@ public partial class PharmacistRecommendationDbContext : DbContext
     }
 
     public virtual DbSet<AdministrationMode> AdministrationModes { get; set; }
-
+    public virtual DbSet<Assistant> Assistants { get; set; }  // ADD THIS
     public virtual DbSet<Document> Documents { get; set; }
-
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
-
     public virtual DbSet<EmailConfiguration> EmailConfigurations { get; set; }
-
     public virtual DbSet<ImportConfiguration> ImportConfigurations { get; set; }
-
     public virtual DbSet<Medication> Medications { get; set; }
-
     public virtual DbSet<MedicationDocument> MedicationDocuments { get; set; }
-
     public virtual DbSet<Monitoring> Monitorings { get; set; }
-
     public virtual DbSet<Patient> Patients { get; set; }
-
     public virtual DbSet<Pharmacy> Pharmacies { get; set; }
-
     public virtual DbSet<PharmacyCard> PharmacyCards { get; set; }
-
+    public virtual DbSet<Pharmacist> Pharmacists { get; set; }  // ADD THIS
     public virtual DbSet<Prescription> Prescriptions { get; set; }
-
     public virtual DbSet<PrescriptionMedication> PrescriptionMedications { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -356,6 +344,42 @@ public partial class PharmacistRecommendationDbContext : DbContext
                 .HasForeignKey(d => d.PharmacyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_Pharmacy");
+        });
+
+        // ADD THESE CONFIGURATIONS:
+        modelBuilder.Entity<Assistant>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Assistant__3214EC07");
+            entity.ToTable("Assistant");
+
+            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Assistant)
+                .HasForeignKey<Assistant>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assistant_User");
+
+            entity.HasOne(d => d.SupervisorPharmacist).WithMany(p => p.Assistants)
+                .HasForeignKey(d => d.SupervisorPharmacistId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assistant_Pharmacist");
+        });
+
+        modelBuilder.Entity<Pharmacist>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Pharmacist__3214EC07");
+            entity.ToTable("Pharmacist");
+
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FirstName).HasMaxLength(50);
+            entity.Property(e => e.LastName).HasMaxLength(50);
+            entity.Property(e => e.Ncm).HasMaxLength(20);
+            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.Username).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Pharmacist)
+                .HasForeignKey<Pharmacist>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Pharmacist_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

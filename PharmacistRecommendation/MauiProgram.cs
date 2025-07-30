@@ -35,6 +35,13 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceView>();
             builder.Services.AddTransient<AdministrationModesView>();
             builder.Services.AddTransient<ImportConfigurationView>();
+            
+            // ADD THESE MEDICATION VIEWS
+            builder.Services.AddTransient<MedicationView>();
+            builder.Services.AddTransient<AddEditMedicationView>();
+            builder.Services.AddTransient<ConflictResolutionView>();
+
+            builder.Services.AddTransient<MainPageView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
@@ -44,6 +51,13 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceViewModel>();
             builder.Services.AddTransient<AdministrationModesViewModel>();
             builder.Services.AddTransient<ImportConfigurationViewModel>();
+            
+            // ADD THESE MEDICATION VIEWMODELS
+            builder.Services.AddTransient<MedicationViewModel>();
+            builder.Services.AddTransient<AddEditMedicationViewModel>();
+            builder.Services.AddTransient<ConflictResolutionViewModel>();
+            
+            builder.Services.AddTransient<MainPageViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -80,16 +94,6 @@ namespace PharmacistRecommendation
             builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
             builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
-
-            // ADD THESE MEDICATION VIEWS
-            builder.Services.AddTransient<MedicationView>();
-            builder.Services.AddTransient<AddEditMedicationView>();
-            builder.Services.AddTransient<ConflictResolutionView>();
-
-            // ADD THESE MEDICATION VIEWMODELS
-            builder.Services.AddTransient<MedicationViewModel>();
-            builder.Services.AddTransient<AddEditMedicationViewModel>();
-            builder.Services.AddTransient<ConflictResolutionViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

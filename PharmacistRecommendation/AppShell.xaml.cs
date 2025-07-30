@@ -16,15 +16,15 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("new_card", typeof(CardConfigurationView));
             Routing.RegisterRoute("gdpr_configuration", typeof(GdprConfigurationView));
             Routing.RegisterRoute("mixed_issuance", typeof(MixedActIssuanceView));
-            Routing.RegisterRoute("administration_modes", typeof (AdministrationModesView));
+            Routing.RegisterRoute("administration_modes", typeof(AdministrationModesView));
             Routing.RegisterRoute("import_configuration", typeof(ImportConfigurationView));
+            Routing.RegisterRoute("medications", typeof(MedicationView));
         }
 
-        private async void OnNewCardClicked(object sender,  EventArgs e)
+        private async void OnNewCardClicked(object sender, EventArgs e)
         {
             await GoToAsync("new_card");
         }
-
 
         private async void OnMonitClicked(object sender, EventArgs e)
         {
@@ -40,6 +40,7 @@ namespace PharmacistRecommendation
         {
             await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
         }
+
         private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
@@ -77,5 +78,9 @@ namespace PharmacistRecommendation
             await GoToAsync("import_configuration");
         }
 
+        private async void OnMedicationsClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("medications");
+        }
     }
 }
