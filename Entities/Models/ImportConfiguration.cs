@@ -13,5 +13,7 @@ public partial class ImportConfiguration
 
     public string? ReceiptPath { get; set; }
 
+    //public string? ImportPath { get; set; } 
+
     public virtual Pharmacy Pharmacy { get; set; } = null!;
 }

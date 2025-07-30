@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PharmacistRecommendation.Views.AddEditMedicationView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             x:DataType="viewmodels:AddEditMedicationViewModel"
+             Title="{Binding PageTitle}"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Simple Color Palette -->
+            <Color x:Key="HeaderGray">#D3D3D3</Color>
+            <Color x:Key="BorderGray">#CCCCCC</Color>
+            <Color x:Key="TextGray">#333333</Color>
+            <Color x:Key="LightGray">#F5F5F5</Color>
+            <Color x:Key="ButtonGray">#E0E0E0</Color>
+
+            <!-- Simple Entry Style -->
+            <Style x:Key="SimpleEntry" TargetType="Entry">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="Margin" Value="0,2,0,4"/>
+            </Style>
+
+            <!-- Enhanced Error Style -->
+            <Style x:Key="ErrorText" TargetType="Label">
+                <Setter Property="TextColor" Value="#D32F2F"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="FontAttributes" Value="Italic"/>
+                <Setter Property="Margin" Value="0,2,0,8"/>
+            </Style>
+
+            <!-- Simple Button Style -->
+            <Style x:Key="SimpleButton" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource ButtonGray}"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="HeightRequest" Value="36"/>
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+
+            <!-- Field Label Style -->
+            <Style x:Key="FieldLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="Margin" Value="0,8,0,2"/>
+            </Style>
+
+            <!-- Required Field Label Style -->
+            <Style x:Key="RequiredFieldLabel" TargetType="Label" BasedOn="{StaticResource FieldLabel}">
+                <Setter Property="TextColor" Value="#D32F2F"/>
+            </Style>
+
+            <!-- Section Header Style -->
+            <Style x:Key="SectionHeader" TargetType="Label">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource HeaderGray}"/>
+                <Setter Property="Padding" Value="8,6"/>
+                <Setter Property="Margin" Value="0,12,0,8"/>
+            </Style>
+
+            <!-- Regulatory Symbol Style -->
+            <Style x:Key="RegulatorySymbol" TargetType="StackLayout">
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="Spacing" Value="4"/>
+            </Style>
+
+            <!-- Regulatory Label Style -->
+            <Style x:Key="RegulatoryLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView BackgroundColor="White" Padding="12">
+        <StackLayout>
+            <!-- Basic Information Section -->
+            <Label Text="Informații de Bază" Style="{StaticResource SectionHeader}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Column="0" Margin="0,0,8,0">
+                    <Label Text="Cod CIM *" Style="{StaticResource RequiredFieldLabel}"/>
+                    <Entry Text="{Binding CodCIM}" 
+                           Placeholder="W12345" 
+                           MaxLength="50"
+                           Style="{StaticResource SimpleEntry}"/>
+                    <Label Text="{Binding CodCIMError}" 
+                           Style="{StaticResource ErrorText}"
+                           IsVisible="{Binding HasCodCIMError}"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" Margin="8,0,0,0">
+                    <Label Text="Cod ATC" Style="{StaticResource FieldLabel}"/>
+                    <Entry Text="{Binding CodATC}" 
+                           Placeholder="A01AB02" 
+                           MaxLength="7"
+                           Style="{StaticResource SimpleEntry}"/>
+                    <Label Text="{Binding CodATCError}" 
+                           Style="{StaticResource ErrorText}"
+                           IsVisible="{Binding HasCodATCError}"/>
+                </StackLayout>
+            </Grid>
+
+            <Label Text="Denumire Comercială *" Style="{StaticResource RequiredFieldLabel}"/>
+            <Entry Text="{Binding Denumire}" 
+                   Placeholder="Aspirin 100mg"
+                   Style="{StaticResource SimpleEntry}"/>
+            <Label Text="{Binding DenumireError}" 
+                   Style="{StaticResource ErrorText}"
+                   IsVisible="{Binding HasDenumireError}"/>
+
+            <Label Text="DCI" Style="{StaticResource FieldLabel}"/>
+            <Entry Text="{Binding DCI}" 
+                   Placeholder="Acetylsalicylic acid" 
+                   Style="{StaticResource SimpleEntry}"/>
+
+            <Label Text="Acțiune Terapeutică" Style="{StaticResource FieldLabel}"/>
+            <Entry Text="{Binding ActiuneTerapeutica}" 
+                   Placeholder="Antiinflamator, analgezic" 
+                   Style="{StaticResource SimpleEntry}"/>
+
+            <Label Text="Prescripție" Style="{StaticResource FieldLabel}"/>
+            <Entry Text="{Binding Prescriptie}" 
+                   Placeholder="Cu prescripție medicală" 
+                   Style="{StaticResource SimpleEntry}"/>
+
+            <!-- Company Information Section -->
+            <Label Text="Informații Producător" Style="{StaticResource SectionHeader}"/>
+
+            <Label Text="Firma Producătoare" Style="{StaticResource FieldLabel}"/>
+            <Entry Text="{Binding FirmaProducatoare}" 
+                   Placeholder="Bayer AG" 
+                   Style="{StaticResource SimpleEntry}"/>
+
+            <Label Text="Firma Deținătoare" Style="{StaticResource FieldLabel}"/>
+            <Entry Text="{Binding FirmaDetinatoare}" 
+                   Placeholder="Bayer Romania" 
+                   Style="{StaticResource SimpleEntry}"/>
+
+            <!-- Packaging Information Section -->
+            <Label Text="Informații Ambalaj" Style="{StaticResource SectionHeader}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Column="0" Margin="0,0,8,0">
+                    <Label Text="Nr/Data Ambalaj" Style="{StaticResource FieldLabel}"/>
+                    <Entry Text="{Binding NrData}" 
+                           Placeholder="123/2024" 
+                           Style="{StaticResource SimpleEntry}"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" Margin="8,0,0,0">
+                    <Label Text="Volum Ambalaj" Style="{StaticResource FieldLabel}"/>
+                    <Entry Text="{Binding VolumAmbalaj}" 
+                           Placeholder="30 comprimate" 
+                           Style="{StaticResource SimpleEntry}"/>
+                </StackLayout>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Column="0" Margin="0,0,8,0">
+                    <Label Text="Ambalaj" Style="{StaticResource FieldLabel}"/>
+                    <Entry Text="{Binding Ambalaj}" 
+                           Placeholder="Blister" 
+                           Style="{StaticResource SimpleEntry}"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" Margin="8,0,0,0">
+                    <Label Text="Valabilitate" Style="{StaticResource FieldLabel}"/>
+                    <Entry Text="{Binding Valabilitate}" 
+                           Placeholder="24 luni" 
+                           Style="{StaticResource SimpleEntry}"/>
+                </StackLayout>
+            </Grid>
+
+            <!-- Regulatory Symbols Section -->
+            <Label Text="Simboluri Reglementare" Style="{StaticResource SectionHeader}"/>
+
+            <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Bulina -->
+                <StackLayout Grid.Column="0" Style="{StaticResource RegulatorySymbol}">
+                    <Label Text="Bulina" Style="{StaticResource RegulatoryLabel}"/>
+                    <CheckBox IsChecked="{Binding HasBulina}" 
+                              HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <!-- Diez -->
+                <StackLayout Grid.Column="1" Style="{StaticResource RegulatorySymbol}">
+                    <Label Text="Diez" Style="{StaticResource RegulatoryLabel}"/>
+                    <CheckBox IsChecked="{Binding HasDiez}" 
+                              HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <!-- Stea -->
+                <StackLayout Grid.Column="2" Style="{StaticResource RegulatorySymbol}">
+                    <Label Text="Stea" Style="{StaticResource RegulatoryLabel}"/>
+                    <CheckBox IsChecked="{Binding HasStea}" 
+                              HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <!-- Triunghi -->
+                <StackLayout Grid.Column="3" Style="{StaticResource RegulatorySymbol}">
+                    <Label Text="Triunghi" Style="{StaticResource RegulatoryLabel}"/>
+                    <CheckBox IsChecked="{Binding HasTriunghi}" 
+                              HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <!-- Dreptunghi -->
+                <StackLayout Grid.Column="4" Style="{StaticResource RegulatorySymbol}">
+                    <Label Text="Dreptunghi" Style="{StaticResource RegulatoryLabel}"/>
+                    <CheckBox IsChecked="{Binding HasDreptunghi}" 
+                              HorizontalOptions="Center"/>
+                </StackLayout>
+            </Grid>
+
+            <!-- Action Buttons -->
+            <Grid Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" 
+                        Text="Anulează" 
+                        Command="{Binding CancelCommand}" 
+                        Style="{StaticResource SimpleButton}"
+                        Margin="0,0,4,0"/>
+
+                <Button Grid.Column="1" 
+                        Text="{Binding SaveButtonText}" 
+                        Command="{Binding SaveCommand}" 
+                        Style="{StaticResource SimpleButton}"
+                        Margin="4,0,0,0"/>
+            </Grid>
+
+            <!-- Enhanced Loading Indicator -->
+            <StackLayout IsVisible="{Binding IsLoading}" 
+                         HorizontalOptions="Center" 
+                         Margin="0,20,0,0">
+                <Frame BackgroundColor="#F5F5F5" 
+                       Padding="20"
+                       CornerRadius="10"
+                       HasShadow="True">
+                    <StackLayout>
+                        <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                                           Color="{StaticResource TextGray}"
+                                           WidthRequest="30" 
+                                           HeightRequest="30"/>
+                        <Label Text="{Binding LoadingMessage}" 
+                               TextColor="{StaticResource TextGray}"
+                               FontSize="12"
+                               HorizontalOptions="Center"
+                               Margin="0,8,0,0"/>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
