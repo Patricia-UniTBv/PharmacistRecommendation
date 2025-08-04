@@ -47,7 +47,7 @@
             <Label Text="Parolă aplicație Gmail" FontAttributes="Bold" />
             <Entry Text="{Binding AppPassword, Mode=TwoWay}" IsPassword="True" Placeholder="Parola aplicației" />
 
-            <Button Text="Salvează" Command="{Binding SaveCommand}" />
+            <Button Text="Salvează" Command="{Binding SaveCommand}" BackgroundColor="Green" HorizontalOptions="Start" WidthRequest="100" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

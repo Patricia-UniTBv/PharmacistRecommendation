@@ -48,7 +48,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 Name = Name,
                 Address = Address,
-                Cui = Cui,
+                CUI = Cui,
                 Email = Email,
                 Phone = Phone,
                 Logo = Logo
