@@ -85,7 +85,6 @@ public partial class MonitoringViewModel : ObservableObject
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
-        PatientEmail = patient.Email!;
     }
 
     [RelayCommand]
@@ -162,7 +161,8 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        string patientEmail = patient.Email?.Trim();
+        string patientEmail = (PatientEmail?.Trim()) ?? string.Empty;
+
         if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
         {
             patientEmail = await Shell.Current.DisplayPromptAsync(
