@@ -396,6 +396,7 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacyName = _pharmacy!.Name,
                 PharmacyAddress = _pharmacy.Address!,
                 PharmacyPhone = _pharmacy!.Phone!,
+                Logo = _pharmacy!.Logo,
                 Series = this.PrescriptionSeries!,
                 Number = this.PrescriptionNumber!,
                 IssueDate = DateTime.Now,

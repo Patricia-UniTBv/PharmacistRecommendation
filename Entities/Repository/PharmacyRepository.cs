@@ -29,5 +29,11 @@ namespace Entities.Repository
             _context.Pharmacies.Update(pharmacy);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddAsync(Pharmacy pharmacy)
+        {
+            _context.Pharmacies.Add(pharmacy);
+            await _context.SaveChangesAsync();
+        }
     }
 }

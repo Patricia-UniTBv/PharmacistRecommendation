@@ -30,6 +30,7 @@
             <MenuFlyoutItem Text="Moduri administrare" Clicked="OnAdministrationModesClicked"/>
             <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
             <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
+            <MenuFlyoutItem Text="Adăugare farmacie" Clicked="OnAddPharmacyClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Ajutor">

@@ -130,6 +130,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\AddPharmacyView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\AdministrationModesView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -11,6 +11,7 @@ namespace PharmacistRecommendation.Helpers
         public string? PharmacyName { get; set; }
         public string? PharmacyAddress { get; set; }
         public string? PharmacyPhone { get; set; }
+        public string? Logo { get; set; }
         public string? Series { get; set; }
         public string? Number { get; set; }
         public DateTime IssueDate { get; set; }
@@ -28,6 +29,7 @@ namespace PharmacistRecommendation.Helpers
         public string? PharmaceuticalService { get; set; }
         public List<MedicationLine> MedicationsWithPrescription { get; set; } = new();
         public List<MedicationLine> MedicationsWithoutPrescription { get; set; } = new();
+
         private int currentMedicationWithPrescriptionIndex = 0;
         private int currentMedicationWithoutPrescriptionIndex = 0;
         private bool printingWithPrescription = true;
@@ -79,7 +81,6 @@ namespace PharmacistRecommendation.Helpers
                 using (var grayBrush = new SolidBrush(SD.Color.FromArgb(100, 100, 100)))
                 {
                     g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontBold, Brushes.Black, left, y);
-                    //g.DrawString($"Serie: {Safe(Series)} / Nr: {Safe(Number)}", fontBold, Brushes.Black, right - 200, y);
                 }
                 y += lineHeight * 1.5f;
 
@@ -90,12 +91,10 @@ namespace PharmacistRecommendation.Helpers
                 isFirstPage = false;
             }
 
-            // Calculează cât spațiu a mai rămas pe pagină
-            float availableHeight = e.PageBounds.Height - y - 110; // 110 pentru footer și eventuale margini
+            float availableHeight = e.PageBounds.Height - y - 110; 
             float rowHeight = fontText.GetHeight(g) * 3.5f;
             int medicationsPerPage = (int)((availableHeight - sectionSpacing * 2) / rowHeight);
 
-            // 1. Paginare pentru "cu rețetă"
             if (printingWithPrescription && MedicationsWithPrescription?.Count > 0)
             {
                 y += sectionSpacing;
@@ -116,7 +115,6 @@ namespace PharmacistRecommendation.Helpers
                 }
                 else
                 {
-                    // Doar dacă lista fără rețetă conține ceva, treci la următoarea secțiune
                     if (MedicationsWithoutPrescription != null && MedicationsWithoutPrescription.Count > 0)
                     {
                         printingWithPrescription = false;
@@ -126,10 +124,8 @@ namespace PharmacistRecommendation.Helpers
                     }
                     else
                     {
-                        // Niciun tabel de continuat, deci finalizezi documentul aici!
                         currentMedicationWithPrescriptionIndex = 0;
                         printingWithPrescription = true;
-                        // Recomandare și footer pe ultima pagină
                         y += sectionSpacing;
                         y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
                         DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
@@ -139,7 +135,6 @@ namespace PharmacistRecommendation.Helpers
                 }
             }
 
-            // 2. Paginare pentru "fără rețetă"
             if (!printingWithPrescription && MedicationsWithoutPrescription?.Count > 0)
             {
                 if (currentMedicationWithoutPrescriptionIndex == 0)
@@ -162,17 +157,14 @@ namespace PharmacistRecommendation.Helpers
                 }
                 else
                 {
-                    // Toate medicamentele sunt desenate, urmează secțiunea de recomandare și footer
                     currentMedicationWithoutPrescriptionIndex = 0;
                 }
             }
 
-            // 3. Secțiune recomandare și footer DOAR pe ultima pagină!
             y += sectionSpacing;
             y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
             DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
 
-            // Reset pentru printare viitoare
             printingWithPrescription = true;
             e.HasMorePages = false;
         }
@@ -182,11 +174,24 @@ namespace PharmacistRecommendation.Helpers
         {
             var logoRect = new RectangleF(left, y, logoSize, logoSize);
             var symbolRect = new RectangleF(logoRect.X + 20, logoRect.Y, 60, 60);
-            var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Images", "logo.png");
-
-            if (File.Exists(logoPath))
+            if (!string.IsNullOrWhiteSpace(Logo) && File.Exists(Logo))
             {
-                using (var logo = SD.Image.FromFile(logoPath))
+                using var logoImage = SD.Image.FromFile(Logo);
+                g.DrawImage(logoImage, logoRect);
+            }
+            else
+            {
+                var fallbackLogo = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Images", "logo.png");
+                if (File.Exists(fallbackLogo))
+                {
+                    using var logoImage = SD.Image.FromFile(fallbackLogo);
+                    g.DrawImage(logoImage, logoRect);
+                }
+            }
+
+            if (File.Exists(Logo))
+            {
+                using (var logo = SD.Image.FromFile(Logo))
                 {
                     float aspectImage = (float)logo.Width / logo.Height;
                     float aspectRect = symbolRect.Width / symbolRect.Height;
