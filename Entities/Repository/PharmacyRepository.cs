@@ -18,16 +18,53 @@ namespace Entities.Repository
         {
             _context = context;
         }
+        
         public async Task<Pharmacy> GetById(int pharmacyId)
         {
-            return await _context.Pharmacies
-                  .Where(p => p.Id == pharmacyId).FirstAsync();
+            var pharmacy = await _context.Pharmacies
+                  .Where(p => p.Id == pharmacyId)
+                  .FirstOrDefaultAsync();
+            
+            if (pharmacy == null)
+            {
+                throw new InvalidOperationException($"Farmacia cu ID-ul {pharmacyId} nu a fost găsită. Vă rugăm să verificați configurarea sistemului.");
+            }
+                
+            return pharmacy;
+        }
+
+        // Add this method to get the first available pharmacy
+        public async Task<Pharmacy?> GetFirstPharmacyAsync()
+        {
+            return await _context.Pharmacies.FirstOrDefaultAsync();
         }
 
         public async Task UpdatePharmacyAsync(Pharmacy pharmacy)
         {
             _context.Pharmacies.Update(pharmacy);
             await _context.SaveChangesAsync();
+        }
+
+        // Method to ensure at least one pharmacy exists in the database
+        public async Task EnsureDefaultPharmacyAsync()
+        {
+            // Check if any pharmacy exists
+            if (!await _context.Pharmacies.AnyAsync())
+            {
+                // If no pharmacy exists, insert a default one
+                var defaultPharmacy = new Pharmacy
+                {
+                    Name = "Farmacia Demo",
+                    Address = "Strada Principala nr. 1",
+                    CUI = "12345678",
+                    Email = "admin@farmacia.ro",
+                    Phone = "0123456789",
+                    ConsentTemplate = null
+                };
+
+                _context.Pharmacies.Add(defaultPharmacy);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task AddAsync(Pharmacy pharmacy)

@@ -1,13 +1,14 @@
-﻿using Entities.Services.Interfaces;
+﻿using CommunityToolkit.Maui;
+using Entities.Data;
+using Entities.Repository;
+using Entities.Repository.Interfaces;
 using Entities.Services;
+using Entities.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
-using Entities.Repository.Interfaces;
-using Entities.Repository;
-using Entities.Data;
-using PharmacistRecommendation.Helpers;
-using CommunityToolkit.Maui;
 
 namespace PharmacistRecommendation
 {
@@ -24,7 +25,8 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             builder.UseMauiCommunityToolkit();
-            builder.Services.AddSingleton<PharmacistRecommendationDbContext>();
+            builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
+                options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));
 
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();
@@ -33,8 +35,13 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceView>();
             builder.Services.AddTransient<AdministrationModesView>();
             builder.Services.AddTransient<ImportConfigurationView>();
-            builder.Services.AddTransient<EmailConfigurationView>();
-            builder.Services.AddTransient<AddPharmacyView>();
+            
+            // ADD THESE MEDICATION VIEWS
+            builder.Services.AddTransient<MedicationView>();
+            builder.Services.AddTransient<AddEditMedicationView>();
+            builder.Services.AddTransient<ConflictResolutionView>();
+
+            builder.Services.AddTransient<MainPageView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
@@ -44,8 +51,13 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceViewModel>();
             builder.Services.AddTransient<AdministrationModesViewModel>();
             builder.Services.AddTransient<ImportConfigurationViewModel>();
-            builder.Services.AddTransient<EmailConfigurationViewModel>();
-            builder.Services.AddTransient<AddPharmacyViewModel>();
+            
+            // ADD THESE MEDICATION VIEWMODELS
+            builder.Services.AddTransient<MedicationViewModel>();
+            builder.Services.AddTransient<AddEditMedicationViewModel>();
+            builder.Services.AddTransient<ConflictResolutionViewModel>();
+            
+            builder.Services.AddTransient<MainPageViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -75,6 +87,12 @@ namespace PharmacistRecommendation
 
             builder.Services.AddSingleton<IImportConfigurationRepository, ImportConfigurationRepository>();
             builder.Services.AddSingleton<IImportConfigurationService, ImportConfigurationService>();
+
+            // ADD THESE MEDICATION SERVICES
+            builder.Services.AddScoped<IMedicationService, MedicationService>();
+            builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
+            builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
+            builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
 
 #if DEBUG
             builder.Logging.AddDebug();

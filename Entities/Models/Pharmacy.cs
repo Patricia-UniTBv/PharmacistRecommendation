@@ -11,7 +11,7 @@ public partial class Pharmacy
 
     public string? Address { get; set; }
 
-    public string? Cui { get; set; }
+    public string? CUI { get; set; }
 
     public string? Email { get; set; }
 

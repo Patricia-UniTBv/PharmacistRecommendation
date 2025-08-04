@@ -117,6 +117,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="QuestPDF" Version="2025.5.1" />
 		<PackageReference Include="ScottPlot" Version="4.1.74" />
+		<PackageReference Include="ClosedXML" Version="0.102.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -130,13 +131,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\MedicationView.xaml.cs">
+	    <DependentUpon>MedicationView.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\ConflictResolutionView.xaml.cs">
+	    <DependentUpon>ConflictResolutionView.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\AddEditMedicationView.xaml.cs">
+	    <DependentUpon>AddEditMedicationView.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\MedicationView.xaml">
 	  <MauiXaml Update="Views\AddPharmacyView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\AdministrationModesView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CardConfigurationView.xaml">
+	  <MauiXaml Update="Views\ConflictResolutionView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\EmailConfigurationView.xaml">

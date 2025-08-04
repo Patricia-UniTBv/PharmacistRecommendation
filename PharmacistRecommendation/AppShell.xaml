@@ -29,6 +29,7 @@
             <MenuFlyoutItem Text="Modificare document GDPR" Clicked="OnGdprConfigClicked"/>
             <MenuFlyoutItem Text="Moduri administrare" Clicked="OnAdministrationModesClicked"/>
             <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
+            <MenuFlyoutItem Text="Medicamente" Clicked="OnMedicationsClicked"/>
             <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
             <MenuFlyoutItem Text="Adăugare farmacie" Clicked="OnAddPharmacyClicked"/>
         </MenuBarItem>
@@ -38,7 +39,7 @@
         </MenuBarItem>
     </Shell.MenuBarItems>
 
-    <ShellContent  Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:MonitoringView}"/>
+    <ShellContent Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:MainPageView}"/>
 
     <Shell.Resources>
         <Style x:Key="MyPageStyle" TargetType="Element">

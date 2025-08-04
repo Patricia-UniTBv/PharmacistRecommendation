@@ -78,7 +78,7 @@ Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu 
             return template
                 .Replace("{PharmacyName}", pharmacy.Name)
                 .Replace("{PharmacyAddress}", pharmacy.Address ?? "")
-                .Replace("{PharmacyFiscalCode}", pharmacy.Cui ?? "");
+                .Replace("{PharmacyFiscalCode}", pharmacy.CUI ?? "");
         }
     }
 }

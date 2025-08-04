@@ -10,16 +10,19 @@ using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.ViewModels
 {
-    public partial class GdprConfigurationViewModel: ObservableObject
+    public partial class GdprConfigurationViewModel : ObservableObject
     {
         private readonly IPharmacyService _pharmacyService;
         private readonly int _pharmacyId;
 
         [ObservableProperty]
-        string consentTemplate;
+        private string consentTemplate = string.Empty;
 
         [ObservableProperty]
-        bool isBusy = false;
+        private bool isBusy = false;
+
+        [ObservableProperty]
+        private string errorMessage = string.Empty;
 
         public GdprConfigurationViewModel(IPharmacyService pharmacyService)
         {
@@ -30,28 +33,64 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         public async Task LoadConsentTemplateAsync()
         {
-            IsBusy = true;
-            ConsentTemplate = await _pharmacyService.GetConsentTemplateAsync(_pharmacyId);
-            IsBusy = false;
+            try
+            {
+                IsBusy = true;
+                ErrorMessage = string.Empty;
+                ConsentTemplate = await _pharmacyService.GetConsentTemplateAsync(_pharmacyId);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Eroare la încărcarea template-ului: {ex.Message}";
+                ConsentTemplate = "Nu s-a putut încărca template-ul de consimțământ.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
         private async Task SaveConsentTemplateAsync()
         {
-            IsBusy = true;
-            await _pharmacyService.UpdateConsentTemplateAsync(_pharmacyId, ConsentTemplate);
-            IsBusy = false;
-
-            await Shell.Current.DisplayAlert("Succes", "Textul de consimțământ a fost salvat!", "OK");
+            try
+            {
+                IsBusy = true;
+                ErrorMessage = string.Empty;
+                await _pharmacyService.UpdateConsentTemplateAsync(_pharmacyId, ConsentTemplate);
+                await Shell.Current.DisplayAlert("Succes", "Textul de consimțământ a fost salvat!", "OK");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Eroare la salvare: {ex.Message}";
+                await Shell.Current.DisplayAlert("Eroare", ErrorMessage, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
         private async Task ResetConsentTemplateAsync()
         {
-            IsBusy = true;
-            await _pharmacyService.ResetConsentTemplateAsync(_pharmacyId);
-            ConsentTemplate = await _pharmacyService.GetConsentTemplateAsync(_pharmacyId);
-            IsBusy = false;
+            try
+            {
+                IsBusy = true;
+                ErrorMessage = string.Empty;
+                await _pharmacyService.ResetConsentTemplateAsync(_pharmacyId);
+                ConsentTemplate = await _pharmacyService.GetConsentTemplateAsync(_pharmacyId);
+                await Shell.Current.DisplayAlert("Succes", "Template-ul a fost resetat la valoarea implicită!", "OK");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Eroare la resetare: {ex.Message}";
+                await Shell.Current.DisplayAlert("Eroare", ErrorMessage, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }
