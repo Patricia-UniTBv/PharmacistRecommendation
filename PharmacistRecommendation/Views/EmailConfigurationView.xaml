@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PharmacistRecommendation.Views.EmailConfigurationView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label Text="Ghid generare parolă Gmail" FontAttributes="Bold" VerticalOptions="Center" />
+
+                <Image Source="info.png"
+           WidthRequest="16"
+           HeightRequest="16"
+           VerticalOptions="Center">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleHelpCommand}" />
+                    </Image.GestureRecognizers>
+                </Image>
+            </HorizontalStackLayout>
+
+            <!-- Textul ghidului -->
+            <Frame BackgroundColor="#f2f2f2"
+       BorderColor="#cccccc"
+       Padding="10"
+       IsVisible="{Binding ShowGmailHelp}"
+       Margin="0,5">
+                <Label FontSize="12" TextColor="Black">
+                    <Label.Text>
+                        🔐 Cum generezi parola aplicației Gmail:
+
+1. Autentifică-te în contul Gmail.
+2. Activează verificarea în doi pași:
+   👉 https://myaccount.google.com/security
+3. După activare, mergi la:
+   👉 https://myaccount.google.com/apppasswords
+4. Alege "Mail", apoi "Alt dispozitiv" și scrie: Farmacie
+5. Apasă "Generează" și copiază parola de 16 caractere.
+   (ex: xvhszldwomirrwta — fără spații)
+6. Introdu adresa Gmail și parola de aplicație mai jos și apasă „Salvează”.
+
+📎 Notă: Parola de aplicație NU este parola obișnuită de Gmail.
+                    </Label.Text>
+                </Label>
+            </Frame>
+            <Label Text="Adresă Gmail" FontAttributes="Bold" />
+            <Entry Text="{Binding Email, Mode=TwoWay}" Placeholder="ex: farmacia@gmail.com" Keyboard="Email" />
+
+            <Label Text="Parolă aplicație Gmail" FontAttributes="Bold" />
+            <Entry Text="{Binding AppPassword, Mode=TwoWay}" IsPassword="True" Placeholder="Parola aplicației" />
+
+            <Button Text="Salvează" Command="{Binding SaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

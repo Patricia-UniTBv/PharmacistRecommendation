@@ -29,6 +29,7 @@
             <MenuFlyoutItem Text="Modificare document GDPR" Clicked="OnGdprConfigClicked"/>
             <MenuFlyoutItem Text="Moduri administrare" Clicked="OnAdministrationModesClicked"/>
             <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
+            <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
         </MenuBarItem>
 
         <MenuBarItem Text="Ajutor">

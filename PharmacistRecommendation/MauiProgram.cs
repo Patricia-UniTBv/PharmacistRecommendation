@@ -33,6 +33,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceView>();
             builder.Services.AddTransient<AdministrationModesView>();
             builder.Services.AddTransient<ImportConfigurationView>();
+            builder.Services.AddTransient<EmailConfigurationView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
@@ -42,6 +43,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceViewModel>();
             builder.Services.AddTransient<AdministrationModesViewModel>();
             builder.Services.AddTransient<ImportConfigurationViewModel>();
+            builder.Services.AddTransient<EmailConfigurationViewModel>();
 
             builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
             builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
@@ -50,7 +52,6 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
             builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
-            builder.Services.AddSingleton<IEmailService, EmailService>();
 
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();

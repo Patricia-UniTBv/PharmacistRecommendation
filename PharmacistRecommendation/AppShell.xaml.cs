@@ -18,6 +18,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("mixed_issuance", typeof(MixedActIssuanceView));
             Routing.RegisterRoute("administration_modes", typeof (AdministrationModesView));
             Routing.RegisterRoute("import_configuration", typeof(ImportConfigurationView));
+            Routing.RegisterRoute("email_configuration", typeof(EmailConfigurationView));
         }
 
         private async void OnNewCardClicked(object sender,  EventArgs e)
@@ -75,6 +76,11 @@ namespace PharmacistRecommendation
         private async void OnImportConfigClicked(object sender, EventArgs e)
         {
             await GoToAsync("import_configuration");
+        }
+
+        private async void OnEmailConfigClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("email_configuration");
         }
 
     }

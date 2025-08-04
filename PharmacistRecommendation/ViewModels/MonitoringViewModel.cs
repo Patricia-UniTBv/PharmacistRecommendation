@@ -13,15 +13,13 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly IMonitoringService _monitoringService;
     private readonly IPatientService _patientService;
     private readonly IPdfReportService _pdfReportService;
-    private readonly IEmailService _emailService;
 
     public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService, IPdfReportService pdfReportService, IEmailService emailService)
+                               IPatientService patientService, IPdfReportService pdfReportService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
-        _emailService = emailService;
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
@@ -129,7 +127,7 @@ public partial class MonitoringViewModel : ObservableObject
         await LoadHistoryAsync();
     }
 
-    [RelayCommand]                    // va genera LoadHistoryCommand
+    [RelayCommand]                    
     private async Task LoadHistoryAsync()
     {
         if (PatientId == 0) return;
@@ -182,22 +180,31 @@ public partial class MonitoringViewModel : ObservableObject
         }
 
         var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId, StartDate, EndDate);
-
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
-        string body = $"Buna ziua,%0A%0AAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.%0A%0AVă mulțumim!";
+        string body = $"Bună ziua,\n\nAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\nVă mulțumim!";
 
-        // Nu mai scapi nimic la întâmplare: encodezi manual doar dacă e nevoie
-        var mailtoUrl = $"mailto:{patientEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
-        System.Diagnostics.Debug.WriteLine(mailtoUrl);
+        var config = new EmailConfiguration
+        {
+            SenderEmail = Preferences.Get("Email", string.Empty),
+            SenderAppPassword = Preferences.Get("AppPassword", string.Empty)
+        };
+
+        if (string.IsNullOrWhiteSpace(config.SenderEmail) || string.IsNullOrWhiteSpace(config.SenderAppPassword))
+        {
+            await Shell.Current.DisplayAlert("Eroare", "Nu există date de configurare pentru trimiterea e-mailului. Verifică pagina de configurare.", "OK");
+            return;
+        }
 
         try
         {
-            await Launcher.Default.OpenAsync(mailtoUrl);
-            await Shell.Current.DisplayAlert("Atașează fișierul", $"Emailul este pregătit, dar trebuie să atașezi manual PDF-ul:\n{pdfPath}", "OK");
+            var sender = new EmailSenderService(config);
+            await sender.SendEmailWithAttachmentAsync(patientEmail, subject, body, pdfPath);
+
+            await Shell.Current.DisplayAlert("Succes", "Emailul a fost trimis cu succes.", "OK");
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Eroare", $"Trimiterea a eșuat: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
         }
     }
 
