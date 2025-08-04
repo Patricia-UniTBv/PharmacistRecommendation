@@ -224,7 +224,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.ToTable("Pharmacy");
 
             entity.Property(e => e.Address).HasMaxLength(200);
-            entity.Property(e => e.Cui)
+            entity.Property(e => e.CUI)
                 .HasMaxLength(20)
                 .HasColumnName("CUI");
             entity.Property(e => e.Email).HasMaxLength(100);
