@@ -432,7 +432,8 @@ namespace PharmacistRecommendation.ViewModels
         private async void LoadAdministrationModes()
         {
             var modes = await _administrationModeService.GetAllAsync();
-            AdministrationModes = new ObservableCollection<AdministrationMode>(modes);
+            var activeModes = modes.Where(c => (bool)c.IsActive).ToList();
+            AdministrationModes = new ObservableCollection<AdministrationMode>(activeModes);
         }
     }
 }
