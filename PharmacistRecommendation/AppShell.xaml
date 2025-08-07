@@ -19,6 +19,10 @@
             <MenuFlyoutItem Text="Emitere act propriu" Clicked="OnWithoutPrescriptionClicked" />
         </MenuBarItem>
 
+        <MenuBarItem Text="Test">
+            <MenuFlyoutItem Text="Pagina Principală de Test" Clicked="OnTestMainPageClicked" />
+        </MenuBarItem>
+
         <MenuBarItem Text="Rapoarte">
             <MenuFlyoutItem Text="Vezi Raport" />
         </MenuBarItem>
@@ -37,7 +41,8 @@
         </MenuBarItem>
     </Shell.MenuBarItems>
 
-    <ShellContent Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:MainPageView}"/>
+    <!-- Changed default content to LoginAddUserView -->
+    <ShellContent Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:LoginAddUserView}"/>
 
     <Shell.Resources>
         <Style x:Key="MyPageStyle" TargetType="Element">

@@ -7,6 +7,7 @@ using Entities.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PharmacistRecommendation.Helpers;
+using PharmacistRecommendation.Services;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
 
@@ -94,6 +95,20 @@ namespace PharmacistRecommendation
             builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
             builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
+
+            // Add the secure storage service (MISSING REGISTRATION)
+            builder.Services.AddSingleton<ISecureStorageService, MauiSecureStorageService>();
+
+            // Add authentication service (this depends on ISecureStorageService)
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+
+            // Add Login View and ViewModel
+            builder.Services.AddTransient<LoginView>();
+            builder.Services.AddTransient<LoginViewModel>();
+
+            // Add the new LoginAddUser view and viewmodel
+            builder.Services.AddTransient<LoginAddUserView>();
+            builder.Services.AddTransient<LoginAddUserViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();
