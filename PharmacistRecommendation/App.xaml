@@ -13,6 +13,7 @@
             
             <!-- Add converters -->
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

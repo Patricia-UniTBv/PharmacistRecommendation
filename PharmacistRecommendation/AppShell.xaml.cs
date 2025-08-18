@@ -55,33 +55,33 @@ namespace PharmacistRecommendation
 
         private async void OnNewCardClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//CardConfigurationView");
+            await Shell.Current.GoToAsync("new_card");
         }
 
         private async void OnMonitClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MonitoringView");
+            await Shell.Current.GoToAsync("monitoring");
         }
 
         private async void OnMixedIssuanceClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=mixed");
+            await Shell.Current.GoToAsync("mixed_issuance?mode=mixed");
         }
 
         private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=withprescription");
+            await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
         }
 
         private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=withoutprescription");
+            await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
         }
 
         // Keep only one version of OnTestMainPageClicked
         private async void OnTestMainPageClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MainPageView");
+            await Shell.Current.GoToAsync("test_main");
         }
 
         // Reports navigation methods - Fixed routing
@@ -117,27 +117,27 @@ namespace PharmacistRecommendation
 
         private async void OnUsersManagementClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//UsersManagementView");
+            await Shell.Current.GoToAsync("users_management");
         }
 
         private async void OnGdprConfigClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//GdprConfigurationView");
+            await Shell.Current.GoToAsync("gdpr_configuration");
         }
 
         private async void OnAdministrationModesClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//AdministrationModesView");
+            await Shell.Current.GoToAsync("administration_modes");
         }
 
         private async void OnImportConfigClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//ImportConfigurationView");
+            await Shell.Current.GoToAsync("import_configuration");
         }
 
         private async void OnMedicationsClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//MedicationView");
+            await Shell.Current.GoToAsync("medications");
         }
 
         private async Task<bool> CheckAuthenticationOrPrompt()
@@ -148,7 +148,7 @@ namespace PharmacistRecommendation
                 if (!isAuthenticated)
                 {
                     await DisplayAlert("Autentificare Necesară", 
-                        "Trebuie să vă autentificați pentru a accesa această funcționalitatea.", 
+                        "Trebuie să vă autentificați pentru a accesa această funcționalitate.", 
                         "OK");
                     return false;
                 }
