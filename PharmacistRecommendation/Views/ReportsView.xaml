@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PharmacistRecommendation.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             x:DataType="viewmodels:ReportsViewModel"
+             Title="Rapoarte">
+    
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <Label Text="Centru Rapoarte" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"/>
+            
+            <!-- Date Range Selection -->
+            <Frame BackgroundColor="LightGray" Padding="15" HasShadow="True">
+                <StackLayout Spacing="10">
+                    <Label Text="Perioada raport:" FontAttributes="Bold"/>
+                    
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <StackLayout Grid.Column="0">
+                            <Label Text="Data început:"/>
+                            <DatePicker Date="{Binding StartDate}" Format="dd.MM.yyyy"/>
+                        </StackLayout>
+                        
+                        <StackLayout Grid.Column="1">
+                            <Label Text="Data final:"/>
+                            <DatePicker Date="{Binding EndDate}" Format="dd.MM.yyyy"/>
+                        </StackLayout>
+                    </Grid>
+                    
+                    <StackLayout>
+                        <Label Text="Filtru pacient (opțional):"/>
+                        <Entry Text="{Binding PatientFilter}" 
+                               Placeholder="Nume pacient sau CNP"/>
+                    </StackLayout>
+                    
+                    <Button Text="Reset Filtre" 
+                            Command="{Binding ResetFiltersCommand}"
+                            BackgroundColor="Gray"
+                            TextColor="White"/>
+                </StackLayout>
+            </Frame>
+            
+            <!-- Report Types -->
+            <Label Text="Tipuri Rapoarte:" 
+                   FontSize="18" 
+                   FontAttributes="Bold"/>
+            
+            <CollectionView ItemsSource="{Binding ReportTypes}"
+                           SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:ReportTypeModel">
+                        <Grid Padding="0,5">
+                            <Frame BackgroundColor="White" 
+                                   HasShadow="True" 
+                                   Padding="15"
+                                   CornerRadius="10">
+                                <Grid ColumnDefinitions="50,*,120" ColumnSpacing="15">
+                                    
+                                    <!-- Icon -->
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Icon}" 
+                                           FontSize="24"
+                                           VerticalOptions="Center"/>
+                                    
+                                    <!-- Title and Description -->
+                                    <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" 
+                                               FontAttributes="Bold" 
+                                               FontSize="16"/>
+                                        <Label Text="{Binding Description}" 
+                                               FontSize="12" 
+                                               TextColor="Gray"/>
+                                    </StackLayout>
+                                    
+                                    <!-- Generate Button - Simplified without converter -->
+                                    <Button Grid.Column="2" 
+                                            Text="Generează"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ReportsViewModel}}, Path=GenerateReportCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#3498db"
+                                            TextColor="White"
+                                            FontSize="12"
+                                            VerticalOptions="Center"/>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsVisible="{Binding IsGeneratingReport}" 
+                              IsRunning="{Binding IsGeneratingReport}"
+                              Color="#3498db"/>
+            
+            <Label Text="Se generează raportul..." 
+                   IsVisible="{Binding IsGeneratingReport}"
+                   HorizontalOptions="Center"
+                   FontAttributes="Italic"/>
+            
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

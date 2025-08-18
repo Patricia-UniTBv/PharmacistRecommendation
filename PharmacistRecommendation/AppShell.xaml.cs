@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
 using DTO;
 using Entities.Services.Interfaces;
+using Entities.Models; // Add this using directive for Prescription
 using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
@@ -28,7 +29,8 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("administration_modes", typeof(AdministrationModesView));
             Routing.RegisterRoute("import_configuration", typeof(ImportConfigurationView));
             Routing.RegisterRoute("medications", typeof(MedicationView));
-            Routing.RegisterRoute("test_main", typeof(MainPageView)); // Add route for test main page
+            Routing.RegisterRoute("test_main", typeof(MainPageView));
+            Routing.RegisterRoute("reports", typeof(ReportsView));
 
             // Subscribe to authentication changes
             _authService.AuthenticationStateChanged += OnAuthenticationStateChanged;
@@ -51,79 +53,91 @@ namespace PharmacistRecommendation
             }
         }
 
-        // New handler for Test menu
-        private async void OnTestMainPageClicked(object sender, EventArgs e)
-        {
-            await GoToAsync("test_main");
-        }
-
         private async void OnNewCardClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("new_card");
+            await Shell.Current.GoToAsync("//CardConfigurationView");
         }
 
         private async void OnMonitClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("monitoring");
+            await Shell.Current.GoToAsync("//MonitoringView");
         }
 
         private async void OnMixedIssuanceClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("mixed_issuance?mode=mixed");
+            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=mixed");
         }
 
         private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
+            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=withprescription");
         }
 
         private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
+            await Shell.Current.GoToAsync("//MixedActIssuanceView?mode=withoutprescription");
+        }
+
+        // Keep only one version of OnTestMainPageClicked
+        private async void OnTestMainPageClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//MainPageView");
+        }
+
+        // Reports navigation methods - Fixed routing
+        private async void OnReportsClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("reports");
+        }
+
+        private async void OnMixedActsReportClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("reports?type=mixed");
+        }
+
+        private async void OnOwnActsReportClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("reports?type=own");
+        }
+
+        private async void OnConsecutiveActsReportClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("reports?type=consecutive");
+        }
+
+        private async void OnMonitoringListReportClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("reports?type=monitoring");
         }
 
         private async void OnAddPharmacistClicked(object sender, EventArgs e)
         {
-            // Allow adding users without authentication (for initial setup)
-            var vm = ServiceHelper.GetService<PharmacistConfigurationViewModel>();
-            var popup = new PharmacistConfigurationView(vm);
-            var result = await App.Current.MainPage.ShowPopupAsync(popup);
-            if (result is null) return;
+            await Shell.Current.GoToAsync("//PharmacistConfigurationView");
         }
 
         private async void OnUsersManagementClicked(object sender, EventArgs e)
         {
-            // Allow access to user management without authentication (for initial setup)
-            await GoToAsync("users_management");
+            await Shell.Current.GoToAsync("//UsersManagementView");
         }
 
         private async void OnGdprConfigClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("gdpr_configuration");
+            await Shell.Current.GoToAsync("//GdprConfigurationView");
         }
 
         private async void OnAdministrationModesClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("administration_modes");
+            await Shell.Current.GoToAsync("//AdministrationModesView");
         }
 
         private async void OnImportConfigClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("import_configuration");
+            await Shell.Current.GoToAsync("//ImportConfigurationView");
         }
 
         private async void OnMedicationsClicked(object sender, EventArgs e)
         {
-            if (await CheckAuthenticationOrPrompt())
-                await GoToAsync("medications");
+            await Shell.Current.GoToAsync("//MedicationView");
         }
 
         private async Task<bool> CheckAuthenticationOrPrompt()
@@ -134,7 +148,7 @@ namespace PharmacistRecommendation
                 if (!isAuthenticated)
                 {
                     await DisplayAlert("Autentificare Necesară", 
-                        "Trebuie să vă autentificați pentru a accesa această funcționalitate.", 
+                        "Trebuie să vă autentificați pentru a accesa această funcționalitatea.", 
                         "OK");
                     return false;
                 }

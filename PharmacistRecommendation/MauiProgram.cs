@@ -42,6 +42,9 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<AddEditMedicationView>();
             builder.Services.AddTransient<ConflictResolutionView>();
 
+            // Add Reports View
+            builder.Services.AddTransient<ReportsView>();
+
             builder.Services.AddTransient<MainPageView>();
 
             builder.Services.AddTransient<MonitoringViewModel>();
@@ -57,6 +60,9 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<AddEditMedicationViewModel>();
             builder.Services.AddTransient<ConflictResolutionViewModel>();
+            
+            // Add Reports ViewModel
+            builder.Services.AddTransient<ReportsViewModel>();
             
             builder.Services.AddTransient<MainPageViewModel>();
 
