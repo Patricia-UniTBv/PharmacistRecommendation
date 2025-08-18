@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="PharmacistRecommendation.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
+             x:DataType="viewmodels:ReportsViewModel"
+             Title="Rapoarte">
+    
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            
+            <Label Text="Centru Rapoarte" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"/>
+            
+            <!-- Date Range Selection -->
+            <Frame BackgroundColor="LightGray" Padding="15" HasShadow="True">
+                <StackLayout Spacing="10">
+                    <Label Text="Perioada raport:" FontAttributes="Bold"/>
+                    
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <StackLayout Grid.Column="0">
+                            <Label Text="Data început:"/>
+                            <DatePicker Date="{Binding StartDate}" Format="dd.MM.yyyy"/>
+                        </StackLayout>
+                        
+                        <StackLayout Grid.Column="1">
+                            <Label Text="Data final:"/>
+                            <DatePicker Date="{Binding EndDate}" Format="dd.MM.yyyy"/>
+                        </StackLayout>
+                    </Grid>
+                    
+                    <StackLayout>
+                        <Label Text="Filtru pacient (opțional):"/>
+                        <Entry Text="{Binding PatientFilter}" 
+                               Placeholder="Nume pacient sau CNP"/>
+                    </StackLayout>
+                    
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
+                                Text="Reset Filtre" 
+                                Command="{Binding ResetFiltersCommand}"
+                                BackgroundColor="Gray"
+                                TextColor="White"/>
+                        
+                        <Button Grid.Column="1"
+                                Text="Actualizează Date" 
+                                Command="{Binding RefreshDataCommand}"
+                                BackgroundColor="#2ECC71"
+                                TextColor="White"/>
+                    </Grid>
+                </StackLayout>
+            </Frame>
+            
+            <!-- Report Types -->
+            <Label Text="Tipuri Rapoarte:" 
+                   FontSize="18" 
+                   FontAttributes="Bold"/>
+            
+            <CollectionView ItemsSource="{Binding ReportTypes}"
+                           SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:ReportTypeModel">
+                        <Grid Padding="0,5">
+                            <Frame BackgroundColor="White" 
+                                   HasShadow="True" 
+                                   Padding="15"
+                                   CornerRadius="10">
+                                <Grid ColumnDefinitions="50,*,120" ColumnSpacing="15">
+                                    
+                                    <!-- Icon -->
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Icon}" 
+                                           FontSize="24"
+                                           VerticalOptions="Center"/>
+                                    
+                                    <!-- Title and Description -->
+                                    <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" 
+                                               FontAttributes="Bold" 
+                                               FontSize="16"/>
+                                        <Label Text="{Binding Description}" 
+                                               FontSize="12" 
+                                               TextColor="Gray"/>
+                                    </StackLayout>
+                                    
+                                    <!-- Load Data Button -->
+                                    <Button Grid.Column="2" 
+                                            Text="Încarcă Date"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ReportsViewModel}}, Path=SelectReportTypeCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#3498db"
+                                            TextColor="White"
+                                            FontSize="12"
+                                            VerticalOptions="Center"/>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <!-- Loading Indicator for Data -->
+            <ActivityIndicator IsVisible="{Binding IsLoadingData}" 
+                              IsRunning="{Binding IsLoadingData}"
+                              Color="#3498db"/>
+            
+            <Label Text="Se încarcă datele..." 
+                   IsVisible="{Binding IsLoadingData}"
+                   HorizontalOptions="Center"
+                   FontAttributes="Italic"/>
+            
+            <!-- Data Display Section -->
+            <Frame IsVisible="{Binding SelectedReportType, Converter={StaticResource NotNullToBoolConverter}}"
+                   BackgroundColor="White" 
+                   HasShadow="True" 
+                   Padding="15">
+                <StackLayout Spacing="15">
+                    
+                    <!-- Report Header -->
+                    <StackLayout Orientation="Horizontal" Spacing="10">
+                        <Label Text="{Binding CurrentReportTitle}" 
+                               FontSize="20" 
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand"/>
+                        
+                        <Button Text="Salvează PDF"
+                                Command="{Binding SaveAsPdfCommand}"
+                                BackgroundColor="#E74C3C"
+                                TextColor="White"
+                                FontSize="14"
+                                IsVisible="{Binding HasData}"
+                                VerticalOptions="Center"/>
+                    </StackLayout>
+                    
+                    <!-- Data Count -->
+                    <Label Text="{Binding DataCount}" 
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <!-- Data Table -->
+                    <Frame IsVisible="{Binding HasData}"
+                           BackgroundColor="#F8F9FA"
+                           Padding="10">
+                        <StackLayout>
+                            <Label Text="Date găsite:" FontAttributes="Bold" Margin="0,0,0,10"/>
+                            
+                            <CollectionView ItemsSource="{Binding PrescriptionsData}"
+                                           HeightRequest="400">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Prescription">
+                                        <Grid Padding="5" 
+                                              ColumnDefinitions="80,*,100,80,*" 
+                                              ColumnSpacing="10">
+                                            
+                                            <Frame Grid.Column="0" 
+                                                   BackgroundColor="White" 
+                                                   Padding="5" 
+                                                   HasShadow="False"
+                                                   CornerRadius="5">
+                                                <Label Text="{Binding IssueDate, StringFormat='{0:dd.MM.yyyy}'}" 
+                                                       FontSize="12" 
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Frame>
+                                            
+                                            <Frame Grid.Column="1" 
+                                                   BackgroundColor="White" 
+                                                   Padding="5" 
+                                                   HasShadow="False"
+                                                   CornerRadius="5">
+                                                <Label Text="{Binding PatientName}" 
+                                                       FontSize="12"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Frame>
+                                            
+                                            <Frame Grid.Column="2" 
+                                                   BackgroundColor="White" 
+                                                   Padding="5" 
+                                                   HasShadow="False"
+                                                   CornerRadius="5">
+                                                <Label Text="{Binding PatientCnp}" 
+                                                       FontSize="12"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Frame>
+                                            
+                                            <Frame Grid.Column="3" 
+                                                   BackgroundColor="White" 
+                                                   Padding="5" 
+                                                   HasShadow="False"
+                                                   CornerRadius="5">
+                                                <Label FontSize="12"
+                                                       HorizontalTextAlignment="Center">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="{}{0}/{1}">
+                                                            <Binding Path="Series" />
+                                                            <Binding Path="Number" />
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                            </Frame>
+                                            
+                                            <Frame Grid.Column="4" 
+                                                   BackgroundColor="White" 
+                                                   Padding="5" 
+                                                   HasShadow="False"
+                                                   CornerRadius="5">
+                                                <Label Text="{Binding Diagnostic}" 
+                                                       FontSize="12"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Frame>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                
+                                <CollectionView.Header>
+                                    <Grid Padding="5" 
+                                          ColumnDefinitions="80,*,100,80,*" 
+                                          ColumnSpacing="10"
+                                          BackgroundColor="#34495E">
+                                        <Label Grid.Column="0" 
+                                               Text="Data" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="1" 
+                                               Text="Pacient" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"
+                                               VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="2" 
+                                               Text="CNP" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="3" 
+                                               Text="Serie/Nr" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="4" 
+                                               Text="Diagnostic" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"
+                                               VerticalTextAlignment="Center"/>
+                                    </Grid>
+                                </CollectionView.Header>
+                            </CollectionView>
+                        </StackLayout>
+                    </Frame>
+                    
+                    <!-- No Data Message -->
+                    <Label IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"
+                           Text="Nu au fost găsite date pentru criteriile selectate."
+                           FontSize="16"
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center"
+                           Margin="20"/>
+                </StackLayout>
+            </Frame>
+            
+            <!-- PDF Generation Loading -->
+            <ActivityIndicator IsVisible="{Binding IsGeneratingReport}" 
+                              IsRunning="{Binding IsGeneratingReport}"
+                              Color="#E74C3C"/>
+            
+            <Label Text="Se generează PDF-ul..." 
+                   IsVisible="{Binding IsGeneratingReport}"
+                   HorizontalOptions="Center"
+                   FontAttributes="Italic"
+                   TextColor="#E74C3C"/>
+            
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
