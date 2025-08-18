@@ -36,7 +36,12 @@ Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu 
             return await _repository.GetById(id);
         }
 
-       
+        public async Task AddPharmacyAsync(Pharmacy pharmacy)
+        {
+            pharmacy.ConsentTemplate = DEFAULT_CONSENT_TEMPLATE;
+            await _repository.AddAsync(pharmacy);
+        }
+
         public async Task<string> GetConsentTemplateAsync(int pharmacyId)
         {
             var pharmacy = await _repository.GetById(pharmacyId);

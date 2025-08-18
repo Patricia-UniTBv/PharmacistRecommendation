@@ -130,6 +130,33 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\AddPharmacyView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\AdministrationModesView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\CardConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\EmailConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\GdprConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\ImportConfigurationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MixedActIssuanceView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MonitoringView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\OwnActIssuanceView.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <Compile Update="Views\MedicationView.xaml.cs">
 	    <DependentUpon>MedicationView.xaml</DependentUpon>
 	  </Compile>

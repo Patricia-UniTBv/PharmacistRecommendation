@@ -28,6 +28,8 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("administration_modes", typeof(AdministrationModesView));
             Routing.RegisterRoute("import_configuration", typeof(ImportConfigurationView));
             Routing.RegisterRoute("medications", typeof(MedicationView));
+            Routing.RegisterRoute("email_configuration", typeof(EmailConfigurationView));
+            Routing.RegisterRoute("add_pharmacy", typeof(AddPharmacyView));
             Routing.RegisterRoute("test_main", typeof(MainPageView)); // Add route for test main page
 
             // Subscribe to authentication changes
@@ -125,6 +127,16 @@ namespace PharmacistRecommendation
             if (await CheckAuthenticationOrPrompt())
                 await GoToAsync("medications");
         }
+        private async void OnEmailConfigClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("email_configuration");
+        }
+
+        private async void OnAddPharmacyClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("add_pharmacy");
+        }
+
 
         private async Task<bool> CheckAuthenticationOrPrompt()
         {

@@ -36,6 +36,8 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceView>();
             builder.Services.AddTransient<AdministrationModesView>();
             builder.Services.AddTransient<ImportConfigurationView>();
+            builder.Services.AddTransient<AddPharmacyView>();
+            builder.Services.AddTransient<EmailConfigurationView>();
             
             // ADD THESE MEDICATION VIEWS
             builder.Services.AddTransient<MedicationView>();
@@ -52,7 +54,9 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MixedActIssuanceViewModel>();
             builder.Services.AddTransient<AdministrationModesViewModel>();
             builder.Services.AddTransient<ImportConfigurationViewModel>();
-            
+            builder.Services.AddTransient<AddPharmacyViewModel>();
+            builder.Services.AddTransient<EmailConfigurationViewModel>();
+
             // ADD THESE MEDICATION VIEWMODELS
             builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<AddEditMedicationViewModel>();
@@ -67,7 +71,6 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
             builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
-            builder.Services.AddSingleton<IEmailService, EmailService>();
 
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
@@ -89,6 +92,8 @@ namespace PharmacistRecommendation
 
             builder.Services.AddSingleton<IImportConfigurationRepository, ImportConfigurationRepository>();
             builder.Services.AddSingleton<IImportConfigurationService, ImportConfigurationService>();
+
+            builder.Services.AddSingleton<IEmailConfigurationService, EmailConfigurationService>();
 
             // ADD THESE MEDICATION SERVICES
             builder.Services.AddScoped<IMedicationService, MedicationService>();

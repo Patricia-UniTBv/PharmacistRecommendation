@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
+using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
@@ -13,18 +14,22 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly IMonitoringService _monitoringService;
     private readonly IPatientService _patientService;
     private readonly IPdfReportService _pdfReportService;
-    private readonly IEmailService _emailService;
+    private readonly IEmailConfigurationService _emailConfigurationService;
+    private readonly int _pharmacyId;
 
     public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService, IPdfReportService pdfReportService, IEmailService emailService)
+                               IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
-        _emailService = emailService;
+        _emailConfigurationService = emailConfigurationService;
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
+
+        _pharmacyId = 1; // a se modifica cu id ul curent!!
+        loggedInUserId = 1; // a se modifica cu userul conectat! dupa auth
     }
 
     public ObservableCollection<string> MonitoringTypes { get; } =
@@ -59,9 +64,11 @@ public partial class MonitoringViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<object> historyList = [];
 
+    private int loggedInUserId { get; set; }
+
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 7) // a se modifica cu 16!!! nr de cifre din cardul de sanatate
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 16) 
             _ = SearchPatientAsync();
     }
 
@@ -87,7 +94,6 @@ public partial class MonitoringViewModel : ObservableObject
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
-        PatientEmail = patient.Email!;
     }
 
     [RelayCommand]
@@ -101,7 +107,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         var dto = new MonitoringDTO
         {
-            PatientId = PatientId, // de inlocuit cu PatientId
+            PatientId = PatientId, 
             CardId = null,               
             MonitoringDate = DateTime.Now,
             MonitoringType = SelectedMonitoringType,
@@ -122,14 +128,14 @@ public partial class MonitoringViewModel : ObservableObject
             BodyTemperature = BodyTemperature
         };
 
-        await _monitoringService.AddMonitoringAsync(dto, LoggedInUserId); // ia user-id din sesiune
+        await _monitoringService.AddMonitoringAsync(dto, loggedInUserId); 
 
         await Shell.Current.DisplayAlert("Success", "Datele au fost salvate!", "OK");
 
         await LoadHistoryAsync();
     }
 
-    [RelayCommand]                    // va genera LoadHistoryCommand
+    [RelayCommand]                    
     private async Task LoadHistoryAsync()
     {
         if (PatientId == 0) return;
@@ -153,7 +159,6 @@ public partial class MonitoringViewModel : ObservableObject
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }
-
     [RelayCommand]
     private async Task SendEmailAsync()
     {
@@ -164,7 +169,8 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        string patientEmail = patient.Email?.Trim();
+        string patientEmail = (PatientEmail?.Trim()) ?? string.Empty;
+
         if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
         {
             patientEmail = await Shell.Current.DisplayPromptAsync(
@@ -181,27 +187,34 @@ public partial class MonitoringViewModel : ObservableObject
             }
         }
 
+        var config = await _emailConfigurationService.GetByPharmacyIdAsync(_pharmacyId);
+        if (config == null || string.IsNullOrWhiteSpace(config.Username) || string.IsNullOrWhiteSpace(config.Password))
+        {
+            await Shell.Current.DisplayAlert("Eroare", "Configurarea email nu este completă. Verifică pagina de configurare.", "OK");
+            return;
+        }
+
         var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId, StartDate, EndDate);
-
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
-        string body = $"Buna ziua,%0A%0AAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.%0A%0AVă mulțumim!";
-
-        // Nu mai scapi nimic la întâmplare: encodezi manual doar dacă e nevoie
-        var mailtoUrl = $"mailto:{patientEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
-        System.Diagnostics.Debug.WriteLine(mailtoUrl);
+        string body = $"Bună ziua,\n\nAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\nVă mulțumim!";
 
         try
         {
-            await Launcher.Default.OpenAsync(mailtoUrl);
-            await Shell.Current.DisplayAlert("Atașează fișierul", $"Emailul este pregătit, dar trebuie să atașezi manual PDF-ul:\n{pdfPath}", "OK");
+            var emailConfig = new EmailConfiguration
+            {
+                SenderEmail = config.Username,
+                SenderAppPassword = config.Password,
+            };
+
+            var sender = new EmailSenderService(emailConfig);
+            await sender.SendEmailWithAttachmentAsync(patientEmail, subject, body, pdfPath);
+
+            await Shell.Current.DisplayAlert("Succes", "Emailul a fost trimis cu succes.", "OK");
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Eroare", $"Trimiterea a eșuat: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
         }
     }
 
-
-    private int LoggedInUserId =>
-        Preferences.Get("LoggedInUserId", 1);// de inlocuit 1 cu 0
 }

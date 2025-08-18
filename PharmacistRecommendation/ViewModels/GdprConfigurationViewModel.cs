@@ -27,7 +27,7 @@ namespace PharmacistRecommendation.ViewModels
         public GdprConfigurationViewModel(IPharmacyService pharmacyService)
         {
             _pharmacyService = pharmacyService;
-            _pharmacyId = 1; // to be modified!!
+            _pharmacyId = 3; // to be modified!!
         }
 
         [RelayCommand]

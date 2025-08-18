@@ -336,21 +336,34 @@
                 </VerticalStackLayout>
             </Border>
 
-            <HorizontalStackLayout HorizontalOptions="End"
-                       Spacing="10">
+            <VerticalStackLayout Padding="20" Spacing="15">
 
-                <Button Text="Printare PDF"
-                        Command="{Binding GeneratePdfCommand}"
-                        BackgroundColor="#28a745"
-                        TextColor="White"
-                        WidthRequest="120" />
+                <!-- Entry pentru adresa de e-mail -->
+                <Label Text="Adresă e-mail pacient" />
+                <Entry Text="{Binding PatientEmail, Mode=TwoWay}"
+           Placeholder="ex: ion.popescu@mail.com"
+           Keyboard="Email"
+           MaxLength="100"
+           FontSize="14" />
 
-                <Button Text="Trimite Mail"
-                        Command="{Binding SendEmailCommand}"
-                        BackgroundColor="#007bff"
-                        TextColor="White"
-                        WidthRequest="120" />
-            </HorizontalStackLayout>
+                <!-- Butoane -->
+                <HorizontalStackLayout HorizontalOptions="End"
+                           Spacing="10">
+                    <Button Text="Printare PDF"
+                Command="{Binding GeneratePdfCommand}"
+                BackgroundColor="#28a745"
+                TextColor="White"
+                WidthRequest="120" />
+
+                    <Button Text="Trimite Mail"
+                Command="{Binding SendEmailCommand}"
+                BackgroundColor="#007bff"
+                TextColor="White"
+                WidthRequest="120" />
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
 
     </ScrollView>
