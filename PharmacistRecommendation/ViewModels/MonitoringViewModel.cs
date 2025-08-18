@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
+using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
@@ -13,16 +14,22 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly IMonitoringService _monitoringService;
     private readonly IPatientService _patientService;
     private readonly IPdfReportService _pdfReportService;
+    private readonly IEmailConfigurationService _emailConfigurationService;
+    private readonly int _pharmacyId;
 
     public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService, IPdfReportService pdfReportService)
+                               IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
+        _emailConfigurationService = emailConfigurationService;
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
+
+        _pharmacyId = 1; // a se modifica cu id ul curent!!
+        loggedInUserId = 1; // a se modifica cu userul conectat! dupa auth
     }
 
     public ObservableCollection<string> MonitoringTypes { get; } =
@@ -57,9 +64,11 @@ public partial class MonitoringViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<object> historyList = [];
 
+    private int loggedInUserId { get; set; }
+
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 7) // a se modifica cu 16!!! nr de cifre din cardul de sanatate
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 16) 
             _ = SearchPatientAsync();
     }
 
@@ -98,7 +107,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         var dto = new MonitoringDTO
         {
-            PatientId = PatientId, // de inlocuit cu PatientId
+            PatientId = PatientId, 
             CardId = null,               
             MonitoringDate = DateTime.Now,
             MonitoringType = SelectedMonitoringType,
@@ -119,7 +128,7 @@ public partial class MonitoringViewModel : ObservableObject
             BodyTemperature = BodyTemperature
         };
 
-        await _monitoringService.AddMonitoringAsync(dto, LoggedInUserId); // ia user-id din sesiune
+        await _monitoringService.AddMonitoringAsync(dto, loggedInUserId); 
 
         await Shell.Current.DisplayAlert("Success", "Datele au fost salvate!", "OK");
 
@@ -150,7 +159,6 @@ public partial class MonitoringViewModel : ObservableObject
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }
-
     [RelayCommand]
     private async Task SendEmailAsync()
     {
@@ -179,25 +187,26 @@ public partial class MonitoringViewModel : ObservableObject
             }
         }
 
+        var config = await _emailConfigurationService.GetByPharmacyIdAsync(_pharmacyId);
+        if (config == null || string.IsNullOrWhiteSpace(config.Username) || string.IsNullOrWhiteSpace(config.Password))
+        {
+            await Shell.Current.DisplayAlert("Eroare", "Configurarea email nu este completă. Verifică pagina de configurare.", "OK");
+            return;
+        }
+
         var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId, StartDate, EndDate);
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
         string body = $"Bună ziua,\n\nAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\nVă mulțumim!";
 
-        var config = new EmailConfiguration
-        {
-            SenderEmail = Preferences.Get("Email", string.Empty),
-            SenderAppPassword = Preferences.Get("AppPassword", string.Empty)
-        };
-
-        if (string.IsNullOrWhiteSpace(config.SenderEmail) || string.IsNullOrWhiteSpace(config.SenderAppPassword))
-        {
-            await Shell.Current.DisplayAlert("Eroare", "Nu există date de configurare pentru trimiterea e-mailului. Verifică pagina de configurare.", "OK");
-            return;
-        }
-
         try
         {
-            var sender = new EmailSenderService(config);
+            var emailConfig = new EmailConfiguration
+            {
+                SenderEmail = config.Username,
+                SenderAppPassword = config.Password,
+            };
+
+            var sender = new EmailSenderService(emailConfig);
             await sender.SendEmailWithAttachmentAsync(patientEmail, subject, body, pdfPath);
 
             await Shell.Current.DisplayAlert("Succes", "Emailul a fost trimis cu succes.", "OK");
@@ -208,7 +217,4 @@ public partial class MonitoringViewModel : ObservableObject
         }
     }
 
-
-    private int LoggedInUserId =>
-        Preferences.Get("LoggedInUserId", 1);// de inlocuit 1 cu 0
 }

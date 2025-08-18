@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Entities.Models;
+using Entities.Services;
+using Entities.Services.Interfaces;
 using Microsoft.Maui.Controls;
 using System.Threading.Tasks;
 
@@ -16,10 +19,25 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool showGmailHelp;
 
-        public EmailConfigurationViewModel()
+        private readonly IEmailConfigurationService _emailService;
+        private readonly int _pharmacyId;
+
+
+        public EmailConfigurationViewModel(IEmailConfigurationService emailConfigurationService)
         {
-            Email = Preferences.Get("Email", string.Empty);
-            AppPassword = Preferences.Get("AppPassword", string.Empty);
+            _emailService = emailConfigurationService;
+            _pharmacyId = 2; //to be modified!!
+            LoadEmailConfiguration();
+        }
+
+        private async void LoadEmailConfiguration()
+        {
+            var config = await _emailService.GetByPharmacyIdAsync(_pharmacyId);
+            if (config != null)
+            {
+                Email = config.Username ?? string.Empty;
+                AppPassword = config.Password ?? string.Empty;
+            }
         }
 
         [RelayCommand]
@@ -31,11 +49,29 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
-            Preferences.Set("Email", Email);
-            Preferences.Set("AppPassword", AppPassword);
+            var config = await _emailService.GetByPharmacyIdAsync(_pharmacyId);
+
+            if (config == null)
+            {
+                config = new EmailConfiguration
+                {
+                    PharmacyId = _pharmacyId,
+                    Username = Email,
+                    Password = AppPassword
+                };
+
+                await _emailService.AddAsync(config);
+            }
+            else
+            {
+                config.Username = Email;
+                config.Password = AppPassword;
+
+                await _emailService.UpdateAsync(config);
+            }
 
             await Shell.Current.DisplayAlert("Succes", "Datele au fost salvate.", "OK");
-            await Shell.Current.GoToAsync(".."); 
+            await Shell.Current.GoToAsync("..");
         }
 
         [RelayCommand]

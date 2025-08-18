@@ -92,6 +92,8 @@ namespace PharmacistRecommendation
             builder.Services.AddSingleton<IImportConfigurationRepository, ImportConfigurationRepository>();
             builder.Services.AddSingleton<IImportConfigurationService, ImportConfigurationService>();
 
+            builder.Services.AddSingleton<IEmailConfigurationService, EmailConfigurationService>();
+
             // ADD THESE MEDICATION SERVICES
             builder.Services.AddScoped<IMedicationService, MedicationService>();
             builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
