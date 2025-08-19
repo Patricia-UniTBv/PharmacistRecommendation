@@ -14,5 +14,9 @@ namespace Entities.Services.Interfaces
         Task<string> GetConsentTemplateAsync(int pharmacyId);
         Task ResetConsentTemplateAsync(int pharmacyId);
         Task UpdateConsentTemplateAsync(int pharmacyId, string newTemplate);
+
+        Task<bool> HasAnyPharmacyAsync();
+
+        Task<int> GetPharmacyId();
     }
 }

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Entities.Services;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace PharmacistRecommendation.ViewModels
         public GdprConfigurationViewModel(IPharmacyService pharmacyService)
         {
             _pharmacyService = pharmacyService;
-            _pharmacyId = 3; // to be modified!!
+            _pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
 
         [RelayCommand]
@@ -80,7 +81,6 @@ namespace PharmacistRecommendation.ViewModels
                 ErrorMessage = string.Empty;
                 await _pharmacyService.ResetConsentTemplateAsync(_pharmacyId);
                 ConsentTemplate = await _pharmacyService.GetConsentTemplateAsync(_pharmacyId);
-                await Shell.Current.DisplayAlert("Succes", "Template-ul a fost resetat la valoarea implicită!", "OK");
             }
             catch (Exception ex)
             {

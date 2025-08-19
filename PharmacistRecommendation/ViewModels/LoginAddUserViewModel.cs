@@ -5,6 +5,9 @@ using Entities.Services.Interfaces;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using PharmacistRecommendation.Views;
+using Microsoft.EntityFrameworkCore;
+using PharmacistRecommendation.Helpers;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -12,6 +15,7 @@ namespace PharmacistRecommendation.ViewModels
     {
         private readonly IAuthenticationService _authService;
         private readonly IUserService _userService;
+        private readonly IPharmacyService _pharmacyService;
 
         [ObservableProperty]
         private bool isLoginMode = true;
@@ -63,6 +67,9 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool isAddUserLoading;
 
+        [ObservableProperty]
+        private bool hasNoPharmacy;
+
         // Computed properties
         public bool IsNotLoginLoading => !IsLoginLoading;
         public bool IsNotAddUserLoading => !IsAddUserLoading;
@@ -71,13 +78,15 @@ namespace PharmacistRecommendation.ViewModels
 
         public string[] AvailableRoles { get; } = { "Pharmacist", "Assistant" };
 
-        public LoginAddUserViewModel(IAuthenticationService authService, IUserService userService)
+        public LoginAddUserViewModel(IAuthenticationService authService, IUserService userService, IPharmacyService pharmacyService)
         {
             _authService = authService;
             _userService = userService;
+            _pharmacyService = pharmacyService;
+
+            Initialize();
         }
 
-        // Notify when computed properties change
         partial void OnIsLoginLoadingChanged(bool value)
         {
             OnPropertyChanged(nameof(IsNotLoginLoading));
@@ -119,7 +128,8 @@ namespace PharmacistRecommendation.ViewModels
 
                 if (result.IsSuccess)
                 {
-                    // Navigate to the test main page after successful login
+                    SessionManager.SetCurrentUser(result.User);
+
                     await Shell.Current.GoToAsync("test_main");
                 }
                 else
@@ -134,7 +144,7 @@ namespace PharmacistRecommendation.ViewModels
             finally
             {
                 IsLoginLoading = false;
-                LoginPassword = string.Empty; // Clear password for security
+                LoginPassword = string.Empty; 
             }
         }
 
@@ -153,6 +163,7 @@ namespace PharmacistRecommendation.ViewModels
 
             try
             {
+                var id = await _pharmacyService.GetPharmacyId();
                 var userDto = new UserDTO
                 {
                     FirstName = FirstName.Trim(),
@@ -163,7 +174,7 @@ namespace PharmacistRecommendation.ViewModels
                     Password = Password,
                     Ncm = Ncm?.Trim(),
                     Role = SelectedRole,
-                    PharmacyId = 1 // Default pharmacy ID - you may want to make this configurable
+                    PharmacyId = id
                 };
 
                 await _userService.AddUserAsync(userDto);
@@ -182,6 +193,16 @@ namespace PharmacistRecommendation.ViewModels
             {
                 IsAddUserLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task AddPharmacyAsync()
+        {
+            if (IsAddUserLoading) return;
+
+            AddUserErrorMessage = string.Empty;
+
+            await Shell.Current.GoToAsync(nameof(AddPharmacyView));
         }
 
         [RelayCommand]
@@ -274,6 +295,11 @@ namespace PharmacistRecommendation.ViewModels
             LoginPassword = string.Empty;
             LoginErrorMessage = string.Empty;
             IsLoginLoading = false;
+        }
+
+        private async void Initialize()
+        {
+            HasNoPharmacy = !await _pharmacyService.HasAnyPharmacyAsync();
         }
     }
 }

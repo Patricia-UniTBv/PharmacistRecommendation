@@ -4,6 +4,7 @@ using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
 using Microsoft.Maui.Controls;
+using PharmacistRecommendation.Helpers;
 using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.ViewModels
@@ -26,7 +27,7 @@ namespace PharmacistRecommendation.ViewModels
         public EmailConfigurationViewModel(IEmailConfigurationService emailConfigurationService)
         {
             _emailService = emailConfigurationService;
-            _pharmacyId = 2; //to be modified!!
+            _pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
             LoadEmailConfiguration();
         }
 
@@ -53,7 +54,7 @@ namespace PharmacistRecommendation.ViewModels
 
             if (config == null)
             {
-                config = new EmailConfiguration
+                config = new Entities.Models.EmailConfiguration
                 {
                     PharmacyId = _pharmacyId,
                     Username = Email,

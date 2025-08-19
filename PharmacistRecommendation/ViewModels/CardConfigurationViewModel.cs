@@ -31,13 +31,14 @@ namespace PharmacistRecommendation.ViewModels
         private int pharmacyId { get; set; }
         private string _consentDecl;
 
+        [ObservableProperty] private string validationMessage;
 
         public CardConfigurationViewModel(IPharmacyCardService pharmacyCardService, IPharmacyService pharmacyService)
         {
             _pharmacyCardService = pharmacyCardService;
             _pharmacyService = pharmacyService;
 
-            pharmacyId = 1; // to be modified 
+            pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
 
         [RelayCommand]
@@ -67,9 +68,41 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task Save()
         {
-            if (string.IsNullOrWhiteSpace(cardNumber) || string.IsNullOrWhiteSpace(FirstName) || string.IsNullOrWhiteSpace(LastName))
+            ValidationMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(Cnp) || Cnp.Length != 13)
             {
-                await Shell.Current.DisplayAlert("Eroare", "Introduceți datele obligatorii (nume, prenume, număr card).", "OK");
+                ValidationMessage = "Introduceți un CNP valid (13 caractere).";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(FirstName))
+            {
+                ValidationMessage = "Introduceți prenumele.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(LastName))
+            {
+                ValidationMessage = "Introduceți numele.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(CardNumber))
+            {
+                ValidationMessage = "Introduceți numărul cardului.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Gender))
+            {
+                ValidationMessage = "Selectați genul.";
+                return;
+            }
+
+            if (Birthdate == default)
+            {
+                ValidationMessage = "Selectați data nașterii.";
                 return;
             }
             try

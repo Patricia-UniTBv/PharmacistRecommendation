@@ -1,6 +1,7 @@
 ﻿using Entities.Models;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,16 @@ Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu 
                 .Replace("{PharmacyName}", pharmacy.Name)
                 .Replace("{PharmacyAddress}", pharmacy.Address ?? "")
                 .Replace("{PharmacyFiscalCode}", pharmacy.CUI ?? "");
+        }
+
+        public async Task<bool> HasAnyPharmacyAsync()
+        {
+            return await _repository.HasAnyPharmacyAsync();
+        }
+
+        public async Task<int> GetPharmacyId()
+        {
+            return await _repository.GetPharmacyId();
         }
     }
 }

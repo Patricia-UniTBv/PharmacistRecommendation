@@ -147,6 +147,24 @@
                                 <Setter Property="IsVisible" Value="False" />
                             </DataTrigger>
                         </StackLayout.Triggers>
+                        <VerticalStackLayout>
+                        <Label
+                            Text="Nu este adăugată nicio farmacie. Adăugați mai întâi o farmacie."
+                            TextColor="Red"
+                            IsVisible="{Binding HasNoPharmacy}" 
+                            />
+
+                        <Button Text="Adăugare farmacie"
+                                Command="{Binding AddPharmacyCommand}"
+                                TextColor="White"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                HeightRequest="20"
+                                WidthRequest="170"
+                                HorizontalOptions="Start"
+                                IsVisible="{Binding HasNoPharmacy}" />
+                        </VerticalStackLayout>
 
                         <!-- Name Fields -->
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
@@ -240,7 +258,7 @@
                                 CornerRadius="8"
                                 HeightRequest="50"
                                 IsEnabled="{Binding IsNotAddUserLoading}" />
-
+                        
                         <!-- Add User Loading Indicator -->
                         <ActivityIndicator IsRunning="{Binding IsAddUserLoading}"
                                            IsVisible="{Binding IsAddUserLoading}"

@@ -72,5 +72,23 @@ namespace Entities.Repository
             _context.Pharmacies.Add(pharmacy);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> HasAnyPharmacyAsync()
+        {
+            var hasAny = await _context.Pharmacies.AnyAsync();
+            return hasAny;
+        }
+
+        public async Task<int> GetPharmacyId()
+        {
+            var pharmacy = await _context.Pharmacies
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+
+            if (pharmacy == null)
+                throw new Exception("Nu există farmacii în baza de date");
+
+            return pharmacy.Id;
+        }
     }
 }

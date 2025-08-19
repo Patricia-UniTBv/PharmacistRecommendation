@@ -5,8 +5,7 @@
     x:Class="PharmacistRecommendation.Views.CardConfigurationView"
     Padding="20">
 
-    <Grid RowDefinitions="Auto, * , Auto" RowSpacing="10">
-
+    <Grid RowDefinitions="Auto, * , Auto" RowSpacing="2">
         <Label 
       Grid.Row="0"
       Text="Adăugare card pacient"
@@ -14,38 +13,41 @@
       FontAttributes="Bold"
       HorizontalOptions="Center"
       TextColor="Black" />
-
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="12">
-
-                <Entry Placeholder="Card nr." 
+            <VerticalStackLayout Spacing="3">
+                <Label Text="Număr card" FontAttributes="Bold"/>
+                <Entry Placeholder="Nr. card" 
                Text="{Binding CardNumber}" />
-
+                <Label Text="Nume client" FontAttributes="Bold"/>
                 <Entry Placeholder="Nume client" 
                Text="{Binding LastName}" />
-
+                <Label Text="Prenume client" FontAttributes="Bold"/>
                 <Entry Placeholder="Prenume client" 
                Text="{Binding FirstName}" />
-
+                <Label Text="CNP" FontAttributes="Bold"/>
                 <Entry Placeholder="CNP" 
                Text="{Binding Cnp}" 
                Keyboard="Numeric" />
-
                 <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                    <Entry Placeholder="CID (autogenerat)" 
+                    <VerticalStackLayout>
+                        <Label Text="CID" FontAttributes="Bold"/>
+                        <HorizontalStackLayout>
+                        <Entry Placeholder="CID (autogenerat)" 
                  Text="{Binding Cid}" 
                  IsReadOnly="True" 
                  HorizontalOptions="FillAndExpand" />
-                    <Button Text="Generează CID"
+                        <Button Text="Generează CID"
                   Command="{Binding GenerateCidCommand}"
-                  WidthRequest="130"
+                  WidthRequest="125"
                   BackgroundColor="Gray"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
                 </HorizontalStackLayout>
-
+                <Label Text="Telefon" FontAttributes="Bold"/>
                 <Entry Placeholder="Telefon" 
                Text="{Binding Phone}" 
                Keyboard="Telephone" />
-
+                <Label Text="Email" FontAttributes="Bold"/>
                 <Entry Placeholder="Email" 
                Text="{Binding Email}" 
                Keyboard="Email" />
@@ -53,28 +55,44 @@
                 <Label Text="Data nașterii" 
                        FontAttributes="Bold" 
                        TextColor="Black" />
-                <DatePicker Date="{Binding Birthdate}" />
-
+                <DatePicker 
+                        Date="{Binding Birthdate}" 
+                        Format="dd/MM/yyyy" />
                 <Label Text="Gen" 
                        FontAttributes="Bold" 
                        TextColor="Black" />
-                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#EEEEEE" HeightRequest="42">
-                    <Picker SelectedItem="{Binding Gender}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="Black">
-                        <Picker.Items>
-                            <x:String>Feminin</x:String>
-                            <x:String>Masculin</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </Border>
-            </VerticalStackLayout>
-        </ScrollView>
+                <Border Stroke="#CCCCCC"
+        StrokeThickness="1"
+        StrokeShape="RoundRectangle 15,15,15,15"
+        BackgroundColor="White"
+        WidthRequest="130"
+        HeightRequest="42"
+        HorizontalOptions="Start"
+        Padding="10,0">
 
+                    <Grid>
+                        <Picker SelectedItem="{Binding Gender}"
+                BackgroundColor="Transparent"
+                TextColor="Black"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center">
+                            <Picker.Items>
+                                <x:String>Feminin</x:String>
+                                <x:String>Masculin</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+            
+        </ScrollView>
+       
+        
         <HorizontalStackLayout 
       Grid.Row="2"
       Spacing="16"
-      HorizontalOptions="End">
+      HorizontalOptions="Start">
 
             <Button Text="Printează"
               BackgroundColor="Blue"
@@ -86,6 +104,11 @@
               Command="{Binding SaveCommand}"
               BackgroundColor="Green"
               TextColor="White" />
+            <Label Text="{Binding ValidationMessage}" 
+TextColor="Red" 
+FontAttributes="Italic" 
+HorizontalOptions="Center" 
+VerticalOptions="EndAndExpand"/>
         </HorizontalStackLayout>
 
     </Grid>

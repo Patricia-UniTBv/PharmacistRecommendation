@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Entities.Models;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Views;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -58,6 +59,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 await _pharmacyService.AddPharmacyAsync(pharmacy);
                 await Shell.Current.DisplayAlert("Succes", "Farmacia a fost adăugată!", "OK");
+                await Shell.Current.GoToAsync(nameof(LoginAddUserView));
             }
             catch (Exception ex)
             {

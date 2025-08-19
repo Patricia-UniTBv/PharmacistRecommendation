@@ -35,6 +35,9 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("add_pharmacy", typeof(AddPharmacyView));
             Routing.RegisterRoute("test_main", typeof(MainPageView)); // Add route for test main page
 
+            Routing.RegisterRoute(nameof(AddPharmacyView), typeof(AddPharmacyView));
+            Routing.RegisterRoute(nameof(LoginAddUserView), typeof(LoginAddUserView));
+
             // Subscribe to authentication changes
             _authService.AuthenticationStateChanged += OnAuthenticationStateChanged;
         }
@@ -113,10 +116,10 @@ namespace PharmacistRecommendation
             await Shell.Current.GoToAsync("reports?type=monitoring");
         }
 
-        private async void OnAddPharmacistClicked(object sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("//PharmacistConfigurationView");
-        }
+        //private async void OnAddPharmacistClicked(object sender, EventArgs e)
+        //{
+        //    await Shell.Current.GoToAsync("//PharmacistConfigurationView");
+        //}
 
         private async void OnUsersManagementClicked(object sender, EventArgs e)
         {

@@ -2,22 +2,25 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PharmacistRecommendation.Views.GdprConfigurationView">
-    <VerticalStackLayout Padding="16" Spacing="12">
-        <Label Text="Modificare document GDPR" FontSize="Large"/>
-        <ScrollView>
-        <Editor Text="{Binding ConsentTemplate, Mode=TwoWay}" 
-                AutoSize="TextChanges" 
-                HeightRequest="450" 
-                IsEnabled= "true"/>
+    <Grid Padding="16" RowDefinitions="*,Auto" RowSpacing="12">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Modificare document GDPR" FontSize="Large"/>
+                <Editor Text="{Binding ConsentTemplate, Mode=TwoWay}" 
+                    AutoSize="TextChanges" 
+                    HeightRequest="450" 
+                    IsEnabled="true"/>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
+            </VerticalStackLayout>
         </ScrollView>
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
-        <HorizontalStackLayout Spacing="10">
+
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="End">
             <Button Text="Salvează"
-                    Command="{Binding SaveConsentTemplateCommand}"
-                    BackgroundColor="#28a745"/>
+                Command="{Binding SaveConsentTemplateCommand}"
+                BackgroundColor="#28a745"/>
             <Button Text="Resetează la implicit"
-                    Command="{Binding ResetConsentTemplateCommand}"
-                    BackgroundColor="#007bff"/>
+                Command="{Binding ResetConsentTemplateCommand}"
+                BackgroundColor="#007bff"/>
         </HorizontalStackLayout>
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>
