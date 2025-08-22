@@ -22,12 +22,13 @@ namespace Entities.Repository
          int patientId, DateTime from, DateTime to)
         {
             return await _context.Monitorings
-                                 .AsNoTracking()
-                                 .Where(m => m.PatientId == patientId &&
-                                             m.MonitoringDate >= from &&
-                                             m.MonitoringDate <= to)
-                                 .OrderBy(m => m.MonitoringDate)
-                                 .ToListAsync();
+                     .AsNoTracking()
+                     .Where(m => m.PatientId == patientId &&
+                                 m.MonitoringDate >= from &&
+                                 m.MonitoringDate < to.AddDays(1))
+                     .OrderBy(m => m.MonitoringDate)
+                     .ToListAsync();
+
         }
     }
 }

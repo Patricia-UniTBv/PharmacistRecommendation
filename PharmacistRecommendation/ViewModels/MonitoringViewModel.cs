@@ -154,8 +154,7 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task GeneratePdfAsync()
     {
-        var path = await _pdfReportService.CreateMonitoringListReportAsync(
-            StartDate, EndDate, null);
+        var path = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId,StartDate, EndDate);
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }
@@ -194,7 +193,7 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        var pdfPath = await _pdfReportService.CreatePatientReportAsync(PatientId, StartDate, EndDate);
+        var pdfPath = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId, StartDate, EndDate);
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
         string body = $"Bună ziua,\n\nAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\nVă mulțumim!";
 

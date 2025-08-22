@@ -6,10 +6,20 @@ using Entities.Services;
 using Entities.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
+using Microsoft.UI;
 using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.Services;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
+using WinRT.Interop;
+#if WINDOWS
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Windowing;
+using Windows.Storage;
+using WinRT.Interop;
+#endif
 
 namespace PharmacistRecommendation
 {
@@ -25,6 +35,28 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+#if WINDOWS
+
+            builder.ConfigureLifecycleEvents(events =>
+            {
+                events.AddWindows(windows =>
+                {
+                    windows.OnWindowCreated(window =>
+                    {
+                        var hwnd = WindowNative.GetWindowHandle(window);
+                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+                        var appWindow = AppWindow.GetFromWindowId(windowId);
+
+                        var iconPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "logo44x44.ico");
+
+                        appWindow.SetIcon(iconPath); 
+                    });
+                });
+            });
+#endif
+
+
             builder.UseMauiCommunityToolkit();
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));

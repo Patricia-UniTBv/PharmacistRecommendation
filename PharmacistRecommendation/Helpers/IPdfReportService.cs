@@ -11,5 +11,7 @@ namespace PharmacistRecommendation.Helpers
         Task<string> CreateOwnActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter);
         Task<string> CreateConsecutivePrescriptionActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter);
         Task<string> CreateMonitoringListReportAsync(DateTime startDate, DateTime endDate, string patientFilter);
+
+        Task<string> CreateMonitoringPatientReportAsync(int patientId, DateTime from, DateTime to);
     }
 }
