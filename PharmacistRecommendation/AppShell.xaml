@@ -5,6 +5,9 @@
     xmlns:views="clr-namespace:PharmacistRecommendation.Views">
 
     <Shell.MenuBarItems>
+        <MenuBarItem Text="Acasă" >
+            <MenuFlyoutItem Text="Pagina principală" Clicked="OnTestMainPageClicked"/>
+        </MenuBarItem>
         <MenuBarItem Text="Card" >
             <MenuFlyoutItem Text="Card Nou" Clicked="OnNewCardClicked"/>
         </MenuBarItem>
@@ -17,10 +20,6 @@
             <MenuFlyoutItem Text="Emitere act mixt"  Clicked="OnMixedIssuanceClicked" />
             <MenuFlyoutItem Text="Emitere act consecutiv prescripției" Clicked="OnPrescriptionOnlyClicked" />
             <MenuFlyoutItem Text="Emitere act propriu" Clicked="OnWithoutPrescriptionClicked" />
-        </MenuBarItem>
-
-        <MenuBarItem Text="Test">
-            <MenuFlyoutItem Text="Pagina Principală de Test" Clicked="OnTestMainPageClicked" />
         </MenuBarItem>
 
         <MenuBarItem Text="Rapoarte">
@@ -41,13 +40,8 @@
             <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
             <!--<MenuFlyoutItem Text="Adăugare farmacie" Clicked="OnAddPharmacyClicked"/>-->
         </MenuBarItem>
-
-        <MenuBarItem Text="Ajutor">
-            <MenuFlyoutItem Text="Despre" />
-        </MenuBarItem>
     </Shell.MenuBarItems>
 
-    <!-- Changed default content to LoginAddUserView -->
     <ShellContent Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:LoginAddUserView}"/>
 
     <Shell.Resources>

@@ -22,8 +22,7 @@ namespace Entities.Models
         public string Triunghi { get; set; } = string.Empty;
         public string Dreptunghi { get; set; } = string.Empty;
         public string DataActualizare { get; set; } = string.Empty;
-        
-        // Helper method to convert empty strings to null
+       
         public void NormalizeEmptyStrings()
         {
             if (string.IsNullOrWhiteSpace(CodCIM)) CodCIM = null;

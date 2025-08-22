@@ -2,11 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
 using Entities.Services.Interfaces;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using PharmacistRecommendation.Views;
-using Microsoft.EntityFrameworkCore;
 using PharmacistRecommendation.Helpers;
 
 namespace PharmacistRecommendation.ViewModels
@@ -20,7 +17,6 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool isLoginMode = true;
 
-        // Login Properties
         [ObservableProperty]
         private string loginUsername = string.Empty;
 
@@ -33,7 +29,6 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool isLoginLoading;
 
-        // Add User Properties
         [ObservableProperty]
         private string firstName = string.Empty;
 
@@ -70,7 +65,6 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool hasNoPharmacy;
 
-        // Computed properties
         public bool IsNotLoginLoading => !IsLoginLoading;
         public bool IsNotAddUserLoading => !IsAddUserLoading;
         public bool HasLoginError => !string.IsNullOrEmpty(LoginErrorMessage);
@@ -155,7 +149,6 @@ namespace PharmacistRecommendation.ViewModels
 
             AddUserErrorMessage = string.Empty;
 
-            // Validate input
             if (!ValidateAddUserInput())
                 return;
 
@@ -179,7 +172,6 @@ namespace PharmacistRecommendation.ViewModels
 
                 await _userService.AddUserAsync(userDto);
 
-                // Show success message and clear form
                 await Application.Current.MainPage.DisplayAlert("Success",
                     $"User {Username} has been added successfully!", "OK");
 

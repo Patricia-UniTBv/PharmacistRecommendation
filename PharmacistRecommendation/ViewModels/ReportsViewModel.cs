@@ -55,14 +55,12 @@ public partial class ReportsViewModel : ObservableObject
     [ObservableProperty]
     private string dataCount = string.Empty;
 
-    // Data collections for different report types
     [ObservableProperty]
     private ObservableCollection<Prescription> prescriptionsData = new();
 
     [ObservableProperty]
     private ObservableCollection<object> monitoringData = new();
 
-    // This will be called when the page is navigated to with a query parameter
     partial void OnReportTypeChanged(string value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -130,7 +128,6 @@ public partial class ReportsViewModel : ObservableObject
             IsLoadingData = true;
             CurrentReportTitle = SelectedReportType.Title;
             
-            // Clear previous data
             PrescriptionsData.Clear();
             MonitoringData.Clear();
             HasData = false;
@@ -154,7 +151,6 @@ public partial class ReportsViewModel : ObservableObject
                     break;
             }
 
-            // Show feedback to user even if no data is found
             if (!HasData)
             {
                 await Shell.Current.DisplayAlert("Info", 
@@ -257,7 +253,6 @@ public partial class ReportsViewModel : ObservableObject
     private async Task LoadMonitoringData()
     {
         System.Diagnostics.Debug.WriteLine("📊 Loading Monitoring data...");
-        // For now, just show a placeholder - this would need actual monitoring data structure
         DataCount = "Monitorizări vor fi implementate în versiunea viitoare";
         HasData = false;
         
@@ -328,7 +323,6 @@ public partial class ReportsViewModel : ObservableObject
             {
                 System.Diagnostics.Debug.WriteLine("Main thread: Showing success dialog");
                 
-                // Show success message with option to open file
                 var openFile = await Shell.Current.DisplayAlert(
                     "Succes", 
                     $"PDF-ul a fost salvat cu succes!\nLocație: {filePath}\n\nDoriți să deschideți fișierul?", 
@@ -416,7 +410,6 @@ public partial class ReportsViewModel : ObservableObject
         EndDate = DateTime.Today;
         PatientFilter = string.Empty;
         
-        // Reload data if a report type is selected
         if (SelectedReportType != null)
         {
             _ = LoadReportDataAsync();

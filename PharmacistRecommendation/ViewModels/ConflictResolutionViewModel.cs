@@ -43,7 +43,6 @@ namespace PharmacistRecommendation.ViewModels
         {
             _completionSource = new TaskCompletionSource<List<MedicationConflict>>();
 
-            // Convert conflicts to view models
             Conflicts.Clear();
             foreach (var conflict in conflicts)
             {
@@ -109,7 +108,7 @@ namespace PharmacistRecommendation.ViewModels
 
     public class ConflictViewModel : INotifyPropertyChanged
     {
-        private bool _keepExisting = true; // Default to keep existing
+        private bool _keepExisting = true; 
         private bool _updateToImport;
         private bool _skipMedication;
 
@@ -118,11 +117,9 @@ namespace PharmacistRecommendation.ViewModels
             OriginalConflict = conflict;
             ConflictId = Guid.NewGuid().ToString();
 
-            // Create display properties
             MedicationDisplayName = $"{conflict.ManualMedication.Denumire} ({conflict.ManualMedication.CodCIM})";
             ConflictSummary = $"CodCIM: {conflict.ManualMedication.CodCIM} - {conflict.ConflictingFields.Count} field(s) different";
 
-            // Create conflict details
             ConflictDetails = new ObservableCollection<ConflictDetail>();
             foreach (var field in conflict.ConflictingFields)
             {

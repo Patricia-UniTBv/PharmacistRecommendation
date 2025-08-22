@@ -2,11 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using Entities.Models;
 using Entities.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PharmacistRecommendation.Helpers;
+
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -22,7 +19,7 @@ namespace PharmacistRecommendation.ViewModels
 
         public ImportConfigurationViewModel(IImportConfigurationService service)
         {
-            pharmacyId = 1;//to be modified with the actual Id
+            pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
             _service = service;
             LoadConfigurationAsync();
         }

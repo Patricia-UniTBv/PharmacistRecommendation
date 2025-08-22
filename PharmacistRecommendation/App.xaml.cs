@@ -11,13 +11,11 @@ namespace PharmacistRecommendation
             InitializeComponent();
             Current.UserAppTheme = AppTheme.Light;
             
-            // Always start with AppShell - this will show MainPageView by default
             MainPage = new AppShell();
         }
 
         public static async Task NavigateToMainShell()
         {
-            // Already on shell, just navigate back to main content
             if (Current.MainPage is AppShell shell)
             {
                 await shell.GoToAsync("..");
@@ -43,5 +41,20 @@ namespace PharmacistRecommendation
                 }
             }
         }
+
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            var window = base.CreateWindow(activationState);
+
+#if WINDOWS
+            window.MaximumWidth = double.PositiveInfinity;
+            window.MaximumHeight = double.PositiveInfinity;
+            window.Width = Microsoft.Maui.Devices.DeviceDisplay.MainDisplayInfo.Width;
+            window.Height = Microsoft.Maui.Devices.DeviceDisplay.MainDisplayInfo.Height;
+#endif
+
+            return window;
+        }
+
     }
 }

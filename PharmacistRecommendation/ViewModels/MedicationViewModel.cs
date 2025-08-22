@@ -13,12 +13,12 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IMedicationService _medicationService;
         private readonly IMedicationImportService _importService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly SemaphoreSlim _loadingSemaphore = new(1, 1); // Add concurrency protection
+        private readonly SemaphoreSlim _loadingSemaphore = new(1, 1); 
         private string _searchText = string.Empty;
         private string _searchCode = string.Empty;
         private Medication? _selectedMedication;
         private bool _isLoading;
-        private int _selectedFilter = 0; // 0 = All, 1 = Active, 2 = Inactive, 3 = Manual, 4 = CSV
+        private int _selectedFilter = 0; 
 
         public MedicationViewModel(IMedicationService medicationService, IMedicationImportService importService, IServiceProvider serviceProvider)
         {
@@ -26,10 +26,8 @@ namespace PharmacistRecommendation.ViewModels
             _importService = importService ?? throw new ArgumentNullException(nameof(importService));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
-            // Initialize collections - Changed to MedicationDisplayItem
             Medications = new ObservableCollection<MedicationDisplayItem>();
 
-            // Initialize commands - Updated for MedicationDisplayItem
             LoadMedicationsCommand = new Command(async () => await LoadMedicationsAsync());
             SearchCommand = new Command(async () => await SearchMedicationsAsync());
             AddMedicationCommand = new Command(async () => await AddMedicationAsync());
@@ -41,10 +39,8 @@ namespace PharmacistRecommendation.ViewModels
 
         public MedicationViewModel() : this(null!, null!, null!)
         {
-            // This constructor should only be used by XAML designer
         }
 
-        // Changed from ObservableCollection<Medication> to MedicationDisplayItem
         public ObservableCollection<MedicationDisplayItem> Medications { get; }
 
         public string SearchText
@@ -87,7 +83,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Enhanced filter property - renamed from SelectedStatusFilter
         public int SelectedFilter
         {
             get => _selectedFilter;
@@ -97,13 +92,11 @@ namespace PharmacistRecommendation.ViewModels
                 {
                     _selectedFilter = value;
                     OnPropertyChanged();
-                    // Use Task.Run with proper synchronization to avoid blocking the UI thread
                     _ = Task.Run(async () =>
                     {
                         await _loadingSemaphore.WaitAsync();
                         try
                         {
-                            // Dispatch back to UI thread for the actual load operation
                             await MainThread.InvokeOnMainThreadAsync(async () => await LoadMedicationsAsync());
                         }
                         finally
@@ -121,9 +114,8 @@ namespace PharmacistRecommendation.ViewModels
         public ICommand EditMedicationCommand { get; }
         public ICommand DeleteMedicationCommand { get; }
         public ICommand ImportCsvCommand { get; }
-        public ICommand ToggleActiveStatusCommand { get; } // New command for toggling status
+        public ICommand ToggleActiveStatusCommand { get; } 
 
-        // Helper method that does the actual data loading without semaphore management
         private async Task<List<Medication>> GetFilteredMedicationsAsync(string? searchTerm = null)
         {
             List<Medication> medications;
@@ -137,7 +129,6 @@ namespace PharmacistRecommendation.ViewModels
                 medications = await _medicationService.SearchMedicationsAsync(searchTerm);
             }
 
-            // Apply enhanced filter
             return SelectedFilter switch
             {
                 1 => medications.Where(m => m.IsActive).ToList(), // Active
@@ -148,7 +139,6 @@ namespace PharmacistRecommendation.ViewModels
             };
         }
 
-        // Simplified LoadMedicationsAsync
         public async Task LoadMedicationsAsync()
         {
             if (_medicationService == null)
@@ -187,7 +177,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Simplified SearchMedicationsAsync
         public async Task SearchMedicationsAsync()
         {
             if (_medicationService == null)
@@ -227,7 +216,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // New method to toggle active status
         public async Task ToggleActiveStatusAsync(MedicationDisplayItem? item)
         {
             if (item?.Medication == null)
@@ -258,11 +246,9 @@ namespace PharmacistRecommendation.ViewModels
             {
                 try
                 {
-                    // Update the medication status
                     medication.IsActive = newStatus;
                     await _medicationService.UpdateMedicationAsync(medication);
 
-                    // Update the display item
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         item.RefreshStatus();
@@ -277,7 +263,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Enhanced ImportCsvAsync using existing interface methods
         private async Task ImportCsvAsync()
         {
             try
@@ -300,7 +285,6 @@ namespace PharmacistRecommendation.ViewModels
 
                     using var stream = await fileResult.OpenReadAsync();
 
-                    // Parse the file
                     List<CsvMedicationRow> csvData;
                     if (fileResult.FileName.EndsWith(".xlsx"))
                     {
@@ -311,11 +295,9 @@ namespace PharmacistRecommendation.ViewModels
                         csvData = await _importService.ParseCsvFileAsync(stream);
                     }
 
-                    // Get current medications to check for inactive ones that might be reactivated
                     var existingMedications = await _medicationService.GetAllMedicationsAsync();
                     var inactiveToReactivate = new List<Medication>();
 
-                    // Check for inactive medications that exist in the CSV
                     foreach (var csvRow in csvData)
                     {
                         if (string.IsNullOrWhiteSpace(csvRow.CodCIM)) continue;
@@ -329,10 +311,8 @@ namespace PharmacistRecommendation.ViewModels
                         }
                     }
 
-                    // Preview the import using existing method
                     var previewResult = await _importService.PreviewCsvImportAsync(csvData);
 
-                    // Show enhanced preview to user including reactivation info
                     var previewMessage = $"Import Preview:\n" +
                                        $"• New medications: {previewResult.AddedCount}\n" +
                                        $"• Updated medications: {previewResult.UpdatedCount}\n" +
@@ -346,13 +326,12 @@ namespace PharmacistRecommendation.ViewModels
                         previewMessage += $"\n• Errors: {previewResult.Errors.Count}";
                     }
 
-                    // Handle reactivations first if any exist
                     if (inactiveToReactivate.Count > 0)
                     {
                         var reactivationMessage = $"{previewMessage}\n\n" +
                                                 $"⚠️ {inactiveToReactivate.Count} inactive medications will be automatically reactivated because they were found in the new CSV:\n\n";
 
-                        foreach (var med in inactiveToReactivate.Take(5)) // Show first 5
+                        foreach (var med in inactiveToReactivate.Take(5)) 
                         {
                             reactivationMessage += $"• {med.Denumire} ({med.CodCIM})\n";
                         }
@@ -371,7 +350,6 @@ namespace PharmacistRecommendation.ViewModels
                         }
                     }
 
-                    // Handle manual conflicts if they exist
                     if (previewResult.HasConflicts)
                     {
                         var conflictMessage = $"{previewMessage}\n\n" +
@@ -382,34 +360,28 @@ namespace PharmacistRecommendation.ViewModels
 
                         if (resolveConflicts)
                         {
-                            // Show conflict resolution UI
                             var resolvedConflicts = await ShowConflictResolutionAsync(previewResult.ManualMedicationConflicts);
 
                             if (resolvedConflicts != null)
                             {
-                                // Update the conflicts with user decisions
                                 previewResult.ManualMedicationConflicts.Clear();
                                 previewResult.ManualMedicationConflicts.AddRange(resolvedConflicts);
                             }
                             else
                             {
-                                // User cancelled conflict resolution
                                 return;
                             }
                         }
                         else
                         {
-                            // User cancelled
                             return;
                         }
                     }
 
-                    // Ask to proceed with import
                     var proceed = await ShowAlert("Import Preview", previewMessage, "Proceed", "Cancel");
 
                     if (proceed)
                     {
-                        // Execute import using existing method
                         var importOptions = new CsvImportOptions
                         {
                             ImportDataSource = "CSV_Import",
@@ -419,7 +391,6 @@ namespace PharmacistRecommendation.ViewModels
 
                         var result = await _importService.ExecuteCsvImportAsync(csvData, importOptions);
 
-                        // Handle reactivations manually after import
                         int reactivatedCount = 0;
                         foreach (var medication in inactiveToReactivate)
                         {
@@ -436,7 +407,6 @@ namespace PharmacistRecommendation.ViewModels
                             }
                         }
 
-                        // Handle resolved conflicts
                         if (previewResult.ManualMedicationConflicts.Any(c => c.UserWantsUpdate))
                         {
                             var conflictResult = await _importService.HandleManualMedicationConflictsAsync(
@@ -445,7 +415,6 @@ namespace PharmacistRecommendation.ViewModels
                             result.ProcessedCount += conflictResult.ProcessedCount;
                         }
 
-                        // Show enhanced results including reactivations
                         var resultMessage = $"Import Complete:\n" +
                                           $"• Added: {result.AddedCount}\n" +
                                           $"• Updated: {result.UpdatedCount}\n" +
@@ -468,10 +437,8 @@ namespace PharmacistRecommendation.ViewModels
 
                         await ShowAlert("Import Complete", resultMessage, "OK");
 
-                        // Log the import results
                         System.Diagnostics.Debug.WriteLine($"Import Results: Added={result.AddedCount}, Updated={result.UpdatedCount}, Reactivated={reactivatedCount}, Processed={result.ProcessedCount}, Errors={result.Errors.Count}");
 
-                        // Refresh the medication list
                         await LoadMedicationsAsync();
                     }
                 }
@@ -486,7 +453,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Rest of your existing methods remain the same...
         private async Task AddMedicationAsync()
         {
             try
@@ -496,16 +462,12 @@ namespace PharmacistRecommendation.ViewModels
 
                 addEditView.BindingContext = addEditViewModel;
 
-                // Show the add medication page
                 await Application.Current.MainPage.Navigation.PushAsync(addEditView);
 
-                // Wait for user to complete the add operation
                 var result = await addEditViewModel.ShowForAddAsync();
 
-                // Close the add medication page
                 await Application.Current.MainPage.Navigation.PopAsync();
 
-                // If medication was added successfully, refresh the list
                 if (result)
                 {
                     await LoadMedicationsAsync();
@@ -532,16 +494,12 @@ namespace PharmacistRecommendation.ViewModels
 
                 addEditView.BindingContext = addEditViewModel;
 
-                // Show the edit medication page
                 await Application.Current.MainPage.Navigation.PushAsync(addEditView);
 
-                // Wait for user to complete the edit operation
                 var result = await addEditViewModel.ShowForEditAsync(medication);
 
-                // Close the edit medication page
                 await Application.Current.MainPage.Navigation.PopAsync();
 
-                // If medication was updated successfully, refresh the list
                 if (result)
                 {
                     await LoadMedicationsAsync();
@@ -576,7 +534,6 @@ namespace PharmacistRecommendation.ViewModels
                 {
                     await _medicationService.DeleteMedicationAsync(medication.Id);
 
-                    // Remove from the collection on main thread
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         var itemToRemove = Medications.FirstOrDefault(m => m.Medication.Id == medication.Id);
@@ -604,13 +561,10 @@ namespace PharmacistRecommendation.ViewModels
 
                 conflictView.BindingContext = conflictViewModel;
 
-                // Show the conflict resolution page
                 await Application.Current.MainPage.Navigation.PushAsync(conflictView);
 
-                // Wait for user to resolve conflicts
                 var resolvedConflicts = await conflictViewModel.ShowConflictsAsync(conflicts);
 
-                // Close the conflict resolution page
                 await Application.Current.MainPage.Navigation.PopAsync();
 
                 return resolvedConflicts;
@@ -622,7 +576,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Helper method to safely show alerts
         private async Task ShowAlert(string title, string message, string accept)
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
@@ -653,14 +606,12 @@ namespace PharmacistRecommendation.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // Dispose semaphore when ViewModel is destroyed
         ~MedicationViewModel()
         {
             _loadingSemaphore?.Dispose();
         }
     }
 
-    // Enhanced MedicationDisplayItem wrapper class with clickable status and ViewModel reference
     public class MedicationDisplayItem : INotifyPropertyChanged
     {
         private readonly MedicationViewModel _viewModel;
@@ -682,10 +633,8 @@ namespace PharmacistRecommendation.ViewModels
         public string SourceText => Medication.DataSource == "Manual" ? "Manual" : "CSV";
         public string SourceColor => Medication.DataSource == "Manual" ? "Blue" : "Orange";
 
-        // Command for clicking on status
         public ICommand ToggleStatusCommand => _viewModel.ToggleActiveStatusCommand;
 
-        // Method to refresh status display
         public void RefreshStatus()
         {
             OnPropertyChanged(nameof(StatusText));

@@ -24,6 +24,7 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IAdministrationModeService _administrationModeService;
         private readonly IPharmacyService _pharmacyService;
         private readonly IImportConfigurationService _importService;
+        private readonly IMedicationService _medicationService;
 
         [ObservableProperty]
         string mode;
@@ -100,32 +101,29 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         bool isPrintButtonEnabled = false;
 
-        public ObservableCollection<string> AllMedications { get; } = new()
-        {
-            "Paracetamol 1",
-            "Paracetamol 2",
-            "Algocalmin",
-            "Nurofen",
-            "Ibuprofen",
-            "Aspirin",
-            "Diclofenac",
-            "Ketoprofen",
-            "Metamizol",
-            "Tramadol",
-            "Codeine"
-            // a se încărca din DB  !!!!!!!
-        };
+        public ObservableCollection<string> AllMedications { get; set; } = new();
 
-        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService)
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService, IMedicationService medicationService)
         {
             _prescriptionService = prescriptionService;
             _administrationModeService = administrationModeService;
             _pharmacyService = pharmacyService;
             _importService = importService;
+            _medicationService = medicationService;
 
+            LoadMedicationsAsync();
             LoadAdministrationModes();
 
-            pharmacyId = 1; // a se modifica cu ID-ul farmaciei curente!!
+            pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        }
+
+        public async Task LoadMedicationsAsync()
+        {
+            var all = await _medicationService.GetAllMedicationsAsync();
+            foreach (var med in all)
+            {
+                AllMedications.Add(med.Denumire);
+            }
         }
 
         [RelayCommand]

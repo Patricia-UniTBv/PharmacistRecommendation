@@ -40,7 +40,6 @@ namespace Entities.Services
                     dto.BloodGlucose,
                     dto.BodyTemperature
                 }),
-               // UserId = loggedInUserId           
             };
 
             return await _repo.AddAsync(entity);

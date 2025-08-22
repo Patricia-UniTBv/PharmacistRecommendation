@@ -104,8 +104,6 @@ namespace Entities.Models
         [StringLength(50)]
         public string DataSource { get; set; } = "Manual";
 
-        // Navigation properties
-        //public virtual ICollection<DoctorMedication> DoctorMedications { get; set; } = new List<DoctorMedication>();
         public virtual ICollection<MedicationDocument> MedicationDocuments { get; set; } = new List<MedicationDocument>();
         public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();
     }

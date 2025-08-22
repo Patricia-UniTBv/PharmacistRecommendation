@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Entities.Models;  // FIXED: Changed from PharmacistRecommendation.Models
+namespace Entities.Models;  
 
 public partial class Pharmacist
 {

@@ -11,7 +11,6 @@ namespace PharmacistRecommendation.ViewModels
     {
         public MainPageViewModel()
         {
-            // Initialize commands
             NavigateToMedicationsCommand = new Command(async () => await NavigateToMedicationsAsync());
             NavigateToNewCardCommand = new Command(async () => await NavigateToNewCardAsync());
             NavigateToMonitoringCommand = new Command(async () => await NavigateToMonitoringAsync());
@@ -169,7 +168,6 @@ namespace PharmacistRecommendation.ViewModels
 
                 if (result is not null)
                 {
-                    // Handle the result if needed
                 }
             }
             catch (Exception ex)
@@ -180,7 +178,6 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task NavigateToReportsAsync()
         {
-            // For now, show a placeholder message since reports functionality might not be implemented yet
             await Application.Current.MainPage.DisplayAlert(
                 "În curs de dezvoltare",
                 "Funcționalitatea de rapoarte va fi disponibilă în curând.",

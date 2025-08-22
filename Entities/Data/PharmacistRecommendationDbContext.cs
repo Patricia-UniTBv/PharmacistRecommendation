@@ -17,7 +17,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
     }
 
     public virtual DbSet<AdministrationMode> AdministrationModes { get; set; }
-    public virtual DbSet<Assistant> Assistants { get; set; }  // ADD THIS
+    public virtual DbSet<Assistant> Assistants { get; set; }  
     public virtual DbSet<Document> Documents { get; set; }
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
     public virtual DbSet<EmailConfiguration> EmailConfigurations { get; set; }
@@ -28,14 +28,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
     public virtual DbSet<Patient> Patients { get; set; }
     public virtual DbSet<Pharmacy> Pharmacies { get; set; }
     public virtual DbSet<PharmacyCard> PharmacyCards { get; set; }
-    public virtual DbSet<Pharmacist> Pharmacists { get; set; }  // ADD THIS
+    public virtual DbSet<Pharmacist> Pharmacists { get; set; }  
     public virtual DbSet<Prescription> Prescriptions { get; set; }
     public virtual DbSet<PrescriptionMedication> PrescriptionMedications { get; set; }
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Only configure if not already configured (for development scenarios)
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;");
@@ -128,7 +127,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.HasIndex(e => e.CodCIM, "IX_Medication_CodCIM");
         
-            // Romanian medication fields
             entity.Property(e => e.CodCIM).HasMaxLength(50);
             entity.Property(e => e.Denumire).HasMaxLength(500);
             entity.Property(e => e.DCI).HasMaxLength(255);

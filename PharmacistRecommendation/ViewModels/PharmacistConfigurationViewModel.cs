@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DTO;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,8 +115,8 @@ namespace PharmacistRecommendation.ViewModels
                 Username = Username?.Trim(),
                 Password = Password, 
                 Role = Role,
-                PharmacyId = 1 // to be replaced
-            };
+                PharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1
+        };
             try
             {
                 if (Mode == UserFormMode.Edit)

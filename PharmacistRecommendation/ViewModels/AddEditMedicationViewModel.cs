@@ -14,12 +14,11 @@ namespace PharmacistRecommendation.ViewModels
         private Medication? _originalMedication;
         private TaskCompletionSource<bool>? _completionSource;
         private System.Threading.Timer? _autoSaveTimer;
-        private CancellationTokenSource? _validationCancellation; // Add this for validation cancellation
+        private CancellationTokenSource? _validationCancellation; 
 
-        // Medication properties
         private string _codCIM = string.Empty;
         private string _denumire = string.Empty;
-        private string _dci = string.Empty; // Fixed: changed from _ci to _dci
+        private string _dci = string.Empty; 
         private string _formaFarmaceutica = string.Empty;
         private string _concentratia = string.Empty;
         private string _firmaProducatoare = string.Empty;
@@ -37,12 +36,10 @@ namespace PharmacistRecommendation.ViewModels
         private bool _hasTriunghi;
         private bool _hasDreptunghi;
 
-        // Validation properties
         private string _codCIMError = string.Empty;
         private string _denumireError = string.Empty;
         private string _codATCError = string.Empty;
 
-        // Loading properties
         private string _loadingMessage = "Se salvează...";
 
         public AddEditMedicationViewModel(IMedicationService medicationService)
@@ -53,7 +50,6 @@ namespace PharmacistRecommendation.ViewModels
             CancelCommand = new Command(async () => await CancelAsync());
         }
 
-        // Public Properties
         public string PageTitle => _isEditMode ? "Editează Medicament" : "Adaugă Medicament";
         public string SaveButtonText => _isEditMode ? "Actualizează" : "Salvează";
 
@@ -78,7 +74,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Medication Properties
         public string CodCIM
         {
             get => _codCIM;
@@ -291,7 +286,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        // Validation Properties
         public string CodCIMError
         {
             get => _codCIMError;
@@ -329,11 +323,9 @@ namespace PharmacistRecommendation.ViewModels
         public bool HasDenumireError => !string.IsNullOrEmpty(DenumireError);
         public bool HasCodATCError => !string.IsNullOrEmpty(CodATCError);
 
-        // Commands
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        // Public Methods
         public async Task<bool> ShowForAddAsync()
         {
             _isEditMode = false;
@@ -355,10 +347,8 @@ namespace PharmacistRecommendation.ViewModels
             return await _completionSource.Task;
         }
 
-        // Private Methods
         private async Task ClearFormAsync()
         {
-            // Clear form data
             CodCIM = string.Empty;
             Denumire = string.Empty;
             DCI = string.Empty;
@@ -379,12 +369,10 @@ namespace PharmacistRecommendation.ViewModels
             HasTriunghi = false;
             HasDreptunghi = false;
             
-            // Clear validation errors
             CodCIMError = string.Empty;
             DenumireError = string.Empty;
             CodATCError = string.Empty;
             
-            // Try to restore draft if available
             await RestoreFormDraftAsync();
         }
 
@@ -428,13 +416,9 @@ namespace PharmacistRecommendation.ViewModels
             else
             {
                 CodCIMError = string.Empty;
-                // FIXED: Remove real-time validation that causes threading issues
-                // _ = Task.Run(async () => await ValidateCodCIMUniquenessAsync());
             }
         }
 
-        // FIXED: Remove async uniqueness validation to prevent threading issues
-        // The uniqueness check will only happen on form submission
         private async Task<bool> CheckCodCIMUniquenessAsync()
         {
             if (string.IsNullOrWhiteSpace(_codCIM)) return true;
@@ -449,7 +433,7 @@ namespace PharmacistRecommendation.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error validating CodCIM uniqueness: {ex.Message}");
-                return true; // Allow save if validation fails
+                return true; 
             }
         }
 
@@ -457,7 +441,6 @@ namespace PharmacistRecommendation.ViewModels
         {
             if (!string.IsNullOrWhiteSpace(CodATC))
             {
-                // ATC codes follow a specific pattern: A10BA02
                 if (!System.Text.RegularExpressions.Regex.IsMatch(CodATC, @"^[A-Z][0-9]{2}[A-Z]{2}[0-9]{2}$"))
                 {
                     CodATCError = "Format invalid (ex: A10BA02)";
@@ -495,7 +478,6 @@ namespace PharmacistRecommendation.ViewModels
             ValidateDenumire();
             ValidateCodATC();
 
-            // Check CodCIM uniqueness only on save
             var isUnique = await CheckCodCIMUniquenessAsync();
             if (!isUnique)
             {
@@ -535,7 +517,6 @@ namespace PharmacistRecommendation.ViewModels
                     await ShowAlert("Succes", "Medicamentul a fost adăugat cu succes!", "OK");
                 }
 
-                // Clear auto-save draft after successful save
                 await ClearFormDraftAsync();
                 
                 _completionSource?.SetResult(true);
@@ -631,7 +612,6 @@ namespace PharmacistRecommendation.ViewModels
             };
         }
 
-        // SIMPLIFIED: Auto-save without database calls to prevent threading issues
         private void StartAutoSave()
         {
             _autoSaveTimer?.Dispose();

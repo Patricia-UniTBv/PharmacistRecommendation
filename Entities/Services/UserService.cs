@@ -2,13 +2,6 @@
 using Entities.Models;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.ApplicationServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Services
 {
@@ -57,7 +50,7 @@ namespace Entities.Services
             {
                 Username = dto.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = dto.Role, // "Pharmacist" sau "Assistant"
+                Role = dto.Role, 
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Ncm = dto.Ncm,

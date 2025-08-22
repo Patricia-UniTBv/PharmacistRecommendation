@@ -1,11 +1,6 @@
 ﻿using Entities.Models;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Services
 {
@@ -43,7 +38,7 @@ namespace Entities.Services
             if (existing == null)
                 throw new InvalidOperationException("Config does not exist.");
 
-            config.Id = existing.Id; // asigură corectitudinea Id-ului
+            config.Id = existing.Id; 
             await _repository.UpdateAsync(config);
         }
     }

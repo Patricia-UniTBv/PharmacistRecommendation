@@ -1,7 +1,6 @@
 ﻿using DTO;
 using Entities.Services.Interfaces;
 using Entities.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -60,7 +59,6 @@ public class PdfReportService : IPdfReportService
             
             System.Diagnostics.Debug.WriteLine("Step 7: Starting PDF document creation");
             
-            // Try a minimal PDF first to isolate the issue
             try
             {
                 System.Diagnostics.Debug.WriteLine("Step 7a: Creating minimal document");
@@ -129,7 +127,6 @@ public class PdfReportService : IPdfReportService
             var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
             System.Diagnostics.Debug.WriteLine($"Step 2: Found {prescriptions.Count} total prescriptions");
             
-            // Filter by date range and patient filter
             var filteredPrescriptions = prescriptions
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
                 .Where(p => string.IsNullOrEmpty(patientFilter) || 
@@ -307,4 +304,5 @@ public class PdfReportService : IPdfReportService
             throw new Exception($"Error creating acts report: {ex.Message}", ex);
         }
     }
+
 }

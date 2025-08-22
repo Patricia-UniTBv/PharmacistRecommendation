@@ -2,11 +2,6 @@
 using Entities.Models;
 using Entities.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Repository
 {
@@ -33,7 +28,6 @@ namespace Entities.Repository
             return pharmacy;
         }
 
-        // Add this method to get the first available pharmacy
         public async Task<Pharmacy?> GetFirstPharmacyAsync()
         {
             return await _context.Pharmacies.FirstOrDefaultAsync();
@@ -45,13 +39,10 @@ namespace Entities.Repository
             await _context.SaveChangesAsync();
         }
 
-        // Method to ensure at least one pharmacy exists in the database
         public async Task EnsureDefaultPharmacyAsync()
         {
-            // Check if any pharmacy exists
             if (!await _context.Pharmacies.AnyAsync())
             {
-                // If no pharmacy exists, insert a default one
                 var defaultPharmacy = new Pharmacy
                 {
                     Name = "Farmacia Demo",

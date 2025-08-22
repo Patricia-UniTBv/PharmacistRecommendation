@@ -1,10 +1,4 @@
 ﻿using DTO;
-using Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.Helpers
 {
@@ -15,6 +9,11 @@ namespace PharmacistRecommendation.Helpers
         public static void SetCurrentUser(UserDTO user)
         {
             CurrentUser = user;
+        }
+
+        public static int? GetCurrentUserId()
+        {
+            return CurrentUser.Id;
         }
 
         public static int? GetCurrentPharmacyId()

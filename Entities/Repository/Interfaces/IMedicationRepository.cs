@@ -1,5 +1,4 @@
-﻿// IMedicationRepository.cs
-using Entities.Models;
+﻿using Entities.Models;
 
 namespace Entities.Repository.Interfaces
 {
@@ -14,8 +13,6 @@ namespace Entities.Repository.Interfaces
         Task<bool> ExistsAsync(int id);
         Task<List<Medication>> GetByCodCIMAsync(string codCIM);
         Task<List<Medication>> GetByAtcCodeAsync(string atcCode);
-
-        // New methods for CSV import functionality
         Task<List<Medication>> GetByDataSourceAsync(string dataSource);
         Task<List<Medication>> BatchAddAsync(List<Medication> medications);
         Task<List<Medication>> BatchUpdateAsync(List<Medication> medications);

@@ -1,11 +1,6 @@
 ﻿using Entities.Models;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Services
 {
@@ -20,7 +15,6 @@ namespace Entities.Services
 
         public async Task<PharmacyCard> CreateCardAsync(string code, int pharmacyId, string firstName, string lastName, string? cnp, string? cid, string? email, string? phone, string? gender, DateTime? birthdate)
         {
-            //var cid = GenerateCidFromCnp(cnp);
 
             var patient = new Patient
             {

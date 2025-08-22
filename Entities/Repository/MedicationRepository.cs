@@ -40,7 +40,7 @@ namespace Entities.Repository
                     (m.FirmaDetinatoare != null && m.FirmaDetinatoare.ToLower().Contains(term)) ||
                     (m.FormaFarmaceutica != null && m.FormaFarmaceutica.ToLower().Contains(term)))
                 .OrderBy(m => m.Denumire)
-                .Take(100) // Limit results for performance
+                .Take(100) 
                 .ToListAsync();
         }
 
@@ -75,7 +75,6 @@ namespace Entities.Repository
             if (existingMedication == null)
                 throw new Exception("Medication not found");
 
-            // Update properties
             existingMedication.Denumire = medication.Denumire;
             existingMedication.CodCIM = medication.CodCIM;
             existingMedication.CodATC = medication.CodATC;
@@ -142,8 +141,6 @@ namespace Entities.Repository
                 .OrderBy(m => m.Denumire)
                 .ToListAsync();
         }
-
-        // New methods for CSV import functionality
         public async Task<List<Medication>> GetByDataSourceAsync(string dataSource)
         {
             if (string.IsNullOrWhiteSpace(dataSource))

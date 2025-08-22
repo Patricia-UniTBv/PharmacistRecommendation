@@ -1,5 +1,4 @@
-﻿// IMedicationService.cs
-using Entities.Models;
+﻿using Entities.Models;
 
 namespace Entities.Services.Interfaces
 {

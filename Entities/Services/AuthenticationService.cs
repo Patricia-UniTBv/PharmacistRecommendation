@@ -1,9 +1,6 @@
 using DTO;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Entities.Services
 {
@@ -37,7 +34,6 @@ namespace Entities.Services
                     return emptyResult;
                 }
 
-                // Get all users and find matching username
                 var users = await _userRepository.GetAllAsync();
                 var user = users.FirstOrDefault(u => u.Username?.Equals(username, StringComparison.OrdinalIgnoreCase) == true);
 
@@ -52,7 +48,6 @@ namespace Entities.Services
                     return notFoundResult;
                 }
 
-                // Verify password
                 if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 {
                     var invalidPasswordResult = new AuthResult
@@ -64,7 +59,6 @@ namespace Entities.Services
                     return invalidPasswordResult;
                 }
 
-                // Create user DTO
                 var userDto = new UserDTO
                 {
                     Id = user.Id,
@@ -78,14 +72,11 @@ namespace Entities.Services
                     PharmacyId = user.PharmacyId
                 };
 
-                // Generate simple token (in production, use JWT)
                 var token = GenerateToken(user.Id, user.Username, user.Role);
 
-                // Store current user and token
                 _currentUser = userDto;
                 _currentToken = token;
 
-                // Store in secure storage
                 await _secureStorage.SetAsync("auth_token", token);
                 await _secureStorage.SetAsync("user_id", user.Id.ToString());
                 await _secureStorage.SetAsync("username", user.Username ?? string.Empty);
@@ -117,19 +108,17 @@ namespace Entities.Services
         {
             try
             {
-                // Clear stored credentials
                 _secureStorage.Remove("auth_token");
                 _secureStorage.Remove("user_id");
                 _secureStorage.Remove("username");
                 _secureStorage.Remove("user_role");
 
-                // Clear current user
                 _currentUser = null;
                 _currentToken = null;
 
                 var logoutResult = new AuthResult
                 {
-                    IsSuccess = false, // false indicates logged out state
+                    IsSuccess = false, 
                     ErrorMessage = null
                 };
 
@@ -137,7 +126,6 @@ namespace Entities.Services
             }
             catch (Exception ex)
             {
-                // Log error but don't throw
                 System.Diagnostics.Debug.WriteLine($"Logout error: {ex.Message}");
             }
         }
@@ -151,13 +139,11 @@ namespace Entities.Services
                     return true;
                 }
 
-                // Check if credentials exist in storage
                 var token = await _secureStorage.GetAsync("auth_token");
                 var userIdStr = await _secureStorage.GetAsync("user_id");
 
                 if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(userIdStr) && int.TryParse(userIdStr, out int userId))
                 {
-                    // Restore user from storage
                     var user = await _userRepository.GetByIdAsync(userId);
                     if (user != null)
                     {
@@ -203,8 +189,6 @@ namespace Entities.Services
 
         private string GenerateToken(int userId, string? username, string? role)
         {
-            // Simple token for demo purposes
-            // In production, use JWT tokens with proper signing
             var tokenData = $"{userId}|{username}|{role}|{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
             var tokenBytes = System.Text.Encoding.UTF8.GetBytes(tokenData);
             return Convert.ToBase64String(tokenBytes);

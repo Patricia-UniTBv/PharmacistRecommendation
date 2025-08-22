@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Entities.Services.Interfaces;
-using System.Threading.Tasks;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -24,7 +23,6 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool isPasswordVisible;
 
-        // Computed properties for binding
         public bool IsNotLoading => !IsLoading;
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -33,7 +31,6 @@ namespace PharmacistRecommendation.ViewModels
             _authService = authService;
         }
 
-        // Notify when computed properties change
         partial void OnIsLoadingChanged(bool value)
         {
             OnPropertyChanged(nameof(IsNotLoading));
@@ -58,7 +55,6 @@ namespace PharmacistRecommendation.ViewModels
 
                 if (result.IsSuccess)
                 {
-                    // Navigate to the test main page after successful login
                     await Shell.Current.GoToAsync("test_main");
                 }
                 else
@@ -73,7 +69,7 @@ namespace PharmacistRecommendation.ViewModels
             finally
             {
                 IsLoading = false;
-                Password = string.Empty; // Clear password for security
+                Password = string.Empty; 
             }
         }
 
@@ -88,7 +84,6 @@ namespace PharmacistRecommendation.ViewModels
         {
             try
             {
-                // Use Application.Current.MainPage instead of Shell.Current
                 if (Application.Current?.MainPage != null)
                 {
                     await Application.Current.MainPage.DisplayAlert("Info", "Please contact your administrator to reset your password.", "OK");

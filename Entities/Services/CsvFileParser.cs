@@ -23,7 +23,6 @@ namespace Entities.Services
                 csvStream.Position = 0;
                 using var reader = new StreamReader(csvStream, Encoding.UTF8);
 
-                // Read header line
                 var headerLine = await reader.ReadLineAsync();
                 if (string.IsNullOrWhiteSpace(headerLine))
                 {
@@ -33,7 +32,6 @@ namespace Entities.Services
                 var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
                 ValidateHeaders(headers);
 
-                // Read data lines
                 string line;
                 int rowNumber = 1;
                 while ((line = await reader.ReadLineAsync()) != null)
@@ -54,7 +52,6 @@ namespace Entities.Services
                     catch (Exception ex)
                     {
                         _logger.LogWarning($"Error parsing CSV line {rowNumber}: {ex.Message}");
-                        // Continue processing other lines
                     }
                 }
             }
@@ -69,7 +66,6 @@ namespace Entities.Services
 
         public async Task<List<CsvMedicationRow>> ParseExcelAsync(Stream excelStream)
         {
-            // For now, provide a user-friendly message about Excel support
             await Task.CompletedTask;
             throw new NotSupportedException(
                 "Excel file import is temporarily unavailable due to library conflicts. " +
@@ -163,7 +159,6 @@ namespace Entities.Services
                 var header = headers[i];
                 var value = i < values.Length ? values[i] : "";
 
-                // Handle 'X' values for boolean-like fields
                 if (header.Equals("Bulina", StringComparison.OrdinalIgnoreCase) ||
                     header.Equals("Diez", StringComparison.OrdinalIgnoreCase) ||
                     header.Equals("Stea", StringComparison.OrdinalIgnoreCase) ||
@@ -173,7 +168,6 @@ namespace Entities.Services
                     value = value.ToUpper() == "X" ? "X" : null;
                 }
 
-                // Map columns (case-insensitive)
                 if (header.Equals("Cod CIM", StringComparison.OrdinalIgnoreCase))
                     medication.CodCIM = value;
                 else if (header.Equals("Denumire comerciala", StringComparison.OrdinalIgnoreCase))
@@ -216,7 +210,6 @@ namespace Entities.Services
                     medication.DataActualizare = value;
             }
 
-            // Validate required fields
             if (string.IsNullOrWhiteSpace(medication.CodCIM))
             {
                 throw new InvalidOperationException("CodCIM is required");

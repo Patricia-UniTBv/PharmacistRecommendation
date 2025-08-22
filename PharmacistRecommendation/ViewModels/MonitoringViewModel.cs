@@ -28,8 +28,8 @@ public partial class MonitoringViewModel : ObservableObject
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
 
-        _pharmacyId = 1; // a se modifica cu id ul curent!!
-        loggedInUserId = 1; // a se modifica cu userul conectat! dupa auth
+        _pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        loggedInUserId = SessionManager.GetCurrentUserId() ?? 1;
     }
 
     public ObservableCollection<string> MonitoringTypes { get; } =
@@ -99,7 +99,7 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (PatientId == 0)      // nu s-a selectat pacient
+        if (PatientId == 0)     
         {
             await Shell.Current.DisplayAlert("Avertizare", "Datele pacientului nu au fost introduse.", "OK");
             return;
@@ -154,8 +154,8 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task GeneratePdfAsync()
     {
-        var path = await _pdfReportService.CreatePatientReportAsync(PatientId,
-            StartDate, EndDate);
+        var path = await _pdfReportService.CreateMonitoringListReportAsync(
+            StartDate, EndDate, null);
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }

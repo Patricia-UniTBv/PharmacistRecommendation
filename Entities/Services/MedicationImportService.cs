@@ -62,25 +62,20 @@ namespace Entities.Services
                 }
             }
 
-            // Execute the actual database operations
             if (!result.HasErrors)
             {
                 await ExecuteDatabaseOperations(result);
 
-                // NEW: Handle inactive medications
                 try
                 {
-                    // Detect which medications should become inactive
                     var inactiveCodCIMs = await DetectInactiveMedicationsAsync(csvData);
 
-                    // Mark them as inactive
                     if (inactiveCodCIMs.Any())
                     {
                         var inactiveCount = await MarkMedicationsAsInactiveAsync(inactiveCodCIMs);
                         result.Warnings.Add($"Marked {inactiveCount} medications as inactive (not found in new import)");
                     }
 
-                    // Mark medications as active if they're back in the import
                     var activeCodCIMs = csvData
                         .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
                         .Select(row => row.CodCIM!)
@@ -124,10 +119,9 @@ namespace Entities.Services
                     updatedMedication.Id = conflict.ManualMedication.Id;
                     updatedMedication.CreatedAt = conflict.ManualMedication.CreatedAt;
 
-                    // FIXED: Change DataSource to indicate it's now synchronized with import data
                     updatedMedication.DataSource = conflict.Resolution == ConflictResolution.UpdateToImport
                         ? "CSV_Import"
-                        : "Manual_Updated"; // Or use a hybrid designation
+                        : "Manual_Updated"; 
 
                     await _medicationRepository.UpdateAsync(updatedMedication);
                     result.ProcessedCount++;
@@ -166,17 +160,14 @@ namespace Entities.Services
 
         public async Task<List<string>> DetectInactiveMedicationsAsync(List<CsvMedicationRow> newImportData)
         {
-            // Get all existing medications from CSV imports
             var existingCsvMedications = await _medicationRepository.GetByDataSourceAsync("CSV_Import");
 
-            // Get CodCIMs from the new import
             var newCodCIMs = newImportData
                 .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
                 .Select(row => row.CodCIM!)
                 .Distinct()
                 .ToList();
 
-            // Find medications that exist in database but NOT in new import
             var inactiveCodCIMs = existingCsvMedications
                 .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) &&
                            !newCodCIMs.Contains(m.CodCIM))
@@ -223,12 +214,10 @@ namespace Entities.Services
         private async Task ProcessCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
             CsvImportResult result, bool previewOnly, CsvImportOptions options = null)
         {
-            // Check if CodCIM already exists
             var existingByCodCIM = existingMedications.FirstOrDefault(m => m.CodCIM == csvRow.CodCIM);
 
             if (existingByCodCIM != null)
             {
-                // CodCIM exists - check if data has changed
                 var updatedMedication = MapCsvToMedication(csvRow);
                 var changedFields = GetChangedFields(existingByCodCIM, updatedMedication);
 
@@ -236,7 +225,6 @@ namespace Entities.Services
                 {
                     if (existingByCodCIM.DataSource == "Manual")
                     {
-                        // Manual medication - needs user confirmation
                         result.ManualMedicationConflicts.Add(new MedicationConflict
                         {
                             ManualMedication = existingByCodCIM,
@@ -246,7 +234,6 @@ namespace Entities.Services
                     }
                     else
                     {
-                        // Import medication - update directly
                         result.UpdatedMedications.Add(new MedicationUpdate
                         {
                             ExistingMedication = existingByCodCIM,
@@ -258,12 +245,10 @@ namespace Entities.Services
             }
             else
             {
-                // CodCIM doesn't exist - check if it's a new code for existing medication
                 var possibleMatch = FindMedicationByAllFieldsExceptCodCIM(csvRow, existingMedications);
 
                 if (possibleMatch != null)
                 {
-                    // Found matching medication with different CodCIM
                     result.CodeChanges.Add(new MedicationCodeChange
                     {
                         ExistingMedication = possibleMatch,
@@ -274,7 +259,6 @@ namespace Entities.Services
                 }
                 else
                 {
-                    // Completely new medication
                     var newMedication = MapCsvToMedication(csvRow);
                     newMedication.DataSource = options?.ImportDataSource ?? "CSV_Import";
                     result.NewMedications.Add(newMedication);
@@ -285,7 +269,7 @@ namespace Entities.Services
         private Medication FindMedicationByAllFieldsExceptCodCIM(CsvMedicationRow csvRow, List<Medication> existingMedications)
         {
             return existingMedications.FirstOrDefault(m =>
-                m.CodCIM != csvRow.CodCIM && // Different CodCIM
+                m.CodCIM != csvRow.CodCIM && 
                 m.Denumire == csvRow.DenumireComericala &&
                 m.DCI == csvRow.DCI &&
                 m.FormaFarmaceutica == csvRow.FormaFarmaceutica &&
@@ -363,21 +347,18 @@ namespace Entities.Services
 
         private async Task ExecuteDatabaseOperations(CsvImportResult result)
         {
-            // Add new medications
             if (result.NewMedications.Any())
             {
                 await _medicationRepository.BatchAddAsync(result.NewMedications);
                 _logger.LogInformation($"Added {result.NewMedications.Count} new medications");
             }
 
-            // Update existing medications
             foreach (var update in result.UpdatedMedications)
             {
                 ApplyChangesToMedication(update.ExistingMedication, update.NewData);
                 await _medicationRepository.UpdateAsync(update.ExistingMedication);
             }
 
-            // Handle code changes
             foreach (var codeChange in result.CodeChanges.Where(c => !c.RequiresUserConfirmation))
             {
                 await _medicationRepository.UpdateCodCIMAsync(
