@@ -4,6 +4,8 @@
              x:Class="PharmacistRecommendation.Views.EmailConfigurationView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
+            <Label Text="Configurare Email" FontAttributes="Bold" FontSize="20"/>
+
             <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                 <Label Text="Ghid generare parolă Gmail" FontAttributes="Bold" VerticalOptions="Center" />
 

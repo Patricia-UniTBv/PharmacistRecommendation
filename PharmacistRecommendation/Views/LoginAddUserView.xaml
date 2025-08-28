@@ -13,7 +13,7 @@
 
             <!-- Header Section -->
             <StackLayout Grid.Row="0" Spacing="20" Margin="0,20,0,40">
-                <Label Text="PharmacistRecommendation"
+                <Label Text="Recomandarea farmacistului"
                        FontSize="28"
                        FontAttributes="Bold"
                        TextColor="White"
