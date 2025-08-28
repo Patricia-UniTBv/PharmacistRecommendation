@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PharmacistRecommendation.Views.ImportConfigurationView">
     <VerticalStackLayout Padding="24" Spacing="16">
+        <Label Text="Configurare importuri" FontAttributes="Bold" FontSize="20"/>
         <Label Text="Cale director rețete:" FontAttributes="Bold"/>
         <Entry Text="{Binding PrescriptionPath, Mode=TwoWay}" Placeholder="Calea către rețete" />
 

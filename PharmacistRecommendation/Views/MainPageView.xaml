@@ -2,147 +2,192 @@
 <ContentPage x:Class="PharmacistRecommendation.Views.MainPageView"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#F8FAFB">
+
+    <ContentPage.Resources>
+        <!-- CULORI BAZĂ (neutre + un accent foarte discret) -->
+        <Color x:Key="BgPage">#F8FAFB</Color>
+        <Color x:Key="BgCard">#FFFFFF</Color>
+        <Color x:Key="StrokeCard">#E5E7EB</Color>
+        <Color x:Key="TextPrimary">#1F2937</Color>
+        <Color x:Key="TextSecondary">#6B7280</Color>
+        <Color x:Key="AccentSoft">#22C55E</Color>
+        <!-- folosit doar pe pressed/focus -->
+
+        <!-- STIL CARD SECȚIUNE -->
+        <Style TargetType="Border" x:Key="SectionCard">
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            <Setter Property="Stroke" Value="{StaticResource StrokeCard}" />
+            <Setter Property="BackgroundColor" Value="{StaticResource BgCard}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- STIL LABELURI -->
+        <Style TargetType="Label" x:Key="SectionTitle">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        </Style>
+        <Style TargetType="Label" x:Key="HeaderTitle">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Label" x:Key="HeaderSubtitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+        </Style>
+
+        <!-- STIL BUTON MONOCROM (alb cu bordură) -->
+        <Style TargetType="Button" x:Key="CardButton">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="BorderColor" Value="{StaticResource StrokeCard}" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HeightRequest" Value="70" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <Setter.Value>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#F0FDF4" />
+                                    <Setter Property="BorderColor" Value="{StaticResource AccentSoft}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="#9CA3AF" />
+                                    <Setter Property="BorderColor" Value="#E5E7EB" />
+                                    <Setter Property="BackgroundColor" Value="#F3F4F6" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#F5F5F5">
+        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="{StaticResource BgPage}">
 
-            <!-- Header Section -->
-            <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 10,10,10,10"
-                    Stroke="#DDDDDD"
-                    BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Pharmacist Recommendation System"
-                           FontSize="24"
-                           FontAttributes="Bold"
-                           TextColor="#2C3E50"
-                           HorizontalOptions="Center" />
-                    <Label Text="Selectați modulul dorit din opțiunile de mai jos"
-                           FontSize="16"
-                           TextColor="#7F8C8D"
-                           HorizontalOptions="Center" />
+            <!-- Header -->
+            <Border Style="{StaticResource SectionCard}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Pharmacist Recommendation System" Style="{StaticResource HeaderTitle}" />
+                    <Label Text="Selectați modulul dorit din opțiunile de mai jos" Style="{StaticResource HeaderSubtitle}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Core Functions Section -->
-            <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 5,5,5,5"
-                    Stroke="#DDDDDD"
-                    BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
-                    <Label Text="Funcții principale"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+            <!-- Funcții principale -->
+            <Border Style="{StaticResource SectionCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Funcții principale" Style="{StaticResource SectionTitle}" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Medicamente Button -->
                         <Button Grid.Column="0"
+                                Style="{StaticResource CardButton}"
                                 Text="💊 Medicamente"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#3498DB"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToMedicationsCommand}" />
 
-                        <!-- Card Nou Button -->
                         <Button Grid.Column="1"
+                                Style="{StaticResource CardButton}"
                                 Text="👤 Card Nou"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#2ECC71"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToNewCardCommand}" />
 
-                        <!-- Monitorizare Button -->
                         <Button Grid.Column="2"
+                                Style="{StaticResource CardButton}"
                                 Text="📊 Monitorizare"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#E74C3C"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToMonitoringCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Document Issuance Section -->
-            <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 5,5,5,5"
-                    Stroke="#DDDDDD"
-                    BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
-                    <Label Text="Emitere documente"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+            <!-- Emitere documente -->
+            <Border Style="{StaticResource SectionCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Emitere documente" Style="{StaticResource SectionTitle}" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Act Mixt Button -->
                         <Button Grid.Column="0"
+                                Style="{StaticResource CardButton}"
                                 Text="📄 Act Mixt"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#9B59B6"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToMixedIssuanceCommand}" />
 
-                        <!-- Act cu Prescripție Button -->
                         <Button Grid.Column="1"
+                                Style="{StaticResource CardButton}"
                                 Text="📝 Act cu Prescripție"
                                 FontSize="13"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#F39C12"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToPrescriptionOnlyCommand}" />
 
-                        <!-- Act Propriu Button -->
                         <Button Grid.Column="2"
+                                Style="{StaticResource CardButton}"
                                 Text="✍️ Act Propriu"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#1ABC9C"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToWithoutPrescriptionCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Configuration Section -->
-            <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 5,5,5,5"
-                    Stroke="#DDDDDD"
-                    BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
-                    <Label Text="Configurări"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+             <!--Rapoarte-->
+            <Border Style="{StaticResource SectionCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Rapoarte" Style="{StaticResource SectionTitle}" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Row="0" Grid.Column="0"
+                    Style="{StaticResource CardButton}"
+                    Text="📊 Acte Mixte"
+                    Command="{Binding NavigateToMixedActsReportCommand}" />
+
+                        <Button Grid.Row="0" Grid.Column="1"
+                    Style="{StaticResource CardButton}"
+                    Text="📊 Acte Proprii"
+                    Command="{Binding NavigateToOwnActsReportCommand}" />
+
+                        <Button Grid.Row="0" Grid.Column="2"
+                    Style="{StaticResource CardButton}"
+                    Text="📊 Acte Consecutive"
+                    Command="{Binding NavigateToConsecutiveActsReportCommand}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Configurări -->
+            <Border Style="{StaticResource SectionCard}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Configurări" Style="{StaticResource SectionTitle}" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -153,65 +198,43 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- Utilizatori Button -->
                         <Button Grid.Row="0" Grid.Column="0"
+                                Style="{StaticResource CardButton}"
                                 Text="👥 Utilizatori"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#34495E"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToUsersManagementCommand}" />
 
-                        <!-- Moduri Administrare Button -->
                         <Button Grid.Row="0" Grid.Column="1"
+                                Style="{StaticResource CardButton}"
                                 Text="⚙️ Moduri Administrare"
                                 FontSize="12"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#95A5A6"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToAdministrationModesCommand}" />
 
-                        <!-- Config. Import Button -->
                         <Button Grid.Row="0" Grid.Column="2"
+                                Style="{StaticResource CardButton}"
                                 Text="📁 Config. Import"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#8E44AD"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToImportConfigCommand}" />
 
-                        <!-- Config. GDPR Button -->
                         <Button Grid.Row="1" Grid.Column="0"
+                                Style="{StaticResource CardButton}"
                                 Text="🛡️ Config. GDPR"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#D35400"
-                                HeightRequest="80"
                                 Command="{Binding NavigateToGdprConfigCommand}" />
 
-                        <!-- Adăugare Utilizator Button -->
                         <Button Grid.Row="1" Grid.Column="1"
+                                Style="{StaticResource CardButton}"
+                                Text="@ Config. Email"
+                                Command="{Binding NavigateToEmailCommand}"/>
+
+                        <!--<Button Grid.Row="1" Grid.Column="1"
+                                Style="{StaticResource CardButton}"
                                 Text="➕ Adăugare Utilizator"
                                 FontSize="12"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#27AE60"
-                                HeightRequest="80"
-                                Command="{Binding NavigateToAddPharmacistCommand}" />
+                                Command="{Binding NavigateToAddPharmacistCommand}" />-->
 
-                        <!-- Rapoarte Button -->
-                        <Button Grid.Row="1" Grid.Column="2"
+                        <!--<Button Grid.Row="1" Grid.Column="2"
+                                Style="{StaticResource CardButton}"
                                 Text="📈 Rapoarte"
-                                FontSize="14"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                BackgroundColor="#2980B9"
-                                HeightRequest="80"
-                                Command="{Binding NavigateToReportsCommand}" />
+                                Command="{Binding NavigateToReportsCommand}" />-->
+                        
                     </Grid>
                 </VerticalStackLayout>
             </Border>
