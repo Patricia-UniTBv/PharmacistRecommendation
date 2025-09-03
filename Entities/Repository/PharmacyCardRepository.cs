@@ -15,8 +15,16 @@ namespace Entities.Repository
 
         public async Task<PharmacyCard> AddCardWithPatientAsync(PharmacyCard card, Patient patient)
         {
-            _context.Patients.Add(patient);
-            await _context.SaveChangesAsync();
+            if (patient.Id == 0)
+            {
+                _context.Patients.Add(patient);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                _context.Patients.Update(patient);
+                await _context.SaveChangesAsync();
+            }
 
             card.PatientId = patient.Id;
             _context.PharmacyCards.Add(card);

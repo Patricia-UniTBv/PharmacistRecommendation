@@ -42,7 +42,7 @@
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="5">
-                            <Label Text="CNP" FontAttributes="Bold" TextColor="Black"/>
+                            <Label Text="CNP *" FontAttributes="Bold" TextColor="Black"/>
                             <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
                                 <Entry Placeholder="CNP"
                            Text="{Binding Cnp}"
@@ -58,15 +58,31 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <VerticalStackLayout Spacing="5">
-                            <Label Text="Nume pacient" FontAttributes="Bold" TextColor="Black"/>
-                            <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
-                                <Entry Placeholder="Nume pacient"
-                           Text="{Binding Name}"
-                           BackgroundColor="Transparent"
-                           TextColor="Black"/>
-                            </Border>
-                        </VerticalStackLayout>
+                        <HorizontalStackLayout Spacing="10">
+                            <VerticalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
+                                <Label Text="Nume pacient" FontAttributes="Bold" TextColor="Black"/>
+                                <Border StrokeThickness="0.6" WidthRequest="150" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
+                                    <Entry Placeholder="Nume"
+                   Text="{Binding FirstName}"
+                   BackgroundColor="Transparent"
+                   TextColor="Black"
+                   HorizontalOptions="FillAndExpand"/>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
+                                <Label Text="Prenume pacient" FontAttributes="Bold" TextColor="Black"/>
+                                <Border StrokeThickness="0.6" WidthRequest="150" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
+                                    <Entry Placeholder="Prenume"
+                   Text="{Binding LastName}"
+                   BackgroundColor="Transparent"
+                   TextColor="Black"
+                   HorizontalOptions="FillAndExpand"/>
+                                </Border>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+
 
                         <VerticalStackLayout Grid.Column="1" Spacing="5">
                             <Label Text="CID" FontAttributes="Bold" TextColor="Black"/>

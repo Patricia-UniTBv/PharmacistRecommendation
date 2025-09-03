@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
+using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
@@ -43,7 +44,8 @@ public partial class MonitoringViewModel : ObservableObject
     public DateTime EndDate { get; set; }
 
     [ObservableProperty] private string cardNumber;
-    [ObservableProperty] private string name;
+    [ObservableProperty] private string firstName;
+    [ObservableProperty] private string lastName;
     [ObservableProperty] private string cnp;
     [ObservableProperty] private string cid;
     [ObservableProperty] private int age;
@@ -82,13 +84,14 @@ public partial class MonitoringViewModel : ObservableObject
 
         if (patient is null)
         {
-            Name = Cnp = Cid = Gender = string.Empty;
+            FirstName = LastName = Cnp = Cid = Gender = string.Empty;
             Age = 0;
             PatientId = 0;
             return;
         }
 
-        Name = $"{patient.FirstName} {patient.LastName}";
+        FirstName = patient.FirstName; 
+        LastName = patient.LastName;
         Cnp = patient.Cnp!;
         Cid = patient.Cid!;
         Age = PatientHelper.CalculateAge(patient.Birthdate);
@@ -99,15 +102,25 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (PatientId == 0)     
+        if (string.IsNullOrWhiteSpace(Cnp))
         {
-            await Shell.Current.DisplayAlert("Avertizare", "Datele pacientului nu au fost introduse.", "OK");
+            await Shell.Current.DisplayAlert("Eroare", "CNP-ul pacientului este obligatoriu!", "OK");
             return;
         }
 
+        var patientDto = new Patient
+        {
+            FirstName = FirstName,
+            LastName = LastName,
+            Cnp = Cnp,
+            Gender = Gender
+        };
+
+        var patient = await _patientService.GetOrCreatePatientAsync(patientDto);
+
         var dto = new MonitoringDTO
         {
-            PatientId = PatientId, 
+            PatientId = patient.Id, 
             CardId = null,               
             MonitoringDate = DateTime.Now,
             MonitoringType = SelectedMonitoringType,
@@ -138,6 +151,9 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]                    
     private async Task LoadHistoryAsync()
     {
+        var patient = await _patientService.GetPatientByCnpAsync(cnp);
+        PatientId = patient.Id;
+
         if (PatientId == 0) return;
 
         HistoryList.Clear();
@@ -199,7 +215,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         try
         {
-            var emailConfig = new EmailConfiguration
+            var emailConfig = new Helpers.EmailConfiguration
             {
                 SenderEmail = config.Username,
                 SenderAppPassword = config.Password,

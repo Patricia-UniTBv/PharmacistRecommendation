@@ -215,21 +215,6 @@ namespace PharmacistRecommendation.ViewModels
                 await ShowAlert("Completează CNP-ul pacientului!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(PrescriptionNumber))
-            {
-                await ShowAlert("Completează numărul rețetei!");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(PrescriptionSeries))
-            {
-                await ShowAlert("Completează seria rețetei!");
-                return;
-            }
-            if (MedicationsWithPrescription.Count == 0)
-            {
-                await ShowAlert("Adaugă cel puțin un medicament cu rețetă!");
-                return;
-            }
 
             var prescription = new Prescription
             {
