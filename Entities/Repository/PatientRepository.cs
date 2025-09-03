@@ -14,6 +14,17 @@ namespace Entities.Repository
             _context = context;
         }
 
+        public async Task<Patient> AddAsync(Patient patient)
+        {
+            _context.Patients.Add(patient);
+            await _context.SaveChangesAsync();
+            return patient;
+        }
+        public async Task<Patient?> GetByCnpAsync(string cnp)
+        {
+            return await _context.Patients.FirstOrDefaultAsync(p => p.Cnp == cnp);
+        }
+
         public async Task<Patient?> GetByCardCodeAsync(string cardCode)
         {
             return await _context.PharmacyCards
@@ -26,6 +37,15 @@ namespace Entities.Repository
         {
             return await _context.Patients
                   .Where(p => p.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Patient> UpdateAsync(Patient patient)
+        {
+            _context.Patients.Update(patient);
+
+            await _context.SaveChangesAsync();
+
+            return patient;
         }
     }
 }
