@@ -17,7 +17,6 @@ namespace Entities.Services
 
         public async Task<Patient> GetOrCreatePatientAsync(Patient dto)
         {
-            // Căutăm pacientul după CNP
             Patient? patient = null;
             if (!string.IsNullOrWhiteSpace(dto.Cnp))
             {
@@ -63,6 +62,18 @@ namespace Entities.Services
         {
             return await _repository.GetByCnpAsync(cnp);
         }
+
+        public async Task<Patient?> GetPatientAsync(string? cardCode = null, string? cnp = null)
+        {
+            if (!string.IsNullOrWhiteSpace(cardCode))
+                return await _repository.GetByCardCodeAsync(cardCode);
+
+            if (!string.IsNullOrWhiteSpace(cnp))
+                return await _repository.GetByCnpAsync(cnp);
+
+            return null;
+        }
+
 
         public async Task<Patient?> GetByIdAsync(int id)
         {

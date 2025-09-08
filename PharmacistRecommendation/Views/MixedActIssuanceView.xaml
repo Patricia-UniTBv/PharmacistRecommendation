@@ -60,7 +60,7 @@
             <Label Text="Medicamente utilizate de pacient" TextColor="Black" FontAttributes="Bold"/>
             <Entry Placeholder="Medicamente utilizate de pacient" Text="{Binding UsedMedications}" />
 
-            <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White">
+            <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}" >
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
                         <Label Text="Parafa medic" TextColor="Black"  FontAttributes="Bold"/>

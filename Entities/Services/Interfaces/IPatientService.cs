@@ -7,6 +7,7 @@ namespace Entities.Services.Interfaces
         Task<Patient?> GetPatientByCardCodeAsync(string cardCode);
         Task<Patient> GetOrCreatePatientAsync(Patient dto);
         Task<Patient?> GetPatientByCnpAsync(string cnp);
+        Task<Patient?> GetPatientAsync(string? cardCode = null, string? cnp = null);
         Task<Patient?> GetByIdAsync(int id);
     }
 }

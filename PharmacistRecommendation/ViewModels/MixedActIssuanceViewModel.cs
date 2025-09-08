@@ -205,14 +205,14 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
-            if (string.IsNullOrWhiteSpace(PatientName))
+            if (string.IsNullOrWhiteSpace(PatientName) && string.IsNullOrWhiteSpace(CaregiverName))
             {
-                await ShowAlert("Completează numele pacientului!");
+                await ShowAlert("Completează numele pacientului/aparținătorului!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(PatientCnp))
+            if (string.IsNullOrWhiteSpace(PatientCnp) && string.IsNullOrWhiteSpace(CaregiverCnp))
             {
-                await ShowAlert("Completează CNP-ul pacientului!");
+                await ShowAlert("Completează CNP-ul pacientului/aparținătorului!");
                 return;
             }
 

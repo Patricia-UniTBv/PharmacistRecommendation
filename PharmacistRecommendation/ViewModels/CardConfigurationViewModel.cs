@@ -33,6 +33,9 @@ namespace PharmacistRecommendation.ViewModels
 
         [ObservableProperty] private string validationMessage;
 
+        [ObservableProperty]
+        private string birthdateString;
+
         public CardConfigurationViewModel(IPharmacyCardService pharmacyCardService, IPharmacyService pharmacyService)
         {
             _pharmacyCardService = pharmacyCardService;
@@ -40,6 +43,48 @@ namespace PharmacistRecommendation.ViewModels
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
+
+        partial void OnCnpChanged(string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value) && value.Length == 13)
+            {
+                try
+                {
+                    int s = int.Parse(value.Substring(0, 1));
+                    int yy = int.Parse(value.Substring(1, 2));
+                    int mm = int.Parse(value.Substring(3, 2));
+                    int dd = int.Parse(value.Substring(5, 2));
+
+                    int year = s switch
+                    {
+                        1 or 2 => 1900 + yy,
+                        3 or 4 => 1800 + yy,
+                        5 or 6 => 2000 + yy,
+                        _ => throw new Exception("CNP invalid")
+                    };
+
+                    var date = new DateTime(year, mm, dd);
+                    Birthdate = date;
+                    BirthdateString = date.ToString("dd/MM/yyyy");
+
+                    Gender = (s % 2 == 0) ? "Feminin" : "Masculin";
+                }
+                catch
+                {
+                    // CNP invalid, nu face nimic
+                }
+            }
+        }
+
+
+        partial void OnBirthdateStringChanged(string value)
+        {
+            if (DateTime.TryParseExact(value, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var date))
+            {
+                Birthdate = date;
+            }
+        }
+
 
         [RelayCommand]
         private async Task GenerateCid()
@@ -70,21 +115,15 @@ namespace PharmacistRecommendation.ViewModels
         {
             ValidationMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(Cnp) || Cnp.Length != 13)
-            {
-                ValidationMessage = "Introduceți un CNP valid (13 caractere).";
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(FirstName))
             {
-                ValidationMessage = "Introduceți prenumele.";
+                ValidationMessage = "Introduceți numele și prenumele.";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(LastName))
             {
-                ValidationMessage = "Introduceți numele.";
+                ValidationMessage = "Introduceți numele și prenumele.";
                 return;
             }
 
@@ -94,17 +133,6 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Gender))
-            {
-                ValidationMessage = "Selectați genul.";
-                return;
-            }
-
-            if (Birthdate == default)
-            {
-                ValidationMessage = "Selectați data nașterii.";
-                return;
-            }
             try
             {
                 var card = await _pharmacyCardService.CreateCardAsync(
@@ -134,10 +162,12 @@ namespace PharmacistRecommendation.ViewModels
         {
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
 
+            string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
+
             _consentDecl = _pharmacy.ConsentTemplate
-                .Replace("{PharmacyName}", _pharmacy.Name)
-                .Replace("{PharmacyAddress}", _pharmacy.Address)
-                .Replace("{PharmacyFiscalCode}", _pharmacy.CUI);
+                .Replace("{PharmacyName}", Safe(_pharmacy.Name))
+                .Replace("{PharmacyAddress}", Safe(_pharmacy.Address))
+                .Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI));
 
             using var pd = new PrintDocument();
             pd.DefaultPageSettings.Landscape = false;
@@ -152,12 +182,13 @@ namespace PharmacistRecommendation.ViewModels
         private void Pd_PrintPage(object sender, PrintPageEventArgs e)
         {
             var g = e.Graphics;
-            float dpiX = g.DpiX, dpiY = g.DpiY;
-            var m = e.PageSettings.Margins;
 
-            float left = 30, top = 30;
-            float right = e.PageBounds.Width - 30;
-            float bottom = e.PageBounds.Height - 30;
+            var margin = e.MarginBounds;
+
+            float left = margin.Left + 5;
+            float top = margin.Top + 5;
+            float right = margin.Right - 5;
+            float bottom = margin.Bottom - 5;
 
             using var fontText = new SD.Font("Tahoma", 10f, SD.FontStyle.Regular);
             float lineHeight = fontText.GetHeight(g) * 1.2f;
@@ -165,7 +196,6 @@ namespace PharmacistRecommendation.ViewModels
             string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
             float y = top;
-            float contentWidth = right - left;
 
             g.DrawString($"Număr card: {Safe(cardNumber)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
             g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
@@ -175,20 +205,40 @@ namespace PharmacistRecommendation.ViewModels
             g.DrawString($"E-mail: {Safe(email)}", fontText, SD.Brushes.Black, left, y); y += lineHeight * 1.5f;
 
             float boxSize = 12;
-            float xCheckbox = 30;
+            float xCheckbox = left;
             g.DrawRectangle(Pens.Black, xCheckbox, y, boxSize, boxSize);
 
             float padding = 5;
             float xText = xCheckbox + boxSize + padding;
             g.DrawString("Declar că datele furnizate mai sus sunt corecte.", fontText, Brushes.Black, xText, y);
-            y += 130;
+            y += 100;
 
-            var rect = new RectangleF(left, y, right - left, bottom - y - 40);
+            var rect = new RectangleF(left, y, right - left, bottom - y - 70);
             g.DrawString(_consentDecl, fontText, Brushes.Black, rect);
 
-            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 100));
-            g.DrawString("Nume: __________________________", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 80));
-            g.DrawString("Semnătura: ______________________", fontText, Brushes.Black, new SD.PointF(20, e.PageBounds.Height - 60));
+            float footerSpacing = 10;
+
+            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, Brushes.Black,
+                new SD.PointF(left, bottom - 3 * lineHeight - footerSpacing));
+            g.DrawString("Nume: __________________________", fontText, Brushes.Black,
+                new SD.PointF(left, bottom - 2 * lineHeight - footerSpacing));
+            g.DrawString("Semnătura: ______________________", fontText, Brushes.Black,
+                new SD.PointF(left, bottom - 1 * lineHeight - footerSpacing));
         }
+
+        [RelayCommand]
+        private void NewCard()
+        {
+            CardNumber = string.Empty;
+            LastName = string.Empty;
+            FirstName = string.Empty;
+            Cnp = string.Empty;
+            Cid = string.Empty;
+            Phone = string.Empty;
+            Email = string.Empty;
+            Birthdate = DateTime.Today;
+            Gender = null;
+        }
+
     }
 }

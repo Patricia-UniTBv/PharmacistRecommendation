@@ -61,7 +61,7 @@
                         <HorizontalStackLayout Spacing="10">
                             <VerticalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
                                 <Label Text="Nume pacient" FontAttributes="Bold" TextColor="Black"/>
-                                <Border StrokeThickness="0.6" WidthRequest="150" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
+                                <Border StrokeThickness="0.6" WidthRequest="250" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
                                     <Entry Placeholder="Nume"
                    Text="{Binding FirstName}"
                    BackgroundColor="Transparent"
@@ -72,7 +72,7 @@
 
                             <VerticalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
                                 <Label Text="Prenume pacient" FontAttributes="Bold" TextColor="Black"/>
-                                <Border StrokeThickness="0.6" WidthRequest="150" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
+                                <Border StrokeThickness="0.6" WidthRequest="250" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42" HorizontalOptions="FillAndExpand">
                                     <Entry Placeholder="Prenume"
                    Text="{Binding LastName}"
                    BackgroundColor="Transparent"
@@ -113,7 +113,7 @@
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="5">
-                            <Label Text="Sex" FontAttributes="Bold" TextColor="Black"/>
+                            <Label Text="Gen" FontAttributes="Bold" TextColor="Black"/>
                             <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 5,5,5,5" Stroke="#AAAAAA" HeightRequest="42">
                                 <Picker SelectedItem="{Binding Gender}"
                             BackgroundColor="Transparent"
@@ -209,6 +209,11 @@
                     <HorizontalStackLayout HorizontalOptions="End" Spacing="10">
                         <!--<Button Text="Renunță" Command="{Binding CancelCommand}"
                                 BackgroundColor="#dc3545" TextColor="White"/>-->
+                        <Button Text="Resetează"
+                                Command="{Binding ClearCommand}"
+                                BackgroundColor="#007bff"
+                                TextColor="White"
+                                WidthRequest="95"/>
                         <Button Text="Salvează" Command="{Binding SaveCommand}"
                                 BackgroundColor="#28a745" TextColor="White"/>
                     </HorizontalStackLayout>
@@ -277,15 +282,19 @@
                                                 Margin="0,0,4,0" />
                                 </Grid>
                         </VerticalStackLayout>
-                        <Button Grid.Column="2"
-                                Text="Caută"
-                                Command="{Binding LoadHistoryCommand}"
-                                BackgroundColor="#007bff"
-                                TextColor="White"
-                                WidthRequest="100"
-                                HeightRequest="40"
-                                HorizontalOptions="End"
-                                VerticalOptions="EndAndExpand"/>
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" Spacing="5">
+                            <Button Text="Caută"
+                Command="{Binding LoadHistoryCommand}"
+                BackgroundColor="#007bff"
+                TextColor="White"
+                WidthRequest="100"
+                HeightRequest="40"
+                HorizontalOptions="End"/>
+                            <Label Text="{Binding ValidationMessage}" 
+               TextColor="Red" 
+               FontAttributes="Italic"
+               HorizontalOptions="End"/>
+                        </VerticalStackLayout>
                     </Grid>
 
 
@@ -352,33 +361,42 @@
                 </VerticalStackLayout>
             </Border>
 
-            <VerticalStackLayout Padding="20" Spacing="15">
+            <Grid Padding="20" ColumnSpacing="10" VerticalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- Entry pentru adresa de e-mail -->
-                <Label Text="Adresă e-mail pacient" />
+                <!-- Label -->
+                <Label Text="Adresă e-mail pacient:" 
+           VerticalOptions="Center"
+           Grid.Column="0"/>
+
+                <!-- Entry -->
                 <Entry Text="{Binding PatientEmail, Mode=TwoWay}"
            Placeholder="ex: ion.popescu@mail.com"
            Keyboard="Email"
            MaxLength="100"
-           FontSize="14" />
+           FontSize="14"
+           Grid.Column="1"/>
 
                 <!-- Butoane -->
-                <HorizontalStackLayout HorizontalOptions="End"
-                           Spacing="10">
+                <HorizontalStackLayout Grid.Column="2" Spacing="10">
                     <Button Text="Printare PDF"
                 Command="{Binding GeneratePdfCommand}"
                 BackgroundColor="#28a745"
                 TextColor="White"
-                WidthRequest="120" />
+                WidthRequest="120"/>
 
                     <Button Text="Trimite Mail"
                 Command="{Binding SendEmailCommand}"
                 BackgroundColor="#007bff"
                 TextColor="White"
-                WidthRequest="120" />
+                WidthRequest="120"/>
                 </HorizontalStackLayout>
+            </Grid>
 
-            </VerticalStackLayout>
 
         </VerticalStackLayout>
 
