@@ -20,7 +20,7 @@
 
                 <!-- Patient Data Section -->
                 <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5"
-        Stroke="#DDDDDD" BackgroundColor="White" Padding="5">
+        Stroke="#DDDDDD" BackgroundColor="White" Padding="10">
 
                     <VerticalStackLayout Spacing="5">
                         <Label Text="Date pacient" FontSize="14" FontAttributes="Bold"/>
@@ -35,21 +35,21 @@
 
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Număr card" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding CardNumber}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="CNP" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding Cnp}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="CID" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding Cid}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
@@ -66,21 +66,21 @@
 
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Nume" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding LastName}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="Prenume" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding FirstName}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="Vârstă" FontSize="11" FontAttributes="Bold"/>
-                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="30">
+                                <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding Age}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
                             </VerticalStackLayout>
@@ -103,7 +103,7 @@
 
                 <!-- Monitored Parameters Section -->
                 <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5"
-        Stroke="#DDDDDD" BackgroundColor="White" Padding="5">
+        Stroke="#DDDDDD" BackgroundColor="White" Padding="10">
 
                     <VerticalStackLayout Spacing="5">
 
@@ -193,7 +193,7 @@
 
                 <!-- History Section -->
                 <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5"
-                        Stroke="#DDDDDD" BackgroundColor="White" Padding="5">
+                        Stroke="#DDDDDD" BackgroundColor="White" Padding="10">
 
                     <VerticalStackLayout Spacing="2">
                         <Grid>
