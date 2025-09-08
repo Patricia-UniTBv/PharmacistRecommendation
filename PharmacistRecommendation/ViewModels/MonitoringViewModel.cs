@@ -131,11 +131,6 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (string.IsNullOrWhiteSpace(Cnp))
-        {
-            await Shell.Current.DisplayAlert("Eroare", "CNP-ul pacientului este obligatoriu!", "OK");
-            return;
-        }
 
         var patientDto = new Patient
         {
