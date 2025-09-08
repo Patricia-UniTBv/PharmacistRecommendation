@@ -18,24 +18,26 @@ public partial class MonitoringView : ContentPage
             Debug.WriteLine($"Error: {ex.Message}");
         }
     }
-    void OnPickerFocused(object sender, FocusEventArgs e)
-    {
-        _savedY = MainScroll.ScrollY;
-        _restorePending = true;
-    }
 
-    void OnPickerUnfocused(object sender, FocusEventArgs e)
-    {
-        if (!_restorePending) return;
 
-        const int framesToWait = 2;
-        var delay = (int)(1000.0 / DeviceDisplay.MainDisplayInfo.RefreshRate * framesToWait);
+    //void OnPickerFocused(object sender, FocusEventArgs e)
+    //{
+    //    _savedY = MainScroll.ScrollY;
+    //    _restorePending = true;
+    //}
 
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            await Task.Delay(delay);
-            await MainScroll.ScrollToAsync(0, _savedY, false);
-            _restorePending = false;
-        });
-    }
+    //void OnPickerUnfocused(object sender, FocusEventArgs e)
+    //{
+    //    if (!_restorePending) return;
+
+    //    const int framesToWait = 2;
+    //    var delay = (int)(1000.0 / DeviceDisplay.MainDisplayInfo.RefreshRate * framesToWait);
+
+    //    MainThread.BeginInvokeOnMainThread(async () =>
+    //    {
+    //        await Task.Delay(delay);
+    //        await MainScroll.ScrollToAsync(0, _savedY, false);
+    //        _restorePending = false;
+    //    });
+    //}
 }

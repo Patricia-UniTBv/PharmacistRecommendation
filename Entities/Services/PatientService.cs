@@ -63,13 +63,16 @@ namespace Entities.Services
             return await _repository.GetByCnpAsync(cnp);
         }
 
-        public async Task<Patient?> GetPatientAsync(string? cardCode = null, string? cnp = null)
+        public async Task<Patient?> GetPatientAsync(string? cardCode = null, string? cnp = null, string? firstName = null, string? lastName = null)
         {
             if (!string.IsNullOrWhiteSpace(cardCode))
                 return await _repository.GetByCardCodeAsync(cardCode);
 
             if (!string.IsNullOrWhiteSpace(cnp))
                 return await _repository.GetByCnpAsync(cnp);
+
+            if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+                return await _repository.GetByNameAsync(firstName, lastName);
 
             return null;
         }

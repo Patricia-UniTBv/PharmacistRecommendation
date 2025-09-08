@@ -161,7 +161,6 @@ namespace PharmacistRecommendation.ViewModels
         private async Task Print()
         {
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
-
             string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
             _consentDecl = _pharmacy.ConsentTemplate
@@ -171,12 +170,39 @@ namespace PharmacistRecommendation.ViewModels
 
             using var pd = new PrintDocument();
             pd.DefaultPageSettings.Landscape = false;
-            pd.PrinterSettings = new PrinterSettings();
+
             pd.PrintPage += Pd_PrintPage;
 
-            using var dlg = new PrintDialog { Document = pd };
-            if (dlg.ShowDialog() == DialogResult.OK)
-                pd.Print();
+            var result = await Shell.Current.DisplayActionSheet("Alege tipărire sau PDF", "Anulează", null, "Tipărire", "Salvează ca PDF");
+
+            if (result == "Tipărire")
+            {
+                using var dlg = new PrintDialog { Document = pd };
+                if (dlg.ShowDialog() == DialogResult.OK)
+                    pd.Print();
+            }
+            else if (result == "Salvează ca PDF")
+            {
+                string safeName = string.IsNullOrWhiteSpace(firstName + lastName) ? "Pacient" : $"{firstName}_{lastName}";
+                string safeCard = string.IsNullOrWhiteSpace(cardNumber) ? "0000" : cardNumber;
+                string defaultFileName = $"{safeName}_{safeCard}.pdf";
+
+                using var sfd = new SaveFileDialog
+                {
+                    Filter = "PDF files (*.pdf)|*.pdf",
+                    FileName = defaultFileName,
+                    Title = "Salvează PDF-ul"
+                };
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    pd.PrinterSettings.PrinterName = "Microsoft Print to PDF";
+                    pd.PrinterSettings.PrintToFile = true;
+                    pd.PrinterSettings.PrintFileName = sfd.FileName;
+                    pd.Print();
+                    await Shell.Current.DisplayAlert("Succes", $"Fișier PDF salvat: {sfd.FileName}", "OK");
+                }
+            }
         }
 
         private void Pd_PrintPage(object sender, PrintPageEventArgs e)
@@ -220,8 +246,8 @@ namespace PharmacistRecommendation.ViewModels
 
             g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, Brushes.Black,
                 new SD.PointF(left, bottom - 3 * lineHeight - footerSpacing));
-            g.DrawString("Nume: __________________________", fontText, Brushes.Black,
-                new SD.PointF(left, bottom - 2 * lineHeight - footerSpacing));
+            g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                new SD.PointF(left, bottom - 2 * lineHeight - footerSpacing);
             g.DrawString("Semnătura: ______________________", fontText, Brushes.Black,
                 new SD.PointF(left, bottom - 1 * lineHeight - footerSpacing));
         }
