@@ -178,7 +178,7 @@ public partial class ReportsViewModel : ObservableObject
         System.Diagnostics.Debug.WriteLine($"📋 Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
@@ -205,7 +205,7 @@ public partial class ReportsViewModel : ObservableObject
         System.Diagnostics.Debug.WriteLine($"💊 Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
@@ -231,7 +231,7 @@ public partial class ReportsViewModel : ObservableObject
         System.Diagnostics.Debug.WriteLine($"📄 Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))

@@ -33,7 +33,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("reports", typeof(ReportsView));
             Routing.RegisterRoute("email_configuration", typeof(EmailConfigurationView));
             Routing.RegisterRoute("add_pharmacy", typeof(AddPharmacyView));
-            Routing.RegisterRoute("test_main", typeof(MainPageView)); // Add route for test main page
+            Routing.RegisterRoute("test_main", typeof(MainPageView)); 
 
             Routing.RegisterRoute(nameof(AddPharmacyView), typeof(AddPharmacyView));
             Routing.RegisterRoute(nameof(LoginAddUserView), typeof(LoginAddUserView));
@@ -84,13 +84,11 @@ namespace PharmacistRecommendation
             await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
         }
 
-        // Keep only one version of OnTestMainPageClicked
         private async void OnTestMainPageClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("test_main");
         }
 
-        // Reports navigation methods - Fixed routing
         private async void OnReportsClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("reports");

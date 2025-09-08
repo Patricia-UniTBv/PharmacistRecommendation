@@ -78,17 +78,16 @@
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="{StaticResource BgPage}">
+        <VerticalStackLayout Padding="20" Spacing="50" BackgroundColor="{StaticResource BgPage}">
 
             <!-- Header -->
             <Border Style="{StaticResource SectionCard}">
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="Pharmacist Recommendation System" Style="{StaticResource HeaderTitle}" />
+                    <Label Text="Recomandarea farmacistului" Style="{StaticResource HeaderTitle}" />
                     <Label Text="Selectați modulul dorit din opțiunile de mai jos" Style="{StaticResource HeaderSubtitle}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Funcții principale -->
             <Border Style="{StaticResource SectionCard}">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="Funcții principale" Style="{StaticResource SectionTitle}" />
@@ -101,19 +100,25 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0"
-                                Style="{StaticResource CardButton}"
-                                Text="💊 Medicamente"
-                                Command="{Binding NavigateToMedicationsCommand}" />
+                    Style="{StaticResource CardButton}"
+                    Text="📊 Monitorizare"
+                    BackgroundColor="#4A90E2"  
+                            TextColor="White"
+                    Command="{Binding NavigateToMonitoringCommand}" />
 
-                        <Button Grid.Column="1"
-                                Style="{StaticResource CardButton}"
-                                Text="👤 Card Nou"
-                                Command="{Binding NavigateToNewCardCommand}" />
+                            <Button Grid.Column="1"
+                    Style="{StaticResource CardButton}"
+                    Text="👤 Card Nou"
+                    BackgroundColor="#50C878"  
+                                TextColor="White"
+                    Command="{Binding NavigateToNewCardCommand}" />
 
-                        <Button Grid.Column="2"
-                                Style="{StaticResource CardButton}"
-                                Text="📊 Monitorizare"
-                                Command="{Binding NavigateToMonitoringCommand}" />
+                                <Button Grid.Column="2"
+                    Style="{StaticResource CardButton}"
+                    Text="💊 Medicamente"
+                    BackgroundColor="#AAB7B8"  
+                                    TextColor="White"
+                    Command="{Binding NavigateToMedicationsCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -131,110 +136,26 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0"
-                                Style="{StaticResource CardButton}"
-                                Text="📄 Act Mixt"
-                                Command="{Binding NavigateToMixedIssuanceCommand}" />
-
-                        <Button Grid.Column="1"
-                                Style="{StaticResource CardButton}"
-                                Text="📝 Act cu Prescripție"
-                                FontSize="13"
-                                Command="{Binding NavigateToPrescriptionOnlyCommand}" />
-
-                        <Button Grid.Column="2"
-                                Style="{StaticResource CardButton}"
-                                Text="✍️ Act Propriu"
-                                Command="{Binding NavigateToWithoutPrescriptionCommand}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
-
-             <!--Rapoarte-->
-            <Border Style="{StaticResource SectionCard}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Rapoarte" Style="{StaticResource SectionTitle}" />
-
-                    <Grid ColumnSpacing="12" RowSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Button Grid.Row="0" Grid.Column="0"
                     Style="{StaticResource CardButton}"
-                    Text="📊 Acte Mixte"
-                    Command="{Binding NavigateToMixedActsReportCommand}" />
+                    Text="📄 Act Mixt"
+                    BackgroundColor="#5D6D7E"  
+                            TextColor="White"
+                    Command="{Binding NavigateToMixedIssuanceCommand}" />
 
-                        <Button Grid.Row="0" Grid.Column="1"
+                            <Button Grid.Column="1"
                     Style="{StaticResource CardButton}"
-                    Text="📊 Acte Proprii"
-                    Command="{Binding NavigateToOwnActsReportCommand}" />
+                    Text="📝 Act cu Prescripție"
+                    FontSize="13"
+                    BackgroundColor="#7DCEA0" 
+                                TextColor="White"
+                    Command="{Binding NavigateToPrescriptionOnlyCommand}" />
 
-                        <Button Grid.Row="0" Grid.Column="2"
+                                <Button Grid.Column="2"
                     Style="{StaticResource CardButton}"
-                    Text="📊 Acte Consecutive"
-                    Command="{Binding NavigateToConsecutiveActsReportCommand}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Configurări -->
-            <Border Style="{StaticResource SectionCard}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Configurări" Style="{StaticResource SectionTitle}" />
-
-                    <Grid ColumnSpacing="12" RowSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Button Grid.Row="0" Grid.Column="0"
-                                Style="{StaticResource CardButton}"
-                                Text="👥 Utilizatori"
-                                Command="{Binding NavigateToUsersManagementCommand}" />
-
-                        <Button Grid.Row="0" Grid.Column="1"
-                                Style="{StaticResource CardButton}"
-                                Text="⚙️ Moduri Administrare"
-                                FontSize="12"
-                                Command="{Binding NavigateToAdministrationModesCommand}" />
-
-                        <Button Grid.Row="0" Grid.Column="2"
-                                Style="{StaticResource CardButton}"
-                                Text="📁 Config. Import"
-                                Command="{Binding NavigateToImportConfigCommand}" />
-
-                        <Button Grid.Row="1" Grid.Column="0"
-                                Style="{StaticResource CardButton}"
-                                Text="🛡️ Config. GDPR"
-                                Command="{Binding NavigateToGdprConfigCommand}" />
-
-                        <Button Grid.Row="1" Grid.Column="1"
-                                Style="{StaticResource CardButton}"
-                                Text="@ Config. Email"
-                                Command="{Binding NavigateToEmailCommand}"/>
-
-                        <!--<Button Grid.Row="1" Grid.Column="1"
-                                Style="{StaticResource CardButton}"
-                                Text="➕ Adăugare Utilizator"
-                                FontSize="12"
-                                Command="{Binding NavigateToAddPharmacistCommand}" />-->
-
-                        <!--<Button Grid.Row="1" Grid.Column="2"
-                                Style="{StaticResource CardButton}"
-                                Text="📈 Rapoarte"
-                                Command="{Binding NavigateToReportsCommand}" />-->
-                        
+                    Text="✍️ Act Propriu"
+                    BackgroundColor="#F5B041" 
+                                    TextColor="White"
+                    Command="{Binding NavigateToWithoutPrescriptionCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
