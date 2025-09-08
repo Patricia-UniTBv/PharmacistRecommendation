@@ -18,10 +18,7 @@ Notificarea de revocare a consimțământului poate fi transmisă prin e-mail, s
 
 Vă rugăm să aveți în vedere faptul că revocarea consimțământului nu afectează legalitatea utilizării datelor înainte de retragerea consimțământului.
 
-Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu vor fi utilizate în scopurile de mai sus."
-.Replace("{PharmacyName}", Safe(_pharmacy.Name))
-.Replace("{PharmacyAddress}", Safe(_pharmacy.Address))
-.Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI));
+Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu vor fi utilizate în scopurile de mai sus.";
 
 
         private readonly IPharmacyRepository _repository;

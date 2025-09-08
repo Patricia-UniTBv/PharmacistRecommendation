@@ -25,6 +25,12 @@ namespace Entities.Repository
             return await _context.Patients.FirstOrDefaultAsync(p => p.Cnp == cnp);
         }
 
+        public async Task<Patient?> GetByNameAsync(string? firstName, string? lastName)
+        {
+            return await _context.Patients
+        .FirstOrDefaultAsync(p => p.FirstName == firstName && p.LastName == lastName);
+        }
+
         public async Task<Patient?> GetByCardCodeAsync(string cardCode)
         {
             return await _context.PharmacyCards

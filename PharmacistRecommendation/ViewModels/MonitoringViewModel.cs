@@ -72,34 +72,61 @@ public partial class MonitoringViewModel : ObservableObject
 
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 16) 
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5) 
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnFirstNameChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue))
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnLastNameChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue))
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnCnpChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5)
             _ = SearchPatientAsync();
     }
 
     [RelayCommand]
     private async Task SearchPatientAsync()
     {
-        if (string.IsNullOrWhiteSpace(CardNumber))
-            return;
-
-        var patient = await _patientService.GetPatientByCardCodeAsync(CardNumber);
-
-        if (patient is null)
+        if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp))
         {
-            FirstName = LastName = Cnp = Cid = Gender = string.Empty;
-            Age = 0;
-            PatientId = 0;
+            var patient = await _patientService.GetPatientAsync(CardNumber, Cnp, FirstName, LastName);
+            await FillPatientData(patient);
             return;
         }
 
-        FirstName = patient.FirstName; 
+        if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+        {
+            var patient = await _patientService.GetPatientAsync(null, null, FirstName, LastName);
+            await FillPatientData(patient);
+        }
+    }
+
+    private async Task FillPatientData(Patient? patient)
+    {
+        if (patient is null)
+            return; 
+
+        FirstName = patient.FirstName;
         LastName = patient.LastName;
         Cnp = patient.Cnp!;
         Cid = patient.Cid!;
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
+
+        LoadHistoryAsync();
     }
+
 
     [RelayCommand]
     private async Task SaveAsync()
@@ -153,7 +180,7 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        var patient = await _patientService.GetPatientByCnpAsync(cnp);
+        var patient = await _patientService.GetPatientAsync(cardNumber, cnp, firstName, lastName);
 
         if (patient == null)
         {
@@ -169,7 +196,10 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        HistoryList.Clear();
+        if (HistoryList != null)
+            HistoryList.Clear();
+        else
+            HistoryList = new ObservableCollection<object>();
         ValidationMessage = string.Empty; 
 
         var start = StartDate.Date;
@@ -264,5 +294,6 @@ public partial class MonitoringViewModel : ObservableObject
         BloodGlucose = null;
         BodyTemperature = null;
         PatientEmail = string.Empty;
+        HistoryList = null;
     }
 }
