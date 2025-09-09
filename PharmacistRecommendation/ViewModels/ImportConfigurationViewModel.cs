@@ -9,13 +9,10 @@ namespace PharmacistRecommendation.ViewModels
 {
     public partial class ImportConfigurationViewModel : ObservableObject
     {
-        private readonly IImportConfigurationService _service;
-
         [ObservableProperty] string receiptPath;
         [ObservableProperty] string prescriptionPath;
         [ObservableProperty] string message;
         [ObservableProperty] bool isLoaded;
-        private int pharmacyId;
 
         public ImportConfigurationViewModel()
         {

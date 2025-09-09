@@ -6,7 +6,7 @@
              x:DataType="viewmodels:LoginAddUserViewModel"
              Title="Pharmacist Recommendation - Authentication"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource Primary}">
+             BackgroundColor="White">
 
     <ScrollView>
         <Grid RowDefinitions="Auto, *, Auto" Padding="40">
@@ -16,11 +16,11 @@
                 <Label Text="Recomandarea farmacistului"
                        FontSize="28"
                        FontAttributes="Bold"
-                       TextColor="White"
+                       TextColor="Black"
                        HorizontalOptions="Center" />
                 <Label Text="Sistemul de recomandări pentru farmacii"
                        FontSize="16"
-                       TextColor="White"
+                       TextColor="DarkSlateGrey"
                        Opacity="0.8"
                        HorizontalOptions="Center" />
             </StackLayout>
@@ -141,7 +141,7 @@
                     </StackLayout>
 
                     <!-- Add User Form -->
-                    <StackLayout Spacing="15">
+                    <StackLayout Spacing="5">
                         <StackLayout.Triggers>
                             <DataTrigger TargetType="StackLayout" Binding="{Binding IsLoginMode}" Value="True">
                                 <Setter Property="IsVisible" Value="False" />
@@ -170,14 +170,23 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="Prenume" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding FirstName}" Placeholder="Prenume" FontSize="16" BackgroundColor="Transparent" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8"
+               Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding FirstName}" Placeholder="Prenume"
+                   FontSize="14" BackgroundColor="Transparent"
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"/>
                                 </Frame>
                             </StackLayout>
+
                             <StackLayout Grid.Column="1" Spacing="5">
                                 <Label Text="Nume" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding LastName}" Placeholder="Nume" FontSize="16" BackgroundColor="Transparent" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8"
+               Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding LastName}" Placeholder="Nume"
+                   FontSize="14" BackgroundColor="Transparent"
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"/>
                                 </Frame>
                             </StackLayout>
                         </Grid>
@@ -185,7 +194,7 @@
                         <!-- Email -->
                         <StackLayout Spacing="5">
                             <Label Text="Email" FontSize="14" TextColor="Gray" />
-                            <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
+                            <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
                                 <Entry Text="{Binding Email}" Placeholder="email@example.com" FontSize="16" BackgroundColor="Transparent" Keyboard="Email" />
                             </Frame>
                         </StackLayout>
@@ -194,14 +203,16 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="Telefon" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding Phone}" Placeholder="0123456789" FontSize="16" BackgroundColor="Transparent" Keyboard="Telephone" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding Phone}" Placeholder="0123456789" FontSize="16" BackgroundColor="Transparent" Keyboard="Telephone"  VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
                                 </Frame>
                             </StackLayout>
                             <StackLayout Grid.Column="1" Spacing="5">
                                 <Label Text="NCM" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding Ncm}" Placeholder="NCM (opțional)" FontSize="16" BackgroundColor="Transparent" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding Ncm}" Placeholder="NCM (opțional)" FontSize="16" BackgroundColor="Transparent"  VerticalOptions="Center"
+                                           VerticalTextAlignment="Center" />
                                 </Frame>
                             </StackLayout>
                         </Grid>
@@ -210,17 +221,19 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="Nume utilizator" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding Username}" Placeholder="username" FontSize="16" BackgroundColor="Transparent" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding Username}" Placeholder="username" FontSize="16" BackgroundColor="Transparent"  VerticalOptions="Center"
+                                            VerticalTextAlignment="Center"/>
                                 </Frame>
                             </StackLayout>
                             <StackLayout Grid.Column="1" Spacing="5">
                                 <Label Text="Rol" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False">
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
                                     <Picker ItemsSource="{Binding AvailableRoles}" 
                                             SelectedItem="{Binding SelectedRole}"
                                             FontSize="16"
-                                            BackgroundColor="Transparent" />
+                                            BackgroundColor="Transparent"  VerticalOptions="Center"
+                                            VerticalTextAlignment="Center"/>
                                 </Frame>
                             </StackLayout>
                         </Grid>
@@ -229,14 +242,16 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="Parolă" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding Password}" Placeholder="Parola" FontSize="16" BackgroundColor="Transparent" IsPassword="True" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding Password}" Placeholder="Parola" FontSize="16" BackgroundColor="Transparent" IsPassword="True"  VerticalOptions="Center"
+                                            VerticalTextAlignment="Center"/>
                                 </Frame>
                             </StackLayout>
                             <StackLayout Grid.Column="1" Spacing="5">
                                 <Label Text="Confirmă parola" FontSize="14" TextColor="Gray" />
-                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="False">
-                                    <Entry Text="{Binding ConfirmPassword}" Placeholder="Confirmă parola" FontSize="16" BackgroundColor="Transparent" IsPassword="True" />
+                                <Frame BorderColor="LightGray" BackgroundColor="White" CornerRadius="8" Padding="5" HasShadow="False" HeightRequest="50">
+                                    <Entry Text="{Binding ConfirmPassword}" Placeholder="Confirmă parola" FontSize="16" BackgroundColor="Transparent" IsPassword="True"  VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
                                 </Frame>
                             </StackLayout>
                         </Grid>

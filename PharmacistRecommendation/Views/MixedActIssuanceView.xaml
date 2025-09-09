@@ -2,6 +2,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PharmacistRecommendation.ViewModels"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
     x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
     x:Name="MixedActIssuance"
     BackgroundColor="White">
@@ -57,8 +59,35 @@
             <Label Text="Diagnostic menționat de pacient/aparținător" TextColor="Black" FontAttributes="Bold"/>
             <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}" />
 
-            <Label Text="Medicamente utilizate de pacient" TextColor="Black" FontAttributes="Bold"/>
-            <Entry Placeholder="Medicamente utilizate de pacient" Text="{Binding UsedMedications}" />
+            <VerticalStackLayout Padding="10">
+                <Label Text="Medicamente utilizate de pacient"
+           TextColor="Black"
+           FontAttributes="Bold"/>
+
+                <Entry Text="{Binding SearchText}" 
+                       x:Name="SearchEntry"
+                       Placeholder="Caută medicament..." 
+                       TextChanged="OnSearchTextChanged"/>
+
+                <CollectionView ItemsSource="{Binding Suggestions}" 
+                    SelectionMode="Single"
+                    HeightRequest="200"
+                    VerticalScrollBarVisibility="Always"
+                    IsVisible="{Binding Suggestions.Count, Converter={StaticResource ZeroToBoolConverter}}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding}" Padding="5">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer 
+    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddSuggestionCommand}" 
+    CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
 
             <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}" >
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
@@ -130,20 +159,22 @@
                                 Text="{Binding Name}"
                                 TextChanged="OnMedicationNameTextChanged"
                                 Placeholder="Nume medicament"/>
-                                        <CollectionView ItemsSource="{Binding FilteredMedications}" 
-                                            IsVisible="{Binding ShowSuggestions}">
-                                            <CollectionView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Label Text="{Binding .}" FontSize="16">
-                                                        <Label.GestureRecognizers>
-                                                            <TapGestureRecognizer 
-                                                    Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
-                                                    CommandParameter="{Binding .}"/>
-                                                        </Label.GestureRecognizers>
-                                                    </Label>
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
-                                        </CollectionView>
+                                       <CollectionView
+    ItemsSource="{Binding FilteredMedications}"
+    IsVisible="{Binding ShowSuggestions}"
+    HeightRequest="150">
+    <CollectionView.ItemTemplate>
+        <DataTemplate>
+            <Label Text="{Binding .}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectMedicationCommand}"
+                        CommandParameter="{Binding .}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </DataTemplate>
+    </CollectionView.ItemTemplate>
+</CollectionView>
                                     </StackLayout>
                                     <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
                                     <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
@@ -209,23 +240,24 @@
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
                                     <StackLayout Grid.Column="1" Orientation="Vertical">
                                         <Entry
-                                Text="{Binding Name}"
-                                TextChanged="OnMedicationNameTextChanged"
-                                Placeholder="Nume medicament"/>
+Text="{Binding Name}"
+TextChanged="OnMedicationNameTextChanged"
+Placeholder="Nume medicament"/>
                                         <CollectionView ItemsSource="{Binding FilteredMedications}" 
-                                IsVisible="{Binding ShowSuggestions}" >
+            IsVisible="{Binding ShowSuggestions}">
                                             <CollectionView.ItemTemplate>
                                                 <DataTemplate>
                                                     <Label Text="{Binding .}" FontSize="16">
                                                         <Label.GestureRecognizers>
                                                             <TapGestureRecognizer 
-                                            Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
-                                            CommandParameter="{Binding .}"/>
+                    Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
+                    CommandParameter="{Binding .}"/>
                                                         </Label.GestureRecognizers>
                                                     </Label>
                                                 </DataTemplate>
                                             </CollectionView.ItemTemplate>
                                         </CollectionView>
+
                                     </StackLayout>
                                     <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
                                     <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
