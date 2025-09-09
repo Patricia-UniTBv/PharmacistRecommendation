@@ -8,11 +8,12 @@ using Entities.Models;
 namespace PharmacistRecommendation.ViewModels;
 
 [QueryProperty(nameof(ReportType), "type")]
-public partial class ReportsViewModel : ObservableObject        
+public partial class ReportsViewModel : ObservableObject, IDisposable
 {
     private readonly IPdfReportService _pdfReportService;
     private readonly IPrescriptionService _prescriptionService;
     private readonly IMonitoringService _monitoringService;
+    private bool _disposed = false;
 
     public ReportsViewModel(IPdfReportService pdfReportService, IPrescriptionService prescriptionService, IMonitoringService monitoringService)
     {
@@ -61,6 +62,36 @@ public partial class ReportsViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<object> monitoringData = new();
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            try
+            {
+                // Clear collections to help with memory cleanup
+                PrescriptionsData?.Clear();
+                MonitoringData?.Clear();
+                ReportTypes?.Clear();
+
+                System.Diagnostics.Debug.WriteLine("ReportsViewModel disposed successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during ReportsViewModel disposal: {ex.Message}");
+            }
+            finally
+            {
+                _disposed = true;
+            }
+        }
+    }
+
     partial void OnReportTypeChanged(string value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -68,10 +99,13 @@ public partial class ReportsViewModel : ObservableObject
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 await Task.Delay(500);
-                var reportTypeModel = ReportTypes.FirstOrDefault(r => GetReportTypeString(r.ReportType) == value);
+                var reportTypeModel = GetReportTypeByString(value);
                 if (reportTypeModel != null)
                 {
                     SelectedReportType = reportTypeModel;
+                    // Clear other report types and show only the selected one
+                    ReportTypes.Clear();
+                    ReportTypes.Add(reportTypeModel);
                     await LoadReportDataAsync();
                 }
             });
@@ -84,31 +118,67 @@ public partial class ReportsViewModel : ObservableObject
         {
             Title = "Raport Acte Mixte",
             Description = "Rapoarte pentru recomandări farmaceutice mixte",
-            Icon = "📋",
+            Icon = "",
             ReportType = ReportTypeEnum.MixedActs
         },
         new ReportTypeModel
         {
             Title = "Raport Acte Proprii",
             Description = "Rapoarte pentru recomandările proprii ale farmaciei",
-            Icon = "💊",
+            Icon = "",
             ReportType = ReportTypeEnum.OwnActs
         },
         new ReportTypeModel
         {
             Title = "Raport Acte Consecutive Prescripției",
             Description = "Rapoarte pentru recomandări consecutive prescripțiilor medicale",
-            Icon = "📄",
+            Icon = "",
             ReportType = ReportTypeEnum.ConsecutivePrescriptionActs
         },
         new ReportTypeModel
         {
             Title = "Lista Monitorizări",
             Description = "Rapoarte de monitorizare a pacienților",
-            Icon = "📊",
+            Icon = "",
             ReportType = ReportTypeEnum.MonitoringList
         }
     };
+
+    private ReportTypeModel? GetReportTypeByString(string reportTypeString)
+    {
+        return reportTypeString switch
+        {
+            "mixed" => new ReportTypeModel
+            {
+                Title = "Raport Acte Mixte",
+                Description = "Rapoarte pentru recomandări farmaceutice mixte",
+                Icon = "",
+                ReportType = ReportTypeEnum.MixedActs
+            },
+            "own" => new ReportTypeModel
+            {
+                Title = "Raport Acte Proprii",
+                Description = "Rapoarte pentru recomandările proprii ale farmaciei",
+                Icon = "",
+                ReportType = ReportTypeEnum.OwnActs
+            },
+            "consecutive" => new ReportTypeModel
+            {
+                Title = "Raport Acte Consecutive Prescripției",
+                Description = "Rapoarte pentru recomandări consecutive prescripțiilor medicale",
+                Icon = "",
+                ReportType = ReportTypeEnum.ConsecutivePrescriptionActs
+            },
+            "monitoring" => new ReportTypeModel
+            {
+                Title = "Lista Monitorizări",
+                Description = "Rapoarte de monitorizare a pacienților",
+                Icon = "",
+                ReportType = ReportTypeEnum.MonitoringList
+            },
+            _ => null
+        };
+    }
 
     [RelayCommand]
     private async Task SelectReportTypeAsync(ReportTypeModel reportType)
@@ -133,7 +203,7 @@ public partial class ReportsViewModel : ObservableObject
             HasData = false;
             DataCount = "";
 
-            System.Diagnostics.Debug.WriteLine($"🔍 Loading data for {SelectedReportType.ReportType}");
+            System.Diagnostics.Debug.WriteLine($"Loading data for {SelectedReportType.ReportType}");
 
             switch (SelectedReportType.ReportType)
             {
@@ -161,24 +231,24 @@ public partial class ReportsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Error loading data: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Error loading data: {ex}");
             await Shell.Current.DisplayAlert("Eroare", $"Eroare la încărcarea datelor: {ex.Message}", "OK");
         }
         finally
         {
             IsLoadingData = false;
-            System.Diagnostics.Debug.WriteLine($"✅ Data loading completed. HasData: {HasData}, DataCount: {DataCount}");
+            System.Diagnostics.Debug.WriteLine($"Data loading completed. HasData: {HasData}, DataCount: {DataCount}");
         }
     }
 
     private async Task LoadMixedActsData()
     {
-        System.Diagnostics.Debug.WriteLine("📋 Loading Mixed Acts data...");
+        System.Diagnostics.Debug.WriteLine("Loading Mixed Acts data...");
         var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-        System.Diagnostics.Debug.WriteLine($"📋 Total prescriptions from DB: {prescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
@@ -187,7 +257,7 @@ public partial class ReportsViewModel : ObservableObject
             .OrderBy(p => p.IssueDate)
             .ToList();
 
-        System.Diagnostics.Debug.WriteLine($"📋 Filtered Mixed Acts: {filteredPrescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Filtered Mixed Acts: {filteredPrescriptions.Count}");
 
         foreach (var prescription in filteredPrescriptions)
         {
@@ -200,12 +270,12 @@ public partial class ReportsViewModel : ObservableObject
 
     private async Task LoadOwnActsData()
     {
-        System.Diagnostics.Debug.WriteLine("💊 Loading Own Acts data...");
+        System.Diagnostics.Debug.WriteLine("Loading Own Acts data...");
         var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-        System.Diagnostics.Debug.WriteLine($"💊 Total prescriptions from DB: {prescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
@@ -213,7 +283,7 @@ public partial class ReportsViewModel : ObservableObject
             .OrderBy(p => p.IssueDate)
             .ToList();
 
-        System.Diagnostics.Debug.WriteLine($"💊 Filtered Own Acts: {filteredPrescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Filtered Own Acts: {filteredPrescriptions.Count}");
 
         foreach (var prescription in filteredPrescriptions)
         {
@@ -226,12 +296,12 @@ public partial class ReportsViewModel : ObservableObject
 
     private async Task LoadConsecutiveActsData()
     {
-        System.Diagnostics.Debug.WriteLine("📄 Loading Consecutive Acts data...");
+        System.Diagnostics.Debug.WriteLine("Loading Consecutive Acts data...");
         var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-        System.Diagnostics.Debug.WriteLine($"📄 Total prescriptions from DB: {prescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
         
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate)
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(p => string.IsNullOrEmpty(PatientFilter) || 
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
@@ -239,7 +309,7 @@ public partial class ReportsViewModel : ObservableObject
             .OrderBy(p => p.IssueDate)
             .ToList();
 
-        System.Diagnostics.Debug.WriteLine($"📄 Filtered Consecutive Acts: {filteredPrescriptions.Count}");
+        System.Diagnostics.Debug.WriteLine($"Filtered Consecutive Acts: {filteredPrescriptions.Count}");
 
         foreach (var prescription in filteredPrescriptions)
         {
@@ -252,7 +322,7 @@ public partial class ReportsViewModel : ObservableObject
 
     private async Task LoadMonitoringData()
     {
-        System.Diagnostics.Debug.WriteLine("📊 Loading Monitoring data...");
+        System.Diagnostics.Debug.WriteLine("Loading Monitoring data...");
         DataCount = "Monitorizări vor fi implementate în versiunea viitoare";
         HasData = false;
         
@@ -272,7 +342,7 @@ public partial class ReportsViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshDataAsync()
     {
-        System.Diagnostics.Debug.WriteLine("🔄 RefreshDataAsync called");
+        System.Diagnostics.Debug.WriteLine("RefreshDataAsync called");
         
         if (SelectedReportType == null)
         {
@@ -405,7 +475,7 @@ public partial class ReportsViewModel : ObservableObject
     [RelayCommand]
     private void ResetFilters()
     {
-        System.Diagnostics.Debug.WriteLine("🔄 ResetFilters called");
+        System.Diagnostics.Debug.WriteLine("ResetFilters called");
         StartDate = DateTime.Today.AddDays(-30);
         EndDate = DateTime.Today;
         PatientFilter = string.Empty;

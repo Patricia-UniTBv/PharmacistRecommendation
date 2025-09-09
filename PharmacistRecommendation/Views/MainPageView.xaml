@@ -5,22 +5,22 @@
              BackgroundColor="#F5F5F5">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#F5F5F5">
+        <VerticalStackLayout Padding="15" Spacing="15" BackgroundColor="#F5F5F5">
 
             <!-- Header Section -->
             <Border StrokeThickness="1"
                     StrokeShape="RoundRectangle 10,10,10,10"
                     Stroke="#DDDDDD"
                     BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="10">
+                    Padding="12">
+                <VerticalStackLayout Spacing="8">
                     <Label Text="Pharmacist Recommendation System"
-                           FontSize="24"
+                           FontSize="22"
                            FontAttributes="Bold"
                            TextColor="#2C3E50"
                            HorizontalOptions="Center" />
                     <Label Text="Selectați modulul dorit din opțiunile de mai jos"
-                           FontSize="16"
+                           FontSize="14"
                            TextColor="#7F8C8D"
                            HorizontalOptions="Center" />
                 </VerticalStackLayout>
@@ -31,14 +31,14 @@
                     StrokeShape="RoundRectangle 5,5,5,5"
                     Stroke="#DDDDDD"
                     BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
+                    Padding="12">
+                <VerticalStackLayout Spacing="10">
                     <Label Text="Funcții principale"
-                           FontSize="18"
+                           FontSize="16"
                            FontAttributes="Bold"
                            TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -47,32 +47,32 @@
 
                         <!-- Medicamente Button -->
                         <Button Grid.Column="0"
-                                Text="💊 Medicamente"
-                                FontSize="14"
+                                Text="Medicamente"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#3498DB"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToMedicationsCommand}" />
 
                         <!-- Card Nou Button -->
                         <Button Grid.Column="1"
-                                Text="👤 Card Nou"
-                                FontSize="14"
+                                Text="Card Nou"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#2ECC71"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToNewCardCommand}" />
 
                         <!-- Monitorizare Button -->
                         <Button Grid.Column="2"
-                                Text="📊 Monitorizare"
-                                FontSize="14"
+                                Text="Monitorizare"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#E74C3C"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToMonitoringCommand}" />
                     </Grid>
                 </VerticalStackLayout>
@@ -83,14 +83,14 @@
                     StrokeShape="RoundRectangle 5,5,5,5"
                     Stroke="#DDDDDD"
                     BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
+                    Padding="12">
+                <VerticalStackLayout Spacing="10">
                     <Label Text="Emitere documente"
-                           FontSize="18"
+                           FontSize="16"
                            FontAttributes="Bold"
                            TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -99,33 +99,98 @@
 
                         <!-- Act Mixt Button -->
                         <Button Grid.Column="0"
-                                Text="📄 Act Mixt"
-                                FontSize="14"
+                                Text="Act Mixt"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#9B59B6"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToMixedIssuanceCommand}" />
 
                         <!-- Act cu Prescripție Button -->
                         <Button Grid.Column="1"
-                                Text="📝 Act cu Prescripție"
-                                FontSize="13"
+                                Text="Act cu Prescripție"
+                                FontSize="12"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#F39C12"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToPrescriptionOnlyCommand}" />
 
                         <!-- Act Propriu Button -->
                         <Button Grid.Column="2"
-                                Text="✍️ Act Propriu"
-                                FontSize="14"
+                                Text="Act Propriu"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#1ABC9C"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToWithoutPrescriptionCommand}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Reports Section -->
+            <Border StrokeThickness="1"
+                    StrokeShape="RoundRectangle 5,5,5,5"
+                    Stroke="#DDDDDD"
+                    BackgroundColor="White"
+                    Padding="12">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Rapoarte"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="Black" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Raport Acte Mixte Button -->
+                        <Button Grid.Row="0" Grid.Column="0"
+                                Text="Raport Acte Mixte"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                BackgroundColor="#9B59B6"
+                                HeightRequest="65"
+                                Command="{Binding NavigateToMixedActsReportCommand}" />
+
+                        <!-- Raport Acte Proprii Button -->
+                        <Button Grid.Row="0" Grid.Column="1"
+                                Text="Raport Acte Proprii"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                BackgroundColor="#E74C3C"
+                                HeightRequest="65"
+                                Command="{Binding NavigateToOwnActsReportCommand}" />
+
+                        <!-- Raport Acte Consecutive Button -->
+                        <Button Grid.Row="1" Grid.Column="0"
+                                Text="Raport Acte Consecutive"
+                                FontSize="11"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                BackgroundColor="#3498DB"
+                                HeightRequest="65"
+                                Command="{Binding NavigateToConsecutiveActsReportCommand}" />
+
+                        <!-- Centru Rapoarte Button -->
+                        <Button Grid.Row="1" Grid.Column="1"
+                                Text="Centru Rapoarte"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                BackgroundColor="#2980B9"
+                                HeightRequest="65"
+                                Command="{Binding NavigateToReportsCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -135,14 +200,14 @@
                     StrokeShape="RoundRectangle 5,5,5,5"
                     Stroke="#DDDDDD"
                     BackgroundColor="White"
-                    Padding="15">
-                <VerticalStackLayout Spacing="15">
+                    Padding="12">
+                <VerticalStackLayout Spacing="10">
                     <Label Text="Configurări"
-                           FontSize="18"
+                           FontSize="16"
                            FontAttributes="Bold"
                            TextColor="Black" />
-                    
-                    <Grid ColumnSpacing="15" RowSpacing="15">
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -155,63 +220,63 @@
 
                         <!-- Utilizatori Button -->
                         <Button Grid.Row="0" Grid.Column="0"
-                                Text="👥 Utilizatori"
-                                FontSize="14"
+                                Text="Utilizatori"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#34495E"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToUsersManagementCommand}" />
 
                         <!-- Moduri Administrare Button -->
                         <Button Grid.Row="0" Grid.Column="1"
-                                Text="⚙️ Moduri Administrare"
-                                FontSize="12"
+                                Text="Moduri Administrare"
+                                FontSize="11"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#95A5A6"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToAdministrationModesCommand}" />
 
                         <!-- Config. Import Button -->
                         <Button Grid.Row="0" Grid.Column="2"
-                                Text="📁 Config. Import"
-                                FontSize="14"
+                                Text="Config. Import"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#8E44AD"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToImportConfigCommand}" />
 
                         <!-- Config. GDPR Button -->
                         <Button Grid.Row="1" Grid.Column="0"
-                                Text="🛡️ Config. GDPR"
-                                FontSize="14"
+                                Text="Config. GDPR"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#D35400"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToGdprConfigCommand}" />
 
                         <!-- Adăugare Utilizator Button -->
                         <Button Grid.Row="1" Grid.Column="1"
-                                Text="➕ Adăugare Utilizator"
-                                FontSize="12"
+                                Text="Adăugare Utilizator"
+                                FontSize="11"
                                 FontAttributes="Bold"
                                 TextColor="White"
                                 BackgroundColor="#27AE60"
-                                HeightRequest="80"
+                                HeightRequest="65"
                                 Command="{Binding NavigateToAddPharmacistCommand}" />
 
-                        <!-- Rapoarte Button -->
+                        <!-- Email Config Button -->
                         <Button Grid.Row="1" Grid.Column="2"
-                                Text="📈 Rapoarte"
-                                FontSize="14"
+                                Text="Config. Email"
+                                FontSize="13"
                                 FontAttributes="Bold"
                                 TextColor="White"
-                                BackgroundColor="#2980B9"
-                                HeightRequest="80"
-                                Command="{Binding NavigateToReportsCommand}" />
+                                BackgroundColor="#16A085"
+                                HeightRequest="65"
+                                Command="{Binding NavigateToEmailCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
