@@ -166,27 +166,6 @@ namespace PharmacistRecommendation.ViewModels
                 Suggestions.Add(med);
         }
 
-        //public void UpdateSuggestionsForRow(ReceiptDrugModel row, string query)
-        //{
-        //    row.FilteredMedications.Clear();
-
-        //    if (!string.IsNullOrWhiteSpace(query))
-        //    {
-        //        var matches = AllMedications
-        //            .Where(m => m.Contains(query, StringComparison.OrdinalIgnoreCase))
-        //            .ToList();
-
-        //        foreach (var m in matches)
-        //            row.FilteredMedications.Add(m);
-
-        //        row.ShowSuggestions = row.FilteredMedications.Any();
-        //    }
-        //    else
-        //    {
-        //        row.ShowSuggestions = false;
-        //    }
-        //}
-
 
         public void AddSuggestionToText(string suggestion)
         {
@@ -202,6 +181,11 @@ namespace PharmacistRecommendation.ViewModels
 
             SearchText = string.Join(" ", parts);
 
+            if (!string.IsNullOrWhiteSpace(UsedMedications))
+                UsedMedications += " " + suggestion;
+            else
+                UsedMedications = suggestion;
+
             Suggestions.Clear();
 
             Task.Run(async () =>
@@ -209,6 +193,56 @@ namespace PharmacistRecommendation.ViewModels
                 await Task.Delay(50);
                 MainThread.BeginInvokeOnMainThread(() => SearchEntryReference?.Focus());
             });
+        }
+
+        public async void FilterMedications(string searchText, PrescriptionDrugModel drug)
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(100, _cts.Token); 
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    drug.FilteredMedications.Clear();
+
+                    if (string.IsNullOrWhiteSpace(searchText))
+                    {
+                        drug.ShowSuggestions = false;
+                        return;
+                    }
+
+                    var filtered = AllMedications
+                        .Where(m => m.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .Take(10)
+                        .ToList(); 
+
+                    foreach (var med in filtered)
+                    {
+                        drug.FilteredMedications.Add(med);
+                    }
+
+                    drug.ShowSuggestions = drug.FilteredMedications.Any();
+
+                    OnPropertyChanged(nameof(drug.FilteredMedications));
+                    OnPropertyChanged(nameof(drug.ShowSuggestions));
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error filtering medications: {ex.Message}");
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    drug.ShowSuggestions = false;
+                });
+            }
         }
 
         [RelayCommand]
@@ -295,11 +329,6 @@ namespace PharmacistRecommendation.ViewModels
                 await ShowAlert("Completează numele pacientului/aparținătorului!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(PatientCnp) && string.IsNullOrWhiteSpace(CaregiverCnp))
-            {
-                await ShowAlert("Completează CNP-ul pacientului/aparținătorului!");
-                return;
-            }
 
             var prescription = new Prescription
             {
@@ -311,6 +340,7 @@ namespace PharmacistRecommendation.ViewModels
                 Series = this.PrescriptionSeries,
                 Diagnostic = this.PrescriptionDiagnosis,
                 DiagnosisMentionedByPatient = this.PatientDiagnosis,
+                MedicamentsMentionedByPacient = this.UsedMedications,
                 Symptoms = this.Symptoms,
                 Suspicion = this.Suspicion,
                 PharmacistObservations = this.PharmacistObservations,
@@ -351,59 +381,7 @@ namespace PharmacistRecommendation.ViewModels
             await ShowAlert("Rețeta a fost salvată cu succes!");
         }
 
-        public async void FilterMedications(string searchText, PrescriptionDrugModel drug)
-        {
-            _cts?.Cancel();
-            _cts = new CancellationTokenSource();
-
-            try
-            {
-                await Task.Delay(100, _cts.Token); // debounce
-
-                // Ensure we're on the main thread for UI updates
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    drug.FilteredMedications.Clear();
-
-                    if (string.IsNullOrWhiteSpace(searchText))
-                    {
-                        drug.ShowSuggestions = false;
-                        return;
-                    }
-
-                    var filtered = AllMedications
-                        .Where(m => m.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                        .Take(10)
-                        .ToList(); // Materialize the query
-
-                    foreach (var med in filtered)
-                    {
-                        drug.FilteredMedications.Add(med);
-                    }
-
-                    drug.ShowSuggestions = drug.FilteredMedications.Any();
-
-                    // Force property change notification
-                    OnPropertyChanged(nameof(drug.FilteredMedications));
-                    OnPropertyChanged(nameof(drug.ShowSuggestions));
-                });
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected when cancelled, do nothing
-                return;
-            }
-            catch (Exception ex)
-            {
-                // Log the exception for debugging
-                System.Diagnostics.Debug.WriteLine($"Error filtering medications: {ex.Message}");
-
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    drug.ShowSuggestions = false;
-                });
-            }
-        }
+       
 
         [RelayCommand]
         public async void SelectMedication(string medName)
@@ -501,7 +479,6 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacyName = _pharmacy!.Name,
                 PharmacyAddress = _pharmacy.Address!,
                 PharmacyPhone = _pharmacy!.Phone!,
-                Logo = _pharmacy!.Logo,
                 Series = this.PrescriptionSeries!,
                 Number = this.PrescriptionNumber!,
                 IssueDate = DateTime.Now,
@@ -509,12 +486,21 @@ namespace PharmacistRecommendation.ViewModels
                 PatientCnp = this.PatientCnp!,
                 CaregiverName = this.CaregiverName!,
                 CaregiverCnp = this.CaregiverCnp!,
+                ModeCode = mode switch
+                {
+                    "withprescription" => "AC",
+                    "withoutprescription" => "AP",
+                    "mixed" => "AM",
+                    _ => "XX"
+                },
                 DoctorStamp = this.DoctorStamp!,
                 Diagnostic = this.PrescriptionDiagnosis!,
                 DiagnosisMentioned = this.PatientDiagnosis!,
+                MedicationsMentioned = this.UsedMedications!,
                 Symptoms = this.Symptoms!,
                 Suspicion = this.Suspicion!,
                 PharmacistObservations = this.PharmacistObservations!,
+                NotesToDoctor = this.NotesToDoctor!,
                 PharmacistRecommendation = this.PharmacistRecommendation,
                 PharmaceuticalService = this.SelectedPharmaceuticalService,
                 MedicationsWithPrescription = medsWithPrescription,

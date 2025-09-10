@@ -1,110 +1,65 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities.Models
+namespace Entities.Models;
+
+public partial class Medication
 {
-    [Table("Medication")]
-    public class Medication
-    {
-        [Key]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Column("CodCIM")]
-        [StringLength(50)]
-        public string? CodCIM { get; set; }
+    [Column("CodCIM")]
+    public string? CodCIM { get; set; }
 
-        [Column("Denumire")]
-        [StringLength(500)]
-        public string? Denumire { get; set; }
+    public string? Denumire { get; set; }
 
-        [Column("DCI")]
-        [StringLength(255)]
-        public string? DCI { get; set; }
+    [Column("DCI")]
+    public string? DCI { get; set; }
 
-        [Column("FormaFarmaceutica")]
-        [StringLength(255)]
-        public string? FormaFarmaceutica { get; set; }
+    public string? FormaFarmaceutica { get; set; }
 
-        [Column("Concentratia")]
-        [StringLength(100)]
-        public string? Concentratia { get; set; }
+    public string? Concentratia { get; set; }
 
-        [Column("FirmaProducatoare")]
-        [StringLength(255)]
-        public string? FirmaProducatoare { get; set; }
+    public string? FirmaProducatoare { get; set; }
 
-        [Column("FirmaDetinatoare")]
-        [StringLength(255)]
-        public string? FirmaDetinatoare { get; set; }
+    public string? FirmaDetinatoare { get; set; }
 
-        [Column("CodATC")]
-        [StringLength(50)]
-        public string? CodATC { get; set; }
+    [Column("CodATC")]
+    public string? CodATC { get; set; }
 
-        [Column("ActiuneTerapeutica")]
-        [StringLength(255)]
-        public string? ActiuneTerapeutica { get; set; }
+    public string? ActiuneTerapeutica { get; set; }
 
-        [Column("Prescriptie")]
-        [StringLength(100)]
-        public string? Prescriptie { get; set; }
+    public string? Prescriptie { get; set; }
 
-        [Column("NrData")]
-        [StringLength(100)]
-        public string? NrData { get; set; }
+    public string? NrData { get; set; }
 
-        [Column("Ambalaj")]
-        [StringLength(255)]
-        public string? Ambalaj { get; set; }
+    public string? Ambalaj { get; set; }
 
-        [Column("VolumAmbalaj")]
-        [StringLength(100)]
-        public string? VolumAmbalaj { get; set; }
+    public string? VolumAmbalaj { get; set; }
 
-        [Column("Valabilitate")]
-        [StringLength(100)]
-        public string? Valabilitate { get; set; }
+    public string? Valabilitate { get; set; }
 
-        [Column("Bulina")]
-        [StringLength(50)]
-        public string? Bulina { get; set; }
+    public string? Bulina { get; set; }
 
-        [Column("Diez")]
-        [StringLength(50)]
-        public string? Diez { get; set; }
+    public string? Diez { get; set; }
 
-        [Column("Stea")]
-        [StringLength(50)]
-        public string? Stea { get; set; }
+    public string? Stea { get; set; }
 
-        [Column("Triunghi")]
-        [StringLength(50)]
-        public string? Triunghi { get; set; }
+    public string? Triunghi { get; set; }
 
-        [Column("Dreptunghi")]
-        [StringLength(50)]
-        public string? Dreptunghi { get; set; }
+    public string? Dreptunghi { get; set; }
 
-        // NEW: Add IsActive property
-        [Column("IsActive")]
-        public bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; }
 
-        //System columns
-        [Column("CreatedAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; }
+    [Column("PreviousCodCIM")]
+    public string? PreviousCodCIM { get; set; }
 
-        [Column("PreviousCodCIM")]
-        [StringLength(50)]
-        public string? PreviousCodCIM { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-        [Column("UpdatedAt")]
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public string DataSource { get; set; } = null!;
 
-        [Column("DataSource")]
-        [StringLength(50)]
-        public string DataSource { get; set; } = "Manual";
+    public virtual ICollection<MedicationDocument> MedicationDocuments { get; set; } = new List<MedicationDocument>();
 
-        public virtual ICollection<MedicationDocument> MedicationDocuments { get; set; } = new List<MedicationDocument>();
-        public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();
-    }
+    public virtual ICollection<PrescriptionMedication> PrescriptionMedications { get; set; } = new List<PrescriptionMedication>();
 }

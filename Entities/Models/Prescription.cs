@@ -23,6 +23,8 @@ public partial class Prescription
 
     public string? DiagnosisMentionedByPatient { get; set; }
 
+    public string? MedicamentsMentionedByPacient { get; set; }
+
     public string? Symptoms { get; set; }
 
     public string? Suspicion { get; set; }

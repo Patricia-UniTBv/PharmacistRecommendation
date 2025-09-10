@@ -17,29 +17,40 @@ public partial class PharmacistRecommendationDbContext : DbContext
     }
 
     public virtual DbSet<AdministrationMode> AdministrationModes { get; set; }
-    public virtual DbSet<Assistant> Assistants { get; set; }  
+
+    public virtual DbSet<Assistant> Assistants { get; set; }
+
     public virtual DbSet<Document> Documents { get; set; }
+
     public virtual DbSet<DocumentType> DocumentTypes { get; set; }
+
     public virtual DbSet<EmailConfiguration> EmailConfigurations { get; set; }
+
     public virtual DbSet<ImportConfiguration> ImportConfigurations { get; set; }
+
     public virtual DbSet<Medication> Medications { get; set; }
+
     public virtual DbSet<MedicationDocument> MedicationDocuments { get; set; }
+
     public virtual DbSet<Monitoring> Monitorings { get; set; }
+
     public virtual DbSet<Patient> Patients { get; set; }
+
+    public virtual DbSet<Pharmacist> Pharmacists { get; set; }
+
     public virtual DbSet<Pharmacy> Pharmacies { get; set; }
+
     public virtual DbSet<PharmacyCard> PharmacyCards { get; set; }
-    public virtual DbSet<Pharmacist> Pharmacists { get; set; }  
+
     public virtual DbSet<Prescription> Prescriptions { get; set; }
+
     public virtual DbSet<PrescriptionMedication> PrescriptionMedications { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;");
-        }
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=Patricia-Anelis\\SQLEXPRESS;Database=PharmacistRecommendationDB;Integrated Security=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,11 +61,38 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Assistant>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Assistant__3214EC07");
+
+            entity.ToTable("Assistant");
+
+            entity.HasIndex(e => e.SupervisorPharmacistId, "IX_Assistant_SupervisorPharmacistId");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Assistant)
+                .HasForeignKey<Assistant>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assistant_User");
+
+            entity.HasOne(d => d.SupervisorPharmacist).WithMany(p => p.Assistants)
+                .HasForeignKey(d => d.SupervisorPharmacistId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assistant_Pharmacist");
+        });
+
         modelBuilder.Entity<Document>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Document__3214EC07A42E023C");
 
             entity.ToTable("Document");
+
+            entity.HasIndex(e => e.DocumentTypeId, "IX_Document_DocumentTypeId");
+
+            entity.HasIndex(e => e.PatientId, "IX_Document_PatientId");
+
+            entity.HasIndex(e => e.UserId, "IX_Document_UserId");
 
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -93,6 +131,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("EmailConfiguration");
 
+            entity.HasIndex(e => e.PharmacyId, "IX_EmailConfiguration_PharmacyId");
+
             entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.SmtpPort).HasMaxLength(10);
             entity.Property(e => e.SmtpServer).HasMaxLength(100);
@@ -110,6 +150,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("ImportConfiguration");
 
+            entity.HasIndex(e => e.PharmacyId, "IX_ImportConfiguration_PharmacyId");
+
             entity.Property(e => e.PrescriptionPath).HasMaxLength(255);
             entity.Property(e => e.ReceiptPath).HasMaxLength(255);
 
@@ -126,31 +168,41 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.ToTable("Medication");
 
             entity.HasIndex(e => e.CodCIM, "IX_Medication_CodCIM");
-        
-            entity.Property(e => e.CodCIM).HasMaxLength(50);
-            entity.Property(e => e.Denumire).HasMaxLength(500);
-            entity.Property(e => e.DCI).HasMaxLength(255);
-            entity.Property(e => e.FormaFarmaceutica).HasMaxLength(255);
-            entity.Property(e => e.Concentratia).HasMaxLength(100);
-            entity.Property(e => e.FirmaProducatoare).HasMaxLength(255); 
-            entity.Property(e => e.FirmaDetinatoare).HasMaxLength(255); 
-            entity.Property(e => e.CodATC).HasMaxLength(50);
+
             entity.Property(e => e.ActiuneTerapeutica).HasMaxLength(255);
-            entity.Property(e => e.Prescriptie).HasMaxLength(100);
-            entity.Property(e => e.NrData).HasMaxLength(100);
             entity.Property(e => e.Ambalaj).HasMaxLength(255);
-            entity.Property(e => e.VolumAmbalaj).HasMaxLength(100);
-            entity.Property(e => e.Valabilitate).HasMaxLength(100);
             entity.Property(e => e.Bulina).HasMaxLength(50);
+            entity.Property(e => e.CodATC)
+                .HasMaxLength(50)
+                .HasColumnName("CodATC");
+            entity.Property(e => e.CodCIM)
+                .HasMaxLength(50)
+                .HasColumnName("CodCIM");
+            entity.Property(e => e.Concentratia).HasMaxLength(100);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.DataSource)
+                .HasMaxLength(50)
+                .HasDefaultValue("Manual");
+            entity.Property(e => e.DCI)
+                .HasMaxLength(255)
+                .HasColumnName("DCI");
+            entity.Property(e => e.Denumire).HasMaxLength(500);
             entity.Property(e => e.Diez).HasMaxLength(50);
+            entity.Property(e => e.Dreptunghi).HasMaxLength(50);
+            entity.Property(e => e.FirmaDetinatoare).HasMaxLength(255);
+            entity.Property(e => e.FirmaProducatoare).HasMaxLength(255);
+            entity.Property(e => e.FormaFarmaceutica).HasMaxLength(255);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.NrData).HasMaxLength(100);
+            entity.Property(e => e.Prescriptie).HasMaxLength(100);
+            entity.Property(e => e.PreviousCodCIM)
+                .HasMaxLength(50)
+                .HasColumnName("PreviousCodCIM");
             entity.Property(e => e.Stea).HasMaxLength(50);
             entity.Property(e => e.Triunghi).HasMaxLength(50);
-            entity.Property(e => e.Dreptunghi).HasMaxLength(50);         
-            entity.Property(e => e.DataSource).HasMaxLength(50).HasDefaultValue("Manual");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.PreviousCodCIM).HasMaxLength(50); 
-            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Valabilitate).HasMaxLength(100);
+            entity.Property(e => e.VolumAmbalaj).HasMaxLength(100);
         });
 
         modelBuilder.Entity<MedicationDocument>(entity =>
@@ -158,6 +210,10 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Medicati__3214EC077DB018F6");
 
             entity.ToTable("MedicationDocument");
+
+            entity.HasIndex(e => e.DocumentId, "IX_MedicationDocument_DocumentId");
+
+            entity.HasIndex(e => e.MedicationId, "IX_MedicationDocument_MedicationId");
 
             entity.HasOne(d => d.Document).WithMany(p => p.MedicationDocuments)
                 .HasForeignKey(d => d.DocumentId)
@@ -175,6 +231,10 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Monitori__3214EC07DFBF32F4");
 
             entity.ToTable("Monitoring");
+
+            entity.HasIndex(e => e.CardId, "IX_Monitoring_CardId");
+
+            entity.HasIndex(e => e.PatientId, "IX_Monitoring_PatientId");
 
             entity.Property(e => e.Height).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.MonitoringDate)
@@ -215,6 +275,27 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.Phone).HasMaxLength(20);
         });
 
+        modelBuilder.Entity<Pharmacist>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Pharmacist__3214EC07");
+
+            entity.ToTable("Pharmacist");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FirstName).HasMaxLength(50);
+            entity.Property(e => e.LastName).HasMaxLength(50);
+            entity.Property(e => e.Ncm).HasMaxLength(20);
+            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.Username).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Pharmacist)
+                .HasForeignKey<Pharmacist>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Pharmacist_User");
+        });
+
         modelBuilder.Entity<Pharmacy>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Pharmacy__3214EC075262534F");
@@ -236,6 +317,10 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Pharmacy__3214EC078F3535BC");
 
             entity.ToTable("PharmacyCard");
+
+            entity.HasIndex(e => e.PatientId, "IX_PharmacyCard_PatientId");
+
+            entity.HasIndex(e => e.PharmacyId, "IX_PharmacyCard_PharmacyId");
 
             entity.Property(e => e.Code).HasMaxLength(50);
             entity.Property(e => e.IssueDate)
@@ -259,24 +344,29 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("Prescription");
 
+            entity.HasIndex(e => e.DocumentId, "IX_Prescription_DocumentId");
+
+            entity.HasIndex(e => e.PatientId, "IX_Prescription_PatientId");
+
             entity.HasIndex(e => new { e.Series, e.Number }, "IX_Prescription_SeriesNumber");
 
             entity.Property(e => e.CaregiverCnp).HasMaxLength(20);
             entity.Property(e => e.CaregiverName).HasMaxLength(50);
-            entity.Property(e => e.DiagnosisMentionedByPatient).HasMaxLength(200);
+            entity.Property(e => e.DiagnosisMentionedByPatient).HasMaxLength(500);
             entity.Property(e => e.Diagnostic).HasMaxLength(200);
             entity.Property(e => e.DoctorStamp).HasMaxLength(20);
             entity.Property(e => e.FillDate).HasColumnType("datetime");
             entity.Property(e => e.IssueDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.NotesToDoctor).HasMaxLength(200);
+            entity.Property(e => e.MedicamentsMentionedByPacient).HasMaxLength(500);
+            entity.Property(e => e.NotesToDoctor).HasMaxLength(500);
             entity.Property(e => e.Number).HasMaxLength(20);
             entity.Property(e => e.PatientCnp).HasMaxLength(20);
             entity.Property(e => e.PatientName).HasMaxLength(50);
             entity.Property(e => e.PharmaceuticalService).HasMaxLength(50);
             entity.Property(e => e.PharmacistObservations).HasMaxLength(200);
-            entity.Property(e => e.PharmacistRecommendation).HasMaxLength(200);
+            entity.Property(e => e.PharmacistRecommendation).HasMaxLength(500);
             entity.Property(e => e.Series).HasMaxLength(20);
             entity.Property(e => e.Suspicion).HasMaxLength(200);
             entity.Property(e => e.Symptoms).HasMaxLength(200);
@@ -295,6 +385,12 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Prescrip__3214EC07825DDC1B");
 
             entity.ToTable("PrescriptionMedication");
+
+            entity.HasIndex(e => e.AdministrationModeId, "IX_PrescriptionMedication_AdministrationModeId");
+
+            entity.HasIndex(e => e.MedicationId, "IX_PrescriptionMedication_MedicationId");
+
+            entity.HasIndex(e => e.PrescriptionId, "IX_PrescriptionMedication_PrescriptionId");
 
             entity.Property(e => e.Evening).HasMaxLength(20);
             entity.Property(e => e.Morning).HasMaxLength(20);
@@ -322,6 +418,8 @@ public partial class PharmacistRecommendationDbContext : DbContext
 
             entity.ToTable("User");
 
+            entity.HasIndex(e => e.PharmacyId, "IX_User_PharmacyId");
+
             entity.HasIndex(e => e.Username, "IX_User_Username")
                 .IsUnique()
                 .HasFilter("([Username] IS NOT NULL)");
@@ -342,42 +440,6 @@ public partial class PharmacistRecommendationDbContext : DbContext
                 .HasForeignKey(d => d.PharmacyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_Pharmacy");
-        });
-
-        // ADD THESE CONFIGURATIONS:
-        modelBuilder.Entity<Assistant>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Assistant__3214EC07");
-            entity.ToTable("Assistant");
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Assistant)
-                .HasForeignKey<Assistant>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Assistant_User");
-
-            entity.HasOne(d => d.SupervisorPharmacist).WithMany(p => p.Assistants)
-                .HasForeignKey(d => d.SupervisorPharmacistId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Assistant_Pharmacist");
-        });
-
-        modelBuilder.Entity<Pharmacist>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Pharmacist__3214EC07");
-            entity.ToTable("Pharmacist");
-
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.FirstName).HasMaxLength(50);
-            entity.Property(e => e.LastName).HasMaxLength(50);
-            entity.Property(e => e.Ncm).HasMaxLength(20);
-            entity.Property(e => e.Password).HasMaxLength(100);
-            entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.Username).HasMaxLength(50);
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Pharmacist)
-                .HasForeignKey<Pharmacist>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Pharmacist_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

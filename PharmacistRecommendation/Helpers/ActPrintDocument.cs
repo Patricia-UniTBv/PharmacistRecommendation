@@ -19,22 +19,22 @@ namespace PharmacistRecommendation.Helpers
         public string? PatientCnp { get; set; }
         public string? CaregiverName { get; set; }
         public string? CaregiverCnp { get; set; }
+        public string? ModeCode { get; set; }
         public string? DoctorStamp { get; set; }
         public string? Diagnostic { get; set; }
         public string? DiagnosisMentioned { get; set; }
+        public string? MedicationsMentioned { get; set; }
         public string? Symptoms { get; set; }
         public string? Suspicion { get; set; }
         public string? PharmacistObservations { get; set; }
+        public string? NotesToDoctor { get; set; }
         public string? PharmacistRecommendation { get; set; }
         public string? PharmaceuticalService { get; set; }
+        public string? LoggedUserNcm { get; set; }
+        public string? LoggedUserName { get; set; }
+
         public List<MedicationLine> MedicationsWithPrescription { get; set; } = new();
         public List<MedicationLine> MedicationsWithoutPrescription { get; set; } = new();
-
-        private int currentMedicationWithPrescriptionIndex = 0;
-        private int currentMedicationWithoutPrescriptionIndex = 0;
-        private bool printingWithPrescription = true;
-        private bool isFirstPage = true;
-
 
         public class MedicationLine
         {
@@ -46,302 +46,162 @@ namespace PharmacistRecommendation.Helpers
             public string? AdministrationMode { get; set; }
         }
 
+
         protected override void OnPrintPage(PrintPageEventArgs e)
         {
             var g = e.Graphics;
-            float left = 40, top = 40;
-            float right = e.PageBounds.Width - 40;
+            float left = 30, top = 40;
+            float right = e.PageBounds.Width - 100;
             float y = top;
             float contentWidth = right - left;
 
             using var fontTitle = new SD.Font("Arial", 16f, FontStyle.Bold);
-            using var fontSubtitle = new SD.Font("Arial", 11f, FontStyle.Bold);
             using var fontText = new SD.Font("Arial", 10f, FontStyle.Regular);
-            using var fontBold = new SD.Font("Arial", 10f, FontStyle.Bold);
+            using var fontSmall = new SD.Font("Arial", 7f, FontStyle.Regular);
             using var fontSection = new SD.Font("Arial", 12f, FontStyle.Bold);
-            using var fontSmall = new SD.Font("Arial", 8f, FontStyle.Regular);
 
             float lineHeight = fontText.GetHeight(g) * 1.2f;
-            float sectionSpacing = lineHeight * 1.2f;
-            float logoSize = 80f;
 
-            string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
-
-            if ((MedicationsWithPrescription == null || MedicationsWithPrescription.Count == 0) && printingWithPrescription)
+            try
             {
-                printingWithPrescription = false;
+                using var logo = SD.Image.FromFile("Resources/Images/logo.png");
+                g.DrawImage(logo, left, y, 60, 60);
+            }
+            catch { }
+
+            float textStartX = left + 90;
+            float titleWidth = contentWidth - 90;
+            StringFormat format = new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near, FormatFlags = StringFormatFlags.LineLimit };
+
+            string pageTitle = ModeCode switch
+            {
+                "AC" => "Act consecutiv prescripției",
+                "AP" => "Act propriu",
+                "AM" => "Act mixt",
+                _ => "Document farmaceutic"
+            };
+            RectangleF rectTitle = new RectangleF(textStartX, y, titleWidth, 40);
+            g.DrawString(pageTitle, fontTitle, Brushes.Black, rectTitle, format);
+
+            y += 50;
+
+            string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{new Random().Next(1000, 9999):D4}";
+            g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString(code, fontText, Brushes.Black, right - 150, y);
+            y += lineHeight;
+            g.DrawString($"FARMACIST: {SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}", fontText, Brushes.Black, textStartX, y);
+            y += lineHeight;
+
+            g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
+            y += lineHeight;
+            g.DrawString($"ADRESA: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
+            y += lineHeight;
+            g.DrawString($"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
+            y += lineHeight;
+
+            float cnpOffset = 200; 
+
+            g.DrawString($"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString($"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+            y += lineHeight;
+
+            g.DrawString($"Aparținător: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString($"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+            y += lineHeight;
+
+            void DrawWrappedText(string text)
+            {
+                RectangleF rect = new RectangleF(textStartX, y, contentWidth, e.PageBounds.Height - y - 150);
+                g.DrawString(text, fontText, Brushes.Black, rect, format);
+                y += g.MeasureString(text, fontText, (int)contentWidth).Height + lineHeight / 2;
             }
 
-
-            if (isFirstPage)
+            DrawWrappedText($"DIAGNOSTIC MENȚIONAT DE PACIENT: {DiagnosisMentioned}");
+            DrawWrappedText($"MEDICAMENTE UTILIZATE DE PACIENT: {MedicationsMentioned}");
+            if (ModeCode == "AC" || ModeCode == "AM")
             {
-                DrawHeaderWithLogo(g, left, y, contentWidth, logoSize, fontTitle, fontSubtitle);
-                y += logoSize + 15f;
+                float offset = 250; 
+                g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
+                g.DrawString($"SERIE/NUMĂR MEDIC: {Series}", fontText, Brushes.Black, textStartX + offset, y);
+                y += fontText.GetHeight(g) * 1.1f;
+                DrawWrappedText($"DIAGNOSTIC: {Diagnostic}");
+            }
+            DrawWrappedText($"SIMPTOMATOLOGIE: {Symptoms}");
+            DrawWrappedText($"SUSPICIUNE: {Suspicion}");
+            DrawWrappedText($"CONSTATĂRILE FARMACISTULUI: {PharmacistObservations}");
 
-                using (var grayBrush = new SolidBrush(SD.Color.FromArgb(100, 100, 100)))
-                {
-                    g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontBold, Brushes.Black, left, y);
-                }
-                y += lineHeight * 1.5f;
-
-                y = DrawInformationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-                y = DrawPatientSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-                y = DrawMedicalDetailsSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-
-                isFirstPage = false;
+            if (MedicationsWithPrescription?.Count > 0)
+            {
+                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
+                                          MedicationsWithPrescription, fontSection, fontText, fontText, false);
             }
 
-            float availableHeight = e.PageBounds.Height - y - 110; 
-            float rowHeight = fontText.GetHeight(g) * 3.5f;
-            int medicationsPerPage = (int)((availableHeight - sectionSpacing * 2) / rowHeight);
-
-            if (printingWithPrescription && MedicationsWithPrescription?.Count > 0)
+            if (MedicationsWithoutPrescription?.Count > 0)
             {
-                y += sectionSpacing;
-                var medsToDraw = MedicationsWithPrescription
-                    .Skip(currentMedicationWithPrescriptionIndex)
-                    .Take(medicationsPerPage)
-                    .ToList();
-
-                y = DrawMedicationSection(g, left, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
-                                          medsToDraw, fontSection, fontText, fontBold);
-
-                currentMedicationWithPrescriptionIndex += medsToDraw.Count;
-
-                if (currentMedicationWithPrescriptionIndex < MedicationsWithPrescription.Count)
-                {
-                    e.HasMorePages = true;
-                    return;
-                }
-                else
-                {
-                    if (MedicationsWithoutPrescription != null && MedicationsWithoutPrescription.Count > 0)
-                    {
-                        printingWithPrescription = false;
-                        currentMedicationWithPrescriptionIndex = 0;
-                        e.HasMorePages = true;
-                        return;
-                    }
-                    else
-                    {
-                        currentMedicationWithPrescriptionIndex = 0;
-                        printingWithPrescription = true;
-                        y += sectionSpacing;
-                        y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-                        DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
-                        e.HasMorePages = false;
-                        return;
-                    }
-                }
+                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
+                                          MedicationsWithoutPrescription, fontSection, fontText, fontText, false);
             }
 
-            if (!printingWithPrescription && MedicationsWithoutPrescription?.Count > 0)
-            {
-                if (currentMedicationWithoutPrescriptionIndex == 0)
-                    y += sectionSpacing;
+            y = DrawWrappedTextCustom(g, NotesToDoctor, fontText, textStartX, y, contentWidth);
+            y = DrawWrappedTextCustom(g, PharmacistRecommendation, fontText, textStartX, y, contentWidth);
+            DrawWrappedText($"Serviciu farmaceutic: {PharmaceuticalService}");
 
-                var medsToDraw = MedicationsWithoutPrescription
-                    .Skip(currentMedicationWithoutPrescriptionIndex)
-                    .Take(medicationsPerPage)
-                    .ToList();
+            float footerY = e.PageBounds.Bottom - 100;
+            string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
+            g.DrawString(pharmacistName.ToUpper(), fontText, Brushes.Black, left, footerY);
+            g.DrawString(PatientName?.ToUpper(), fontText, Brushes.Black, right - 120, footerY);
 
-                y = DrawMedicationSection(g, left, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
-                                          medsToDraw, fontSection, fontText, fontBold);
-
-                currentMedicationWithoutPrescriptionIndex += medsToDraw.Count;
-
-                if (currentMedicationWithoutPrescriptionIndex < MedicationsWithoutPrescription.Count)
-                {
-                    e.HasMorePages = true;
-                    return;
-                }
-                else
-                {
-                    currentMedicationWithoutPrescriptionIndex = 0;
-                }
-            }
-
-            y += sectionSpacing;
-            y = DrawRecommendationSection(g, left, y, contentWidth, fontSection, fontText, lineHeight);
-            DrawFooter(g, left, right, e.PageBounds.Bottom, fontText, fontSmall);
-
-            printingWithPrescription = true;
-            e.HasMorePages = false;
+            g.DrawString("Document generat cu recomandarea farmacistului", fontSmall, Brushes.Gray, left, footerY + 35);
         }
 
 
-        private void DrawHeaderWithLogo(SD.Graphics g, float left, float y, float contentWidth, float logoSize, SD.Font titleFont, SD.Font subtitleFont)
-        {
-            var logoRect = new RectangleF(left, y, logoSize, logoSize);
-            var symbolRect = new RectangleF(logoRect.X + 20, logoRect.Y, 60, 60);
-            if (!string.IsNullOrWhiteSpace(Logo) && File.Exists(Logo))
-            {
-                using var logoImage = SD.Image.FromFile(Logo);
-                g.DrawImage(logoImage, logoRect);
-            }
-            else
-            {
-                var fallbackLogo = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Images", "logo.png");
-                if (File.Exists(fallbackLogo))
-                {
-                    using var logoImage = SD.Image.FromFile(fallbackLogo);
-                    g.DrawImage(logoImage, logoRect);
-                }
-            }
 
-            if (File.Exists(Logo))
-            {
-                using (var logo = SD.Image.FromFile(Logo))
-                {
-                    float aspectImage = (float)logo.Width / logo.Height;
-                    float aspectRect = symbolRect.Width / symbolRect.Height;
-
-                    float drawWidth, drawHeight;
-                    float drawX, drawY;
-
-                    if (aspectImage > aspectRect)
-                    {
-                        drawWidth = symbolRect.Width;
-                        drawHeight = symbolRect.Width / aspectImage;
-                        drawX = symbolRect.X;
-                        drawY = symbolRect.Y + (symbolRect.Height - drawHeight) / 2;
-                    }
-                    else
-                    {
-                        drawHeight = symbolRect.Height;
-                        drawWidth = symbolRect.Height * aspectImage;
-                        drawX = symbolRect.X + (symbolRect.Width - drawWidth) / 2;
-                        drawY = symbolRect.Y;
-                    }
-
-                    var destRect = new RectangleF(drawX, drawY, drawWidth, drawHeight);
-                    g.DrawImage(logo, destRect);
-                }
-            }
-            else
-            {
-                using (var symbolFont = new SD.Font("Arial", 24f, FontStyle.Bold))
-                    g.DrawString("?", symbolFont, Brushes.Black, symbolRect.X, symbolRect.Y);
-            }
-
-
-            var titleX = left + logoSize + 20;
-            var titleY = y + 10;
-            g.DrawString("RECOMANDAREA FARMACISTULUI", titleFont, Brushes.DarkBlue, titleX, titleY);
-
-            using (var subtitleBrush = new SolidBrush(SD.Color.FromArgb(100, 100, 100)))
-            {
-                g.DrawString("Consiliere farmaceutică profesională", subtitleFont, subtitleBrush, titleX, titleY + 25);
-            }
-
-            using (var pen = new Pen(SD.Color.FromArgb(70, 130, 180), 2))
-            {
-                g.DrawLine(pen, left, y + logoSize + 10, left + contentWidth, y + logoSize + 10);
-            }
-        }
-
-        private float DrawInformationSection(SD.Graphics g, float left, float y, float contentWidth, SD.Font sectionFont, SD.Font textFont, float lineHeight)
-        {
-            g.DrawString("INFORMAȚII FARMACIE", sectionFont, new SolidBrush(SD.Color.FromArgb(70, 130, 180)), left + 10, y + 3);
-            y += lineHeight * 1.4f;
-
-            g.DrawString($"Nume farmacie: {PharmacyName}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Adresă: {PharmacyAddress}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Telefon: {PharmacyPhone}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight * 1.3f;
-
-            return y;
-        }
-
-        private float DrawPatientSection(SD.Graphics g, float left, float y, float contentWidth, SD.Font sectionFont, SD.Font textFont, float lineHeight)
-        {
-            g.DrawString("INFORMAȚII PACIENT", sectionFont, new SolidBrush(SD.Color.FromArgb(70, 130, 180)), left + 10, y + 3);
-            y += lineHeight * 1.4f;
-
-            g.DrawString($"Nume pacient: {PatientName}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"CNP pacient: {PatientCnp}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Aparținător: {CaregiverName}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"CNP aparținător: {CaregiverCnp}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight * 1.3f;
-
-            return y;
-        }
-
-        private float DrawMedicalDetailsSection(SD.Graphics g, float left, float y, float contentWidth, SD.Font sectionFont, SD.Font textFont, float lineHeight)
-        {
-            g.DrawString("DETALII MEDICALE", sectionFont, new SolidBrush(SD.Color.FromArgb(70, 130, 180)), left + 10, y + 3);
-            y += lineHeight * 1.4f;
-
-            g.DrawString($"Parafă medic: {DoctorStamp}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Serie: {Series}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Număr: {Number}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Diagnostic: {Diagnostic}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Diagnostic menționat: {DiagnosisMentioned}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Simptomatologie: {Symptoms}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Suspiciune: {Suspicion}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight;
-            g.DrawString($"Constatările farmacistului: {PharmacistObservations}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight * 1.3f;
-
-            return y;
-        }
 
         private float DrawMedicationSection(SD.Graphics g, float left, float y, float contentWidth, string title,
-                                           List<MedicationLine> medications, SD.Font sectionFont, SD.Font textFont, SD.Font headerFont)
+                                    List<MedicationLine> medications, SD.Font sectionFont, SD.Font textFont, SD.Font headerFont,
+                                    bool noColor)
         {
-            var titleRect = new RectangleF(left, y, contentWidth, sectionFont.GetHeight(g) * 1.3f);
-            var titleColor = title.Contains("REȚETĂ") ? SD.Color.FromArgb(220, 20, 60) : SD.Color.FromArgb(30, 144, 255);
-            var bgColor = title.Contains("REȚETĂ") ? SD.Color.FromArgb(255, 240, 245) : SD.Color.FromArgb(240, 248, 255);
+            g.DrawString(title, sectionFont, Brushes.Black, left, y);
+            y += sectionFont.GetHeight(g) * 1.3f;
 
-            g.DrawString(title, sectionFont, new SolidBrush(titleColor), left + 10, y + 5);
-            y += sectionFont.GetHeight(g) * 1.9f;
+            y = DrawCompactMedicationsTable(g, left, y, contentWidth, medications, textFont, headerFont, noColor);
 
-            y = DrawEnhancedMedicationsTable(g, left, y, contentWidth, medications, textFont, headerFont);
-
-            return y;
+            return y + 5f;
         }
 
-        private float DrawEnhancedMedicationsTable(SD.Graphics g, float left, float y, float tableWidth,
-                                                 List<MedicationLine> medications, SD.Font font, SD.Font headerFont)
+
+
+        private float DrawCompactMedicationsTable(SD.Graphics g, float left, float y, float tableWidth,
+                                           List<MedicationLine> medications, SD.Font font, SD.Font headerFont,
+                                           bool noColor)
         {
-            float[] colWidths = { 50, 220, 100, 80, 80, 80, 180 };
+            float[] colWidths = { 30, 200, 65, 65, 65, 70, 130 };
+            float totalWidth = colWidths.Sum();
+            float scale = 1f;
+
+            if (totalWidth > tableWidth)
+                scale = tableWidth / totalWidth;
+
+            for (int i = 0; i < colWidths.Length; i++)
+                colWidths[i] *= scale;
+
             float x = left;
-            float headerHeight = headerFont.GetHeight(g) * 1.8f;
-            float rowHeight = font.GetHeight(g) * 2.9f;
-            string[] headers = { "NR\nCRT", "MEDICAMENT", "DIMINEAȚA", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMINISTRARE" };
+            float headerHeight = headerFont.GetHeight(g) * 1.5f;
+            float rowHeight = font.GetHeight(g) * 2f;
+            string[] headers = { "NR CRT", "MEDICAMENT", "DIMIN.", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
 
             for (int i = 0; i < headers.Length; i++)
             {
                 var headerRect = new RectangleF(x, y, colWidths[i], headerHeight);
+                g.DrawRectangle(Pens.Gray, Rectangle.Round(headerRect));
 
-                using (var headerBrush = new SolidBrush(SD.Color.FromArgb(70, 130, 180)))
-                {
-                    g.FillRectangle(headerBrush, headerRect);
-                }
-
-                g.DrawRectangle(new Pen(SD.Color.FromArgb(25, 25, 112), 2), Rectangle.Round(headerRect));
-
-                var textRect = new RectangleF(x + 5, y + 8, colWidths[i] - 10, headerHeight - 16);
-                using (var format = new StringFormat())
-                {
-                    format.Alignment = StringAlignment.Center;
-                    format.LineAlignment = StringAlignment.Center;
-                    g.DrawString(headers[i], headerFont, Brushes.White, textRect, format);
-                }
+                var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, headerHeight - 4);
+                using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                g.DrawString(headers[i], headerFont, Brushes.Black, textRect, format);
 
                 x += colWidths[i];
             }
+
             y += headerHeight;
 
             for (int r = 0; r < medications.Count; r++)
@@ -358,67 +218,47 @@ namespace PharmacistRecommendation.Helpers
             med.AdministrationMode ?? "-"
         };
 
-                var rowColor = r % 2 == 0 ? SD.Color.FromArgb(248, 248, 255) : SD.Color.White;
-
                 for (int i = 0; i < values.Length; i++)
                 {
                     var cellRect = new RectangleF(x, y, colWidths[i], rowHeight);
+                    g.DrawRectangle(Pens.Gray, Rectangle.Round(cellRect));
 
-                    using (var cellBrush = new SolidBrush(rowColor))
+                    var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
+                    using var format = new StringFormat
                     {
-                        g.FillRectangle(cellBrush, cellRect);
-                    }
+                        Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near,
+                        LineAlignment = StringAlignment.Center,
+                        Trimming = StringTrimming.EllipsisCharacter
+                    };
 
-                    g.DrawRectangle(new Pen(SD.Color.FromArgb(200, 200, 200)), Rectangle.Round(cellRect));
-
-                    var textRect = new RectangleF(x + 5, y + 5, colWidths[i] - 10, rowHeight - 10);
-                    using (var format = new StringFormat())
-                    {
-                        format.Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near;
-                        format.LineAlignment = StringAlignment.Center;
-                        format.Trimming = StringTrimming.EllipsisCharacter;
-                        g.DrawString(values[i], font, Brushes.Black, textRect, format);
-                    }
+                    g.DrawString(values[i], font, Brushes.Black, textRect, format);
 
                     x += colWidths[i];
                 }
+
                 y += rowHeight;
             }
-
-            return y + 10;
-        }
-
-        private float DrawRecommendationSection(SD.Graphics g, float left, float y, float contentWidth, SD.Font sectionFont, SD.Font textFont, float lineHeight)
-        {
-            g.DrawString("RECOMANDAREA FARMACISTULUI", sectionFont, new SolidBrush(SD.Color.FromArgb(0, 128, 0)), left + 10, y + 3);
-            y += lineHeight * 1.6f;
-
-            var recRect = new RectangleF(left + 10, y, contentWidth - 20, lineHeight * 3);
-            g.FillRectangle(Brushes.White, recRect);
-            g.DrawRectangle(new Pen(SD.Color.FromArgb(200, 200, 200)), Rectangle.Round(recRect));
-
-            var textRect = new RectangleF(left + 20, y + 10, contentWidth - 40, lineHeight * 2.5f);
-            g.DrawString(PharmacistRecommendation, textFont, Brushes.Black, textRect);
-            y += lineHeight * 3.5f;
-
-            g.DrawString($"Serviciu farmaceutic: {PharmaceuticalService}", textFont, Brushes.Black, left + 10, y);
-            y += lineHeight * 1.5f;
 
             return y;
         }
 
-        private void DrawFooter(SD.Graphics g, float left, float right, float bottom, SD.Font textFont, SD.Font smallFont)
+        private float DrawWrappedTextCustom(SD.Graphics g, string text, SD.Font font, float textStartX, float y, float contentWidth)
         {
-            var footerY = bottom - 80;
+            if (string.IsNullOrWhiteSpace(text))
+                return y;
 
-            g.DrawString("Semnătură farmacist:", textFont, Brushes.Black, left, footerY);
-            g.DrawLine(Pens.Black, left + 150, footerY + 15, left + 350, footerY + 15);
-
-            using (var grayBrush = new SolidBrush(SD.Color.FromArgb(128, 128, 128)))
+            var rect = new RectangleF(textStartX, y, contentWidth, 10000); 
+            using var format = new StringFormat
             {
-                g.DrawString("Document generat cu sistemul Recomandarea Farmacistului", smallFont, grayBrush, left, bottom - 30);
-                g.DrawString($"Generat la: {DateTime.Now:dd.MM.yyyy HH:mm}", smallFont, grayBrush, right - 200, bottom - 30);
-            }
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Near,
+                Trimming = StringTrimming.Word
+            };
+
+            g.DrawString(text, font, Brushes.Black, rect, format);
+
+            var size = g.MeasureString(text, font, (int)contentWidth);
+            return y + size.Height + font.GetHeight(g) * 0.3f; 
         }
     }
 }

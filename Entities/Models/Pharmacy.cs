@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models;
 
@@ -10,7 +11,7 @@ public partial class Pharmacy
     public string Name { get; set; } = null!;
 
     public string? Address { get; set; }
-
+    [Column("CUI")]
     public string? CUI { get; set; }
 
     public string? Email { get; set; }
