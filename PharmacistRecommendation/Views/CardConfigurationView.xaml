@@ -3,112 +3,295 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="PharmacistRecommendation.Views.CardConfigurationView"
-    Padding="20">
+    Padding="24,20,24,24"
+    BackgroundColor="#F8F9FA">
 
-    <Grid RowDefinitions="Auto, * , Auto" RowSpacing="2">
-        <Label 
-      Grid.Row="0"
-      Text="Adăugare card pacient"
-      FontSize="24"
-      FontAttributes="Bold"
-      HorizontalOptions="Center"
-      TextColor="Black" />
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="3">
-                <Label Text="Număr card" FontAttributes="Bold"/>
-                <Entry Placeholder="Nr. card" 
-               Text="{Binding CardNumber}" />
-                <Label Text="Nume client" FontAttributes="Bold"/>
-                <Entry Placeholder="Nume client" 
-               Text="{Binding LastName}" />
-                <Label Text="Prenume client" FontAttributes="Bold"/>
-                <Entry Placeholder="Prenume client" 
-               Text="{Binding FirstName}" />
-                <Label Text="CNP" FontAttributes="Bold"/>
-                <Entry Placeholder="CNP" 
-               Text="{Binding Cnp}" 
-               Keyboard="Numeric" />
-                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                    <VerticalStackLayout>
-                        <Label Text="CID" FontAttributes="Bold"/>
-                        <HorizontalStackLayout>
-                        <Entry Placeholder="CID (autogenerat)" 
-                 Text="{Binding Cid}" 
-                 IsReadOnly="True" 
-                 HorizontalOptions="FillAndExpand" />
-                        <Button Text="Generează CID"
-                  Command="{Binding GenerateCidCommand}"
-                  WidthRequest="125"
-                  BackgroundColor="Gray"/>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-                <Label Text="Telefon" FontAttributes="Bold"/>
-                <Entry Placeholder="Telefon" 
-               Text="{Binding Phone}" 
-               Keyboard="Telephone" />
-                <Label Text="Email" FontAttributes="Bold"/>
-                <Entry Placeholder="Email" 
-               Text="{Binding Email}" 
-               Keyboard="Email" />
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
 
-                <Label Text="Data nașterii" 
-                       FontAttributes="Bold" 
-                       TextColor="Black" />
-                <DatePicker 
-                        Date="{Binding Birthdate}" 
-                        Format="dd/MM/yyyy" />
-                <Label Text="Gen" 
-                       FontAttributes="Bold" 
-                       TextColor="Black" />
-                <Border Stroke="#CCCCCC"
-        StrokeThickness="1"
-        StrokeShape="RoundRectangle 15,15,15,15"
-        BackgroundColor="White"
-        WidthRequest="130"
-        HeightRequest="42"
-        HorizontalOptions="Start"
-        Padding="10,0">
+        <StackLayout Grid.Row="0" Spacing="4">
+            <Label 
+                Text="Adăugare card pacient"
+                FontSize="24"
+                FontAttributes="None"
+                FontFamily="SegoeUI"
+                HorizontalOptions="Center"
+                TextColor="#1A1A1A"
+                Margin="0,8,0,4" />
+            <BoxView 
+                HeightRequest="2"
+                WidthRequest="60"
+                BackgroundColor="#E3F2FD"
+                HorizontalOptions="Center"
+                CornerRadius="1" />
+        </StackLayout>
 
-                    <Grid>
-                        <Picker SelectedItem="{Binding Gender}"
-                BackgroundColor="Transparent"
-                TextColor="Black"
-                HorizontalOptions="Fill"
-                VerticalOptions="Center">
-                            <Picker.Items>
-                                <x:String>Feminin</x:String>
-                                <x:String>Masculin</x:String>
-                            </Picker.Items>
-                        </Picker>
-                    </Grid>
-                </Border>
+        <Border Grid.Row="1"
+                Stroke="#E8EAED"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 16"
+                BackgroundColor="White"
+                Padding="24"
+                Shadow="{OnPlatform 
+                    Default='0,2,8,0,#10000000',
+                    iOS='0,1,4,0,#15000000'}">
 
-            </VerticalStackLayout>
-            
-        </ScrollView>
-       
-        
+            <ScrollView>
+                <Grid ColumnDefinitions="*,*" 
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="20" 
+                      ColumnSpacing="28">
+
+                    <StackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                        <Label Text="Număr card" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Introduceți nr. card" 
+                                   Text="{Binding CardNumber}"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="0" Grid.Column="1" Spacing="6">
+                        <Label Text="Nume pacient" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Nume de familie" 
+                                   Text="{Binding LastName}"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                        <Label Text="Prenume pacient" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Prenume" 
+                                   Text="{Binding FirstName}"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                        <Label Text="CNP" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Cod numeric personal" 
+                                   Text="{Binding Cnp}" 
+                                   Keyboard="Numeric"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="2" Grid.Column="0" Spacing="6">
+                        <Label Text="CID" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Border Stroke="#D1D5DB"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="#F3F4F6"
+                                    Grid.Column="0">
+                                <Entry Placeholder="CID (autogenerat)" 
+                                       Text="{Binding Cid}" 
+                                       IsReadOnly="False"
+                                       FontSize="15"
+                                       TextColor="#6B7280"
+                                       PlaceholderColor="#9CA3AF"
+                                       BackgroundColor="Transparent"
+                                       Margin="12,8"/>
+                            </Border>
+                            <Button Text="Generează"
+                                    Grid.Column="1"
+                                    Command="{Binding GenerateCidCommand}"
+                                    FontSize="13"
+                                    WidthRequest="95"
+                                    HeightRequest="44"
+                                    BackgroundColor="#4F46E5"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    Shadow="{OnPlatform 
+                                        Default='0,1,3,0,#20000000',
+                                        iOS='0,1,2,0,#25000000'}"/>
+                        </Grid>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="2" Grid.Column="1" Spacing="6">
+                        <Label Text="Telefon" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Număr de telefon" 
+                                   Text="{Binding Phone}" 
+                                   Keyboard="Telephone"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="3" Grid.Column="0" Spacing="6">
+                        <Label Text="Email" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Entry Placeholder="Adresă de email" 
+                                   Text="{Binding Email}" 
+                                   Keyboard="Email"
+                                   FontSize="15"
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   BackgroundColor="Transparent"
+                                   Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="3" Grid.Column="1" Spacing="6">
+                        <Label Text="Data nașterii" 
+           FontSize="14" 
+           TextColor="#424242"
+           Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 8"
+            BackgroundColor="#FAFBFC">
+                            <Entry Text="{Binding BirthdateString}" 
+               Placeholder="dd/MM/yyyy"
+               FontSize="15"
+               TextColor="#1F2937"
+               BackgroundColor="Transparent"
+               Margin="12,8"/>
+                        </Border>
+                    </StackLayout>
+
+
+                    <StackLayout Grid.Row="4" Grid.Column="0" Spacing="6">
+                        <Label Text="Gen" 
+                               FontSize="14" 
+                               FontAttributes="None"
+                               TextColor="#424242"
+                               Margin="2,0,0,0"/>
+                        <Border Stroke="#D1D5DB"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FAFBFC">
+                            <Picker SelectedItem="{Binding Gender}"
+                                    FontSize="15"
+                                    TextColor="#1F2937"
+                                    BackgroundColor="Transparent"
+                                    Margin="12,8">
+                                <Picker.Items>
+                                    <x:String>Feminin</x:String>
+                                    <x:String>Masculin</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Border>
+                    </StackLayout>
+
+                </Grid>
+            </ScrollView>
+        </Border>
+
         <HorizontalStackLayout 
-      Grid.Row="2"
-      Spacing="16"
-      HorizontalOptions="Start">
+            Grid.Row="2"
+            Spacing="16"
+            HorizontalOptions="Center"
+            Margin="0,8,0,0">
 
+            <Button Text="Card nou"
+            FontSize="15"
+            FontAttributes="None"
+            Command="{Binding NewCardCommand}"
+            BackgroundColor="#4F46E5"
+            TextColor="White"
+            CornerRadius="10"
+            WidthRequest="120"
+            HeightRequest="48"/>
+            
             <Button Text="Printează"
-              BackgroundColor="Blue"
-              TextColor="White"
-              Command="{Binding PrintCommand}"
-              IsEnabled="{Binding IsPrintButtonEnabled}"/>
+                    FontSize="15"
+                    FontAttributes="None"
+                    BackgroundColor="#1565C0"
+                    TextColor="White"
+                    CornerRadius="10"
+                    WidthRequest="120"
+                    HeightRequest="48"
+                    Command="{Binding PrintCommand}"
+                    IsEnabled="{Binding IsPrintButtonEnabled}"
+                    Shadow="{OnPlatform 
+                        Default='0,2,8,0,#301565C0',
+                        iOS='0,1,4,0,#351565C0'}"/>
 
             <Button Text="Salvează"
-              Command="{Binding SaveCommand}"
-              BackgroundColor="Green"
-              TextColor="White" />
-            <Label Text="{Binding ValidationMessage}" 
-TextColor="Red" 
-FontAttributes="Italic" 
-HorizontalOptions="Center" 
-VerticalOptions="EndAndExpand"/>
+                    FontSize="15"
+                    FontAttributes="None"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#2E7D32"
+                    TextColor="White"
+                    CornerRadius="10"
+                    WidthRequest="120"
+                    HeightRequest="48"
+                    Shadow="{OnPlatform 
+                        Default='0,2,8,0,#302E7D32',
+                        iOS='0,1,4,0,#352E7D32'}"/>
+
+            <Label Text="{Binding ValidationMessage}"
+                   TextColor="Red"
+                   Margin="0,10,0,0"/>
         </HorizontalStackLayout>
 
     </Grid>

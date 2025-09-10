@@ -6,6 +6,7 @@ namespace Entities.Services
 {
     public class PharmacyService : IPharmacyService
     {
+        string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
         private const string DEFAULT_CONSENT_TEMPLATE =
 @"Declar că sunt de acord ca societatea {PharmacyName}, cu sediul în {PharmacyAddress}, având cod fiscal: {PharmacyFiscalCode} (denumită în continuare “Unitate Farmaceutică”) să fie autorizată să proceseze datele mele personale introduse în formularul de înregistrare client, precum și datele care sunt colectate în cadrul tranzacțiilor comerciale cu Unitate Farmaceutică în următoarele scopuri: generarea cardului, furnizarea de informații referitoare la campanii de marketing, oferte speciale, și/sau alte forme de publicitate, prin intermediul e-mail-ului, SMS-ului, telefonului, precum și contactarea în vederea desfășurării de sondaje de opinie a clienților.
 

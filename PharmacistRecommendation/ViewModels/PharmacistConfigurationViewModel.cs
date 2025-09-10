@@ -45,23 +45,23 @@ namespace PharmacistRecommendation.ViewModels
             Role = value ? "Assistant" : "Pharmacist";
         }
 
-        partial void OnFirstNameChanged(string? value)
-        {
-            UpdateUsername();
-        }
+        //partial void OnFirstNameChanged(string? value)
+        //{
+        //    UpdateUsername();
+        //}
 
-        partial void OnLastNameChanged(string? value)
-        {
-            UpdateUsername();
-        }
+        //partial void OnLastNameChanged(string? value)
+        //{
+        //    UpdateUsername();
+        //}
 
-        private void UpdateUsername()
-        {
-            if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
-            {
-                Username = $"{LastName.Trim().ToLower()}.{FirstName.Trim().ToLower()}";
-            }
-        }
+        //private void UpdateUsername()
+        //{
+        //    if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+        //    {
+        //        Username = $"{LastName.Trim().ToLower()}.{FirstName.Trim().ToLower()}";
+        //    }
+        //}
 
         public void LoadFrom(UserDTO dto)
         {
@@ -72,7 +72,7 @@ namespace PharmacistRecommendation.ViewModels
             PhoneNr = dto.Phone;
             Username = dto.Username;
             Ncm = dto.Ncm;
-
+            IsAssistant = dto.Role == "Assistant";
             Mode = UserFormMode.Edit;
         }
 
@@ -130,7 +130,9 @@ namespace PharmacistRecommendation.ViewModels
                     await Shell.Current.DisplayAlert("Succes", "Utilizator adăugat cu succes! ", "OK");
                 }
 
-              
+                CloseRequested?.Invoke(null);
+                await Shell.Current.GoToAsync("users_management");
+
             }
             catch (Exception ex)
             {

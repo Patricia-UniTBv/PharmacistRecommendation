@@ -9,57 +9,33 @@ namespace PharmacistRecommendation.ViewModels
 {
     public partial class ImportConfigurationViewModel : ObservableObject
     {
-        private readonly IImportConfigurationService _service;
-
         [ObservableProperty] string receiptPath;
         [ObservableProperty] string prescriptionPath;
         [ObservableProperty] string message;
         [ObservableProperty] bool isLoaded;
-        private int pharmacyId;
 
-        public ImportConfigurationViewModel(IImportConfigurationService service)
+        public ImportConfigurationViewModel()
         {
-            pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
-            _service = service;
-            LoadConfigurationAsync();
+            LoadConfiguration();
         }
 
-        public IAsyncRelayCommand LoadConfigurationCommand { get; }
-
-        private async Task LoadConfigurationAsync()
+        [RelayCommand]
+        private void LoadConfiguration()
         {
-            var config = await _service.GetAsync();
-            if (config != null)
-            {
-                ReceiptPath = config.ReceiptPath;
-                PrescriptionPath = config.PrescriptionPath;
-            }
+            ReceiptPath = Preferences.Get(nameof(ReceiptPath), string.Empty);
+            PrescriptionPath = Preferences.Get(nameof(PrescriptionPath), string.Empty);
             IsLoaded = true;
         }
 
         [RelayCommand]
-        private async Task SaveAsync()
+        private void Save()
         {
             try
             {
-                var existing = await _service.GetAsync();
-                if (existing == null)
-                {
-                    await _service.AddAsync(new ImportConfiguration
-                    {
-                        ReceiptPath = ReceiptPath,
-                        PrescriptionPath = PrescriptionPath,
-                        PharmacyId = pharmacyId
-                    }); 
-                    Message = "Configurarea a fost salvată!";
-                }
-                else
-                {
-                    existing.ReceiptPath = ReceiptPath;
-                    existing.PrescriptionPath = PrescriptionPath;
-                    await _service.UpdateAsync(existing);
-                    Message = "Configurarea a fost actualizată!";
-                }
+                Preferences.Set(nameof(ReceiptPath), ReceiptPath ?? string.Empty);
+                Preferences.Set(nameof(PrescriptionPath), PrescriptionPath ?? string.Empty);
+
+                Message = "Configurarea a fost salvată!";
             }
             catch (Exception ex)
             {

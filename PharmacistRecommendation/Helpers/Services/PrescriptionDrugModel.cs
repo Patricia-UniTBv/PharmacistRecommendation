@@ -51,5 +51,15 @@ namespace PharmacistRecommendation.Helpers.Services
 
         [ObservableProperty]
         int? administrationModeId;
+
+        partial void OnNameChanged(string value)
+        {
+            OnPropertyChanged(nameof(Name));
+        }
+
+        partial void OnShowSuggestionsChanged(bool value)
+        {
+            OnPropertyChanged(nameof(ShowSuggestions));
+        }
     }
 }

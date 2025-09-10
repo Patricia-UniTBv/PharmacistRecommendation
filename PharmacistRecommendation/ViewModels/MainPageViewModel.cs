@@ -23,6 +23,10 @@ namespace PharmacistRecommendation.ViewModels
             NavigateToGdprConfigCommand = new Command(async () => await NavigateToGdprConfigAsync());
             NavigateToAddPharmacistCommand = new Command(async () => await NavigateToAddPharmacistAsync());
             NavigateToReportsCommand = new Command(async () => await NavigateToReportsAsync());
+            NavigateToEmailCommand = new Command(async () => await NavigateToEmailAsync());
+            NavigateToMixedActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=mixed"));
+            NavigateToOwnActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=own"));
+            NavigateToConsecutiveActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=consecutive"));
         }
 
         public ICommand NavigateToMedicationsCommand { get; }
@@ -37,6 +41,10 @@ namespace PharmacistRecommendation.ViewModels
         public ICommand NavigateToGdprConfigCommand { get; }
         public ICommand NavigateToAddPharmacistCommand { get; }
         public ICommand NavigateToReportsCommand { get; }
+        public ICommand NavigateToEmailCommand { get; }
+        public ICommand NavigateToMixedActsReportCommand { get; }
+        public ICommand NavigateToOwnActsReportCommand { get; }
+        public ICommand NavigateToConsecutiveActsReportCommand { get; }
 
         private async Task NavigateToMedicationsAsync()
         {
@@ -182,6 +190,18 @@ namespace PharmacistRecommendation.ViewModels
                 "În curs de dezvoltare",
                 "Funcționalitatea de rapoarte va fi disponibilă în curând.",
                 "OK");
+        }
+
+        private async Task NavigateToEmailAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("email_configuration");
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorAsync("Eroare Navigare", $"Nu s-a putut accesa pagina: {ex.Message}");
+            }
         }
 
         private async Task ShowErrorAsync(string title, string message)

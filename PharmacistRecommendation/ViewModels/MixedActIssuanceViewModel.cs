@@ -101,7 +101,22 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         bool isPrintButtonEnabled = false;
 
-        public ObservableCollection<string> AllMedications { get; set; } = new();
+        [ObservableProperty]
+        private string searchText;
+
+        [ObservableProperty]
+        private string selectedMedication;
+
+        public ObservableCollection<string> AllMedications { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Suggestions { get; } = new ObservableCollection<string>();
+
+        public IRelayCommand<string> AddSuggestionCommand { get; }
+        public Entry SearchEntryReference { get; set; }
+
+        public ObservableCollection<string> FilteredMedications { get; } = new();
+        public bool ShowSuggestions { get; set; }
+        private CancellationTokenSource _cts;
+
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService, IMedicationService medicationService)
         {
@@ -111,7 +126,9 @@ namespace PharmacistRecommendation.ViewModels
             _importService = importService;
             _medicationService = medicationService;
 
-            LoadMedicationsAsync();
+            AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
+
+            _ = LoadMedicationsAsync();
             LoadAdministrationModes();
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
@@ -126,11 +143,79 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
+        public void UpdateSuggestions(string text)
+        {
+            Suggestions.Clear();
+
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            var separators = new char[] { ' ', ',' };
+            var parts = text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var lastWord = parts.LastOrDefault()?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(lastWord))
+                return;
+
+            var filtered = AllMedications
+                .Where(m => m.IndexOf(lastWord, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(m => m)
+                .Take(20);
+
+            foreach (var med in filtered)
+                Suggestions.Add(med);
+        }
+
+        //public void UpdateSuggestionsForRow(ReceiptDrugModel row, string query)
+        //{
+        //    row.FilteredMedications.Clear();
+
+        //    if (!string.IsNullOrWhiteSpace(query))
+        //    {
+        //        var matches = AllMedications
+        //            .Where(m => m.Contains(query, StringComparison.OrdinalIgnoreCase))
+        //            .ToList();
+
+        //        foreach (var m in matches)
+        //            row.FilteredMedications.Add(m);
+
+        //        row.ShowSuggestions = row.FilteredMedications.Any();
+        //    }
+        //    else
+        //    {
+        //        row.ShowSuggestions = false;
+        //    }
+        //}
+
+
+        public void AddSuggestionToText(string suggestion)
+        {
+            var separators = new char[] { ' ', ',' };
+            var parts = SearchText?.Split(separators, StringSplitOptions.RemoveEmptyEntries)
+                                   .Select(p => p.Trim())
+                                   .ToList() ?? new List<string>();
+
+            if (parts.Any())
+                parts[parts.Count - 1] = suggestion;
+            else
+                parts.Add(suggestion);
+
+            SearchText = string.Join(" ", parts);
+
+            Suggestions.Clear();
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(50);
+                MainThread.BeginInvokeOnMainThread(() => SearchEntryReference?.Focus());
+            });
+        }
+
         [RelayCommand]
         private async Task ImportDataAsync()
         {
             var imp = await _importService.GetById(pharmacyId);
-            if(imp == null)
+            if (imp == null)
             {
                 await ShowAlert("Configurați calea directoarelor!");
             }
@@ -205,29 +290,14 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
-            if (string.IsNullOrWhiteSpace(PatientName))
+            if (string.IsNullOrWhiteSpace(PatientName) && string.IsNullOrWhiteSpace(CaregiverName))
             {
-                await ShowAlert("Completează numele pacientului!");
+                await ShowAlert("Completează numele pacientului/aparținătorului!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(PatientCnp))
+            if (string.IsNullOrWhiteSpace(PatientCnp) && string.IsNullOrWhiteSpace(CaregiverCnp))
             {
-                await ShowAlert("Completează CNP-ul pacientului!");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(PrescriptionNumber))
-            {
-                await ShowAlert("Completează numărul rețetei!");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(PrescriptionSeries))
-            {
-                await ShowAlert("Completează seria rețetei!");
-                return;
-            }
-            if (MedicationsWithPrescription.Count == 0)
-            {
-                await ShowAlert("Adaugă cel puțin un medicament cu rețetă!");
+                await ShowAlert("Completează CNP-ul pacientului/aparținătorului!");
                 return;
             }
 
@@ -281,39 +351,76 @@ namespace PharmacistRecommendation.ViewModels
             await ShowAlert("Rețeta a fost salvată cu succes!");
         }
 
-
-        public void FilterMedications(string searchText, PrescriptionDrugModel drug)
+        public async void FilterMedications(string searchText, PrescriptionDrugModel drug)
         {
-            drug.FilteredMedications.Clear();
-            if (string.IsNullOrWhiteSpace(searchText))
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+
+            try
             {
-                drug.ShowSuggestions = false;
+                await Task.Delay(100, _cts.Token); // debounce
+
+                // Ensure we're on the main thread for UI updates
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    drug.FilteredMedications.Clear();
+
+                    if (string.IsNullOrWhiteSpace(searchText))
+                    {
+                        drug.ShowSuggestions = false;
+                        return;
+                    }
+
+                    var filtered = AllMedications
+                        .Where(m => m.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .Take(10)
+                        .ToList(); // Materialize the query
+
+                    foreach (var med in filtered)
+                    {
+                        drug.FilteredMedications.Add(med);
+                    }
+
+                    drug.ShowSuggestions = drug.FilteredMedications.Any();
+
+                    // Force property change notification
+                    OnPropertyChanged(nameof(drug.FilteredMedications));
+                    OnPropertyChanged(nameof(drug.ShowSuggestions));
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when cancelled, do nothing
                 return;
             }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging
+                System.Diagnostics.Debug.WriteLine($"Error filtering medications: {ex.Message}");
 
-            var filtered = AllMedications
-                .Where(m => m.StartsWith(searchText, StringComparison.InvariantCultureIgnoreCase))
-                .ToList();
-
-            foreach (var med in filtered)
-                drug.FilteredMedications.Add(med);
-
-            drug.ShowSuggestions = filtered.Any();
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    drug.ShowSuggestions = false;
+                });
+            }
         }
 
         [RelayCommand]
-        public void SelectMedication(string medName)
+        public async void SelectMedication(string medName)
         {
-            foreach (var drug in MedicationsWithPrescription)
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                if (drug.ShowSuggestions && drug.FilteredMedications.Contains(medName))
+                foreach (var drug in MedicationsWithPrescription)
                 {
-                    drug.Name = medName;
-                    drug.ShowSuggestions = false;
-                    drug.FilteredMedications.Clear();
-                    break;
+                    if (drug.ShowSuggestions && drug.FilteredMedications.Contains(medName))
+                    {
+                        drug.Name = medName;
+                        drug.ShowSuggestions = false;
+                        drug.FilteredMedications.Clear();
+                        break;
+                    }
                 }
-            }
+            });
         }
 
         [RelayCommand]

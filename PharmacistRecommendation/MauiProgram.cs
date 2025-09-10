@@ -36,25 +36,25 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-#if WINDOWS
+//#if WINDOWS
 
-            builder.ConfigureLifecycleEvents(events =>
-            {
-                events.AddWindows(windows =>
-                {
-                    windows.OnWindowCreated(window =>
-                    {
-                        var hwnd = WindowNative.GetWindowHandle(window);
-                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-                        var appWindow = AppWindow.GetFromWindowId(windowId);
+//            builder.ConfigureLifecycleEvents(events =>
+//            {
+//                events.AddWindows(windows =>
+//                {
+//                    windows.OnWindowCreated(window =>
+//                    {
+//                        var hwnd = WindowNative.GetWindowHandle(window);
+//                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+//                        var appWindow = AppWindow.GetFromWindowId(windowId);
 
-                        var iconPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "logo44x44.ico");
+//                        var iconPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "logo44x44.ico");
 
-                        appWindow.SetIcon(iconPath); 
-                    });
-                });
-            });
-#endif
+//                        appWindow.SetIcon(iconPath); 
+//                    });
+//                });
+//            });
+//#endif
 
 
             builder.UseMauiCommunityToolkit();

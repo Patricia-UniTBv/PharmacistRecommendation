@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
+using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
@@ -42,16 +43,17 @@ public partial class MonitoringViewModel : ObservableObject
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    [ObservableProperty] private string cardNumber;
-    [ObservableProperty] private string name;
-    [ObservableProperty] private string cnp;
-    [ObservableProperty] private string cid;
-    [ObservableProperty] private int age;
-    [ObservableProperty] private string gender;
-    [ObservableProperty] private string patientEmail;
+    [ObservableProperty] private string? cardNumber;
+    [ObservableProperty] private string? firstName;
+    [ObservableProperty] private string? lastName;
+    [ObservableProperty] private string? cnp;
+    [ObservableProperty] private string? cid;
+    [ObservableProperty] private int? age;
+    [ObservableProperty] private string? gender;
+    [ObservableProperty] private string? patientEmail;
 
-    [ObservableProperty] private decimal height;
-    [ObservableProperty] private decimal weight;
+    [ObservableProperty] private decimal? height;
+    [ObservableProperty] private decimal? weight;
 
     [ObservableProperty] private int? maxBloodPressure;
     [ObservableProperty] private int? minBloodPressure;
@@ -64,50 +66,85 @@ public partial class MonitoringViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<object> historyList = [];
 
+    [ObservableProperty] private string? _validationMessage;
+
     private int loggedInUserId { get; set; }
 
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 16) 
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5) 
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnFirstNameChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue))
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnLastNameChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue))
+            _ = SearchPatientAsync();
+    }
+
+    partial void OnCnpChanged(string oldValue, string newValue)
+    {
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5)
             _ = SearchPatientAsync();
     }
 
     [RelayCommand]
     private async Task SearchPatientAsync()
     {
-        if (string.IsNullOrWhiteSpace(CardNumber))
-            return;
-
-        var patient = await _patientService.GetPatientByCardCodeAsync(CardNumber);
-
-        if (patient is null)
+        if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp))
         {
-            Name = Cnp = Cid = Gender = string.Empty;
-            Age = 0;
-            PatientId = 0;
+            var patient = await _patientService.GetPatientAsync(CardNumber, Cnp, FirstName, LastName);
+            await FillPatientData(patient);
             return;
         }
 
-        Name = $"{patient.FirstName} {patient.LastName}";
+        if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+        {
+            var patient = await _patientService.GetPatientAsync(null, null, FirstName, LastName);
+            await FillPatientData(patient);
+        }
+    }
+
+    private async Task FillPatientData(Patient? patient)
+    {
+        if (patient is null)
+            return; 
+
+        FirstName = patient.FirstName;
+        LastName = patient.LastName;
         Cnp = patient.Cnp!;
         Cid = patient.Cid!;
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
+
+        LoadHistoryAsync();
     }
+
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (PatientId == 0)     
+
+        var patientDto = new Patient
         {
-            await Shell.Current.DisplayAlert("Avertizare", "Datele pacientului nu au fost introduse.", "OK");
-            return;
-        }
+            FirstName = FirstName,
+            LastName = LastName,
+            Cnp = Cnp,
+            Gender = Gender
+        };
+
+        var patient = await _patientService.GetOrCreatePatientAsync(patientDto);
 
         var dto = new MonitoringDTO
         {
-            PatientId = PatientId, 
+            PatientId = patient.Id, 
             CardId = null,               
             MonitoringDate = DateTime.Now,
             MonitoringType = SelectedMonitoringType,
@@ -135,12 +172,30 @@ public partial class MonitoringViewModel : ObservableObject
         await LoadHistoryAsync();
     }
 
-    [RelayCommand]                    
+    [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        if (PatientId == 0) return;
+        var patient = await _patientService.GetPatientAsync(cardNumber, cnp, firstName, lastName);
 
-        HistoryList.Clear();
+        if (patient == null)
+        {
+            ValidationMessage = "Datele pacientului nu au fost introduse.";
+            return;
+        }
+
+        PatientId = patient.Id;
+
+        if (PatientId == 0)
+        {
+            ValidationMessage = "Pacient invalid.";
+            return;
+        }
+
+        if (HistoryList != null)
+            HistoryList.Clear();
+        else
+            HistoryList = new ObservableCollection<object>();
+        ValidationMessage = string.Empty; 
 
         var start = StartDate.Date;
         var end = EndDate.Date.AddDays(1).AddTicks(-1);
@@ -161,10 +216,10 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SendEmailAsync()
     {
-        var patient = await _patientService.GetByIdAsync(PatientId);
+        var patient = await _patientService.GetPatientAsync(cardNumber, cnp);
         if (patient == null)
         {
-            await Shell.Current.DisplayAlert("Eroare", "Pacientul nu a fost găsit în sistem.", "OK");
+            await Shell.Current.DisplayAlert("Eroare", "Pacientul nu a fost găsit în sistem. Introduceți numărul cardului sau CNP.", "OK");
             return;
         }
 
@@ -199,7 +254,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         try
         {
-            var emailConfig = new EmailConfiguration
+            var emailConfig = new Helpers.EmailConfiguration
             {
                 SenderEmail = config.Username,
                 SenderAppPassword = config.Password,
@@ -215,5 +270,25 @@ public partial class MonitoringViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
         }
     }
-
+    [RelayCommand]
+    private void Clear()
+    {
+        CardNumber = string.Empty;
+        Cnp = string.Empty;
+        FirstName = string.Empty;
+        LastName = string.Empty;
+        Cid = string.Empty;
+        Age = null;
+        Gender = null;
+        Weight = null;
+        Height = null;
+        MaxBloodPressure = null;
+        MinBloodPressure = null;
+        HeartRate = null;
+        PulseOximetry = null;
+        BloodGlucose = null;
+        BodyTemperature = null;
+        PatientEmail = string.Empty;
+        HistoryList = null;
+    }
 }

@@ -14,5 +14,4 @@ public partial class CardConfigurationView : ContentPage
 		InitializeComponent();
         BindingContext = vm;
     }
-  
 }

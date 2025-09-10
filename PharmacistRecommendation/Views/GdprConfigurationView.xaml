@@ -5,7 +5,7 @@
     <Grid Padding="16" RowDefinitions="*,Auto" RowSpacing="12">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Spacing="12">
-                <Label Text="Modificare document GDPR" FontSize="Large"/>
+                <Label Text="Modificare document GDPR" FontSize="20" FontAttributes="Bold"/>
                 <Editor Text="{Binding ConsentTemplate, Mode=TwoWay}" 
                     AutoSize="TextChanges" 
                     HeightRequest="450" 

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Entities.Models;
+using System.Collections.ObjectModel;
 
 namespace PharmacistRecommendation.Helpers.Services
 {
@@ -25,5 +26,11 @@ namespace PharmacistRecommendation.Helpers.Services
 
         [ObservableProperty]
         AdministrationMode? administrationMode;
+
+        [ObservableProperty]
+        ObservableCollection<string> filteredMedications = new();
+
+        [ObservableProperty]
+        bool showSuggestions;
     }
 }

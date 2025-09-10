@@ -2,7 +2,80 @@
 <ContentPage x:Class="PharmacistRecommendation.Views.MainPageView"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#F8FAFB">
+
+    <ContentPage.Resources>
+        <!-- CULORI BAZĂ (neutre + un accent foarte discret) -->
+        <Color x:Key="BgPage">#F8FAFB</Color>
+        <Color x:Key="BgCard">#FFFFFF</Color>
+        <Color x:Key="StrokeCard">#E5E7EB</Color>
+        <Color x:Key="TextPrimary">#1F2937</Color>
+        <Color x:Key="TextSecondary">#6B7280</Color>
+        <Color x:Key="AccentSoft">#22C55E</Color>
+        <!-- folosit doar pe pressed/focus -->
+
+        <!-- STIL CARD SECȚIUNE -->
+        <Style TargetType="Border" x:Key="SectionCard">
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            <Setter Property="Stroke" Value="{StaticResource StrokeCard}" />
+            <Setter Property="BackgroundColor" Value="{StaticResource BgCard}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- STIL LABELURI -->
+        <Style TargetType="Label" x:Key="SectionTitle">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        </Style>
+        <Style TargetType="Label" x:Key="HeaderTitle">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Label" x:Key="HeaderSubtitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+        </Style>
+
+        <!-- STIL BUTON MONOCROM (alb cu bordură) -->
+        <Style TargetType="Button" x:Key="CardButton">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="BorderColor" Value="{StaticResource StrokeCard}" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HeightRequest" Value="70" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <Setter.Value>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#F0FDF4" />
+                                    <Setter Property="BorderColor" Value="{StaticResource AccentSoft}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="#9CA3AF" />
+                                    <Setter Property="BorderColor" Value="#E5E7EB" />
+                                    <Setter Property="BackgroundColor" Value="#F3F4F6" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout Padding="15" Spacing="15" BackgroundColor="#F5F5F5">
@@ -45,7 +118,6 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Medicamente Button -->
                         <Button Grid.Column="0"
                                 Text="Medicamente"
                                 FontSize="13"
@@ -97,7 +169,6 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Act Mixt Button -->
                         <Button Grid.Column="0"
                                 Text="Act Mixt"
                                 FontSize="13"
