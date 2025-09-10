@@ -5,8 +5,8 @@ namespace PharmacistRecommendation.Helpers
 {
     public static class CidGen
     {
-        [DllImport(@"\Libraries\CidGen64.dll", CharSet = CharSet.Ansi,
-    CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("CidGen64.dll", CharSet = CharSet.Ansi,
+            CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetCid(
             [MarshalAs(UnmanagedType.LPStr)] string pid,
