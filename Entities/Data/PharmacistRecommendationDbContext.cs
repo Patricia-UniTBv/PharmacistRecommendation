@@ -49,8 +49,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=Patricia-Anelis\\SQLEXPRESS;Database=PharmacistRecommendationDB;Integrated Security=True;TrustServerCertificate=True;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Change this to match your MauiProgram.cs
+            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -203,6 +208,13 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Valabilitate).HasMaxLength(100);
             entity.Property(e => e.VolumAmbalaj).HasMaxLength(100);
+
+            entity.Property(e => e.CustomNomenclatorName).HasMaxLength(500);
+
+            entity.HasOne(e => e.LinkedOfficialMedication)
+                  .WithMany()
+                  .HasForeignKey(e => e.LinkedOfficialMedicationId)
+                  .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<MedicationDocument>(entity =>
@@ -218,7 +230,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
             entity.HasOne(d => d.Document).WithMany(p => p.MedicationDocuments)
                 .HasForeignKey(d => d.DocumentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_MedicationDocument_Document");
+                .HasConstraintName("FK_MedicationDocument_Document");       
 
             entity.HasOne(d => d.Medication).WithMany(p => p.MedicationDocuments)
                 .HasForeignKey(d => d.MedicationId)

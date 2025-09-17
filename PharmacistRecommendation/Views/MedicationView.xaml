@@ -56,6 +56,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Column="0" 
@@ -71,8 +72,13 @@
                         Style="{StaticResource SimpleButton}"/>
 
                 <Button Grid.Column="2" 
-                        Text="Import CSV" 
+                        Text="Import Nomenclator ANM" 
                         Command="{Binding ImportCsvCommand}"
+                        Style="{StaticResource SimpleButton}"/>
+
+                <Button Grid.Column="3" 
+                        Text="Import Nomenclator Propriu" 
+                        Command="{Binding ImportCustomNomenclatorCommand}"
                         Style="{StaticResource SimpleButton}"/>
             </Grid>
         </Border>
@@ -131,7 +137,8 @@
                         <x:String>Active</x:String>
                         <x:String>Inactive</x:String>
                         <x:String>Manual</x:String>
-                        <x:String>CSV</x:String>
+                        <x:String>Nomenclator INM</x:String>
+                        <x:String>Nomenclator Propriu</x:String>
                     </Picker.Items>
                 </Picker>
 

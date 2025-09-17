@@ -35,6 +35,7 @@ namespace PharmacistRecommendation.ViewModels
             DeleteMedicationCommand = new Command<MedicationDisplayItem>(async (item) => await DeleteMedicationAsync(item?.Medication));
             ImportCsvCommand = new Command(async () => await ImportCsvAsync());
             ToggleActiveStatusCommand = new Command<MedicationDisplayItem>(async (item) => await ToggleActiveStatusAsync(item));
+            ImportCustomNomenclatorCommand = new Command(async () => await ImportCustomNomenclatorAsync());
         }
 
         public MedicationViewModel() : this(null!, null!, null!)
@@ -115,6 +116,7 @@ namespace PharmacistRecommendation.ViewModels
         public ICommand DeleteMedicationCommand { get; }
         public ICommand ImportCsvCommand { get; }
         public ICommand ToggleActiveStatusCommand { get; } 
+        public ICommand ImportCustomNomenclatorCommand { get; }
 
         private async Task<List<Medication>> GetFilteredMedicationsAsync(string? searchTerm = null)
         {
@@ -133,8 +135,9 @@ namespace PharmacistRecommendation.ViewModels
             {
                 1 => medications.Where(m => m.IsActive).ToList(), // Active
                 2 => medications.Where(m => !m.IsActive).ToList(), // Inactive
-                3 => medications.Where(m => m.DataSource == "Manual").ToList(), // Manually added
-                4 => medications.Where(m => m.DataSource != "Manual").ToList(), // Automatically added (CSV)
+                3 => medications.Where(m => m.DataSource == "Manual").ToList(), // Manual
+                4 => medications.Where(m => m.DataSource == "CSV_Import").ToList(), // Nomenclator INM
+                5 => medications.Where(m => m.DataSource == "Custom_Nomenclator").ToList(), // Nomenclator Propriu
                 _ => medications // All
             };
         }
@@ -453,6 +456,79 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
+        private async Task ImportCustomNomenclatorAsync()
+        {
+            try
+            {
+                var fileResult = await FilePicker.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Select Custom Nomenclator CSV file",
+                    FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                        { DevicePlatform.iOS, new[] { "public.comma-separated-values-text" } },
+                        { DevicePlatform.Android, new[] { "text/csv" } },
+                        { DevicePlatform.WinUI, new[] { ".csv" } },
+                        { DevicePlatform.macOS, new[] { "csv" } }
+                    })
+                });
+
+                if (fileResult != null)
+                {
+                    IsLoading = true;
+
+                    using var stream = await fileResult.OpenReadAsync();
+                    var csvData = await _importService.ParseCustomNomenclatorCsvFileAsync(stream);
+
+                    var previewResult = await _importService.PreviewCustomNomenclatorImportAsync(csvData);
+
+                    var previewMessage = $"Custom Nomenclator Import Preview:\n" +
+                                       $"• New medications: {previewResult.AddedCount}\n" +
+                                       $"• Updated medications: {previewResult.UpdatedCount}\n" +
+                                       $"• Total processed: {previewResult.ProcessedCount}";
+
+                    if (previewResult.HasErrors)
+                    {
+                        previewMessage += $"\n• Errors: {previewResult.Errors.Count}";
+                    }
+
+                    var proceed = await ShowAlert("Custom Nomenclator Import Preview", previewMessage, "Proceed", "Cancel");
+
+                    if (proceed)
+                    {
+                        var importOptions = new CsvImportOptions
+                        {
+                            ImportDataSource = "Custom_Nomenclator",
+                            UpdateManualMedications = false,
+                            ConfirmCodeChanges = false
+                        };
+
+                        var result = await _importService.ExecuteCustomNomenclatorImportAsync(csvData, importOptions);
+
+                        var resultMessage = $"Custom Nomenclator Import Complete:\n" +
+                                          $"• Added: {result.AddedCount}\n" +
+                                          $"• Updated: {result.UpdatedCount}\n" +
+                                          $"• Processed: {result.ProcessedCount}";
+
+                        if (result.HasErrors)
+                        {
+                            resultMessage += $"\nErrors: {result.Errors.Count}";
+                        }
+
+                        await ShowAlert("Import Complete", resultMessage, "OK");
+                        await LoadMedicationsAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowAlert("Import Error", ex.Message, "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
         private async Task AddMedicationAsync()
         {
             try
@@ -630,8 +706,22 @@ namespace PharmacistRecommendation.ViewModels
         public string Denumire => Medication.Denumire ?? "Necunoscut";
         public string DCI => Medication.DCI ?? "DCI nedefinit";
         public string CodATC => Medication.CodATC ?? "-";
-        public string SourceText => Medication.DataSource == "Manual" ? "Manual" : "CSV";
-        public string SourceColor => Medication.DataSource == "Manual" ? "Blue" : "Orange";
+        
+        public string SourceText => Medication.DataSource switch
+        {
+            "Manual" => "Manual",
+            "CSV_Import" => "INM",
+            "Custom_Nomenclator" => "Propriu",
+            _ => "Necunoscut"
+        };
+        
+        public string SourceColor => Medication.DataSource switch
+        {
+            "Manual" => "Blue",
+            "CSV_Import" => "Green",
+            "Custom_Nomenclator" => "Purple",
+            _ => "Gray"
+        };
 
         public ICommand ToggleStatusCommand => _viewModel.ToggleActiveStatusCommand;
 

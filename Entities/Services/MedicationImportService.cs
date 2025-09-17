@@ -392,5 +392,171 @@ namespace Entities.Services
             existing.Dreptunghi = updated.Dreptunghi;
             existing.UpdatedAt = DateTime.Now;
         }
+
+        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvFileAsync(Stream csvStream)
+        {
+            return await _csvParser.ParseCustomNomenclatorCsvAsync(csvStream);
+        }
+
+        public async Task<CsvImportResult> PreviewCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData)
+        {
+            var result = new CsvImportResult();
+            var existingMedications = await _medicationRepository.GetAllAsync();
+
+            foreach (var csvRow in csvData)
+            {
+                try
+                {
+                    await ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: true);
+                    result.ProcessedCount++;
+                }
+                catch (Exception ex)
+                {
+                    result.Errors.Add($"Error processing {csvRow.DenumireComericala}: {ex.Message}");
+                    result.SkippedCount++;
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<CsvImportResult> ExecuteCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData, CsvImportOptions options)
+        {
+            var result = new CsvImportResult();
+            var existingMedications = await _medicationRepository.GetAllAsync();
+
+            foreach (var csvRow in csvData)
+            {
+                try
+                {
+                    await ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: false, options);
+                    result.ProcessedCount++;
+                }
+                catch (Exception ex)
+                {
+                    result.Errors.Add($"Error processing {csvRow.DenumireComericala}: {ex.Message}");
+                    result.SkippedCount++;
+                }
+            }
+
+            if (!result.HasErrors)
+            {
+                await ExecuteDatabaseOperations(result);
+            }
+
+            return result;
+        }
+
+        private async Task ProcessCustomNomenclatorCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
+            CsvImportResult result, bool previewOnly, CsvImportOptions? options = null)
+        {
+            // Case 1: Has CodCIM (which is CodW) - try to link to official medication
+            if (!string.IsNullOrWhiteSpace(csvRow.CodCIM))
+            {
+                // First check if we have an official medication with this CodCIM
+                var officialMedication = existingMedications.FirstOrDefault(m => 
+                    m.CodCIM == csvRow.CodCIM && m.DataSource == "CSV_Import");
+                
+                // Check if we already have a custom nomenclator entry for this CodCIM
+                var existingCustom = existingMedications.FirstOrDefault(m => 
+                    m.CodCIM == csvRow.CodCIM && m.DataSource == "Custom_Nomenclator");
+                
+                if (existingCustom != null)
+                {
+                    // Update existing custom entry
+                    var updatedMedication = CreateCustomNomenclatorMedication(csvRow, officialMedication);
+                    updatedMedication.Id = existingCustom.Id;
+                    updatedMedication.CreatedAt = existingCustom.CreatedAt;
+                    
+                    var changedFields = GetChangedFields(existingCustom, updatedMedication);
+                    if (changedFields.Any())
+                    {
+                        result.UpdatedMedications.Add(new MedicationUpdate
+                        {
+                            ExistingMedication = existingCustom,
+                            NewData = updatedMedication,
+                            ChangedFields = changedFields
+                        });
+                    }
+                }
+                else
+                {
+                    // Create new custom nomenclator entry
+                    var newMedication = CreateCustomNomenclatorMedication(csvRow, officialMedication);
+                    result.NewMedications.Add(newMedication);
+                }
+            }
+            else
+            {
+                // Case 2: No CodCIM (supplement/non-medication) - check by name and producer
+                var existingByName = existingMedications.FirstOrDefault(m =>
+                    m.Denumire == csvRow.DenumireComericala &&
+                    m.FirmaProducatoare == csvRow.FirmaProducatoare &&
+                    m.DataSource == "Custom_Nomenclator");
+
+                if (existingByName != null)
+                {
+                    // Update existing
+                    var updatedMedication = CreateCustomNomenclatorMedication(csvRow, null);
+                    updatedMedication.Id = existingByName.Id;
+                    updatedMedication.CreatedAt = existingByName.CreatedAt;
+                    
+                    var changedFields = GetChangedFields(existingByName, updatedMedication);
+                    if (changedFields.Any())
+                    {
+                        result.UpdatedMedications.Add(new MedicationUpdate
+                        {
+                            ExistingMedication = existingByName,
+                            NewData = updatedMedication,
+                            ChangedFields = changedFields
+                        });
+                    }
+                }
+                else
+                {
+                    // Create new supplement
+                    var newMedication = CreateCustomNomenclatorMedication(csvRow, null);
+                    result.NewMedications.Add(newMedication);
+                }
+            }
+        }
+
+        private Medication CreateCustomNomenclatorMedication(CsvMedicationRow csvRow, Medication? officialMedication)
+        {
+            var medication = new Medication
+            {
+                // If linked to official, copy its data; otherwise use CSV data
+                CodCIM = csvRow.CodCIM, // This is the CodW
+                Denumire = officialMedication?.Denumire ?? csvRow.DenumireComericala,
+                DCI = officialMedication?.DCI ?? csvRow.DCI,
+                FormaFarmaceutica = officialMedication?.FormaFarmaceutica,
+                Concentratia = officialMedication?.Concentratia,
+                FirmaProducatoare = officialMedication?.FirmaProducatoare ?? csvRow.FirmaProducatoare,
+                FirmaDetinatoare = officialMedication?.FirmaDetinatoare,
+                CodATC = officialMedication?.CodATC ?? csvRow.CodATC,
+                ActiuneTerapeutica = officialMedication?.ActiuneTerapeutica ?? csvRow.ActiuneTerapeutica,
+                Prescriptie = officialMedication?.Prescriptie,
+                NrData = officialMedication?.NrData,
+                Ambalaj = officialMedication?.Ambalaj,
+                VolumAmbalaj = officialMedication?.VolumAmbalaj,
+                Valabilitate = officialMedication?.Valabilitate,
+                Bulina = officialMedication?.Bulina,
+                Diez = officialMedication?.Diez,
+                Stea = officialMedication?.Stea,
+                Triunghi = officialMedication?.Triunghi,
+                Dreptunghi = officialMedication?.Dreptunghi,
+                
+                // Custom nomenclator specific data
+                CustomNomenclatorName = csvRow.DenumireComericala, // Store the custom name
+                LinkedOfficialMedicationId = officialMedication?.Id, // Link if exists
+                
+                DataSource = "Custom_Nomenclator",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                IsActive = true
+            };
+
+            return medication;
+        }
     }
 }

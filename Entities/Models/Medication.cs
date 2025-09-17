@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Models;
 
@@ -52,12 +53,34 @@ public partial class Medication
     public bool IsActive { get; set; }
 
     public DateTime CreatedAt { get; set; }
+    
     [Column("PreviousCodCIM")]
     public string? PreviousCodCIM { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
     public string DataSource { get; set; } = null!;
+
+    [Column("CustomNomenclatorName")]
+    [StringLength(500)]
+    public string? CustomNomenclatorName { get; set; }
+
+    [Column("LinkedOfficialMedicationId")]
+    public int? LinkedOfficialMedicationId { get; set; }
+
+    // Navigation property for linked official medication
+    [ForeignKey("LinkedOfficialMedicationId")]
+    public virtual Medication? LinkedOfficialMedication { get; set; }
+
+    // Computed property to get the display name
+    [NotMapped]
+    public string DisplayName => DataSource == "Custom_Nomenclator" && !string.IsNullOrEmpty(CustomNomenclatorName) 
+        ? CustomNomenclatorName 
+        : Denumire ?? "Unknown";
+
+    // Check if this is a custom nomenclator entry
+    [NotMapped]
+    public bool IsCustomNomenclatorEntry => DataSource == "Custom_Nomenclator";
 
     public virtual ICollection<MedicationDocument> MedicationDocuments { get; set; } = new List<MedicationDocument>();
 

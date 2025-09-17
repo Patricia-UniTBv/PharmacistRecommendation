@@ -247,5 +247,135 @@ namespace Entities.Services
             values.Add(currentValue.ToString().Trim());
             return values.ToArray();
         }
+
+        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvAsync(Stream csvStream)
+        {
+            var medications = new List<CsvMedicationRow>();
+            csvStream.Position = 0;
+
+            using var reader = new StreamReader(csvStream, Encoding.UTF8);
+            var headerLine = await reader.ReadLineAsync();
+            
+            if (string.IsNullOrWhiteSpace(headerLine))
+                throw new InvalidOperationException("CSV file is empty or has no header");
+
+            var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
+            ValidateCustomNomenclatorHeaders(headers);
+
+            string? line;
+            int lineNumber = 1;
+
+            while ((line = await reader.ReadLineAsync()) != null)
+            {
+                lineNumber++;
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                try
+                {
+                    var medication = ParseCustomNomenclatorCsvLine(line, headers);
+                    medication.NormalizeEmptyStrings();
+                    medications.Add(medication);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Error parsing line {lineNumber}: {ex.Message}");
+                }
+            }
+
+            return medications;
+        }
+
+        public bool ValidateCustomNomenclatorCsvStructure(Stream csvStream)
+        {
+            try
+            {
+                csvStream.Position = 0;
+                using var reader = new StreamReader(csvStream, Encoding.UTF8);
+                var headerLine = reader.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(headerLine))
+                    return false;
+
+                var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
+                ValidateCustomNomenclatorHeaders(headers);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public List<string> GetCustomNomenclatorRequiredColumns()
+        {
+            return new List<string>
+            {
+                "Denumire",
+                "Producator", 
+                "Cod W", // Optional - might be empty for supplements
+                "Cod ATC",
+                "Tip ANM",
+                "DCI"
+            };
+        }
+
+        private void ValidateCustomNomenclatorHeaders(string[] headers)
+        {
+            var requiredColumns = new[] { "Denumire", "Producator" }; // minimum required
+            var missingColumns = requiredColumns.Where(req => !headers.Contains(req, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            if (missingColumns.Any())
+            {
+                throw new InvalidOperationException($"Missing required columns: {string.Join(", ", missingColumns)}");
+            }
+        }
+
+        private CsvMedicationRow ParseCustomNomenclatorCsvLine(string line, string[] headers)
+        {
+            var values = ParseCsvValues(line);
+
+            if (values.Length != headers.Length)
+            {
+                throw new InvalidOperationException($"Column count mismatch. Expected {headers.Length}, got {values.Length}");
+            }
+
+            return CreateCustomNomenclatorMedicationRow(values, headers);
+        }
+
+        private CsvMedicationRow CreateCustomNomenclatorMedicationRow(string[] values, string[] headers)
+        {
+            var medication = new CsvMedicationRow();
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var header = headers[i];
+                var value = i < values.Length ? values[i] : "";
+
+                switch (header.ToLower())
+                {
+                    case "denumire":
+                        medication.DenumireComericala = value;
+                        break;
+                    case "producator":
+                        medication.FirmaProducatoare = value;
+                        break;
+                    case "cod w":
+                        medication.CodCIM = string.IsNullOrWhiteSpace(value) ? null : value; // CodW = CodCIM, can be null
+                        break;
+                    case "cod atc":
+                        medication.CodATC = value;
+                        break;
+                    case "tip anm":
+                        medication.ActiuneTerapeutica = value; // Store in existing field
+                        break;
+                    case "dci":
+                        medication.DCI = value;
+                        break;
+                }
+            }
+
+            return medication;
+        }
     }
 }
