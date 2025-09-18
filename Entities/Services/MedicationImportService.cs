@@ -450,74 +450,56 @@ namespace Entities.Services
         private async Task ProcessCustomNomenclatorCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
             CsvImportResult result, bool previewOnly, CsvImportOptions? options = null)
         {
-            // Case 1: Has CodCIM (which is CodW) - try to link to official medication
+            // First, check for any existing custom nomenclator entry with this exact name
+            var existingByCustomName = existingMedications.FirstOrDefault(m =>
+                m.CustomNomenclatorName == csvRow.DenumireComericala &&
+                m.DataSource == "Custom_Nomenclator");
+
+            if (existingByCustomName != null)
+            {
+                // Entry with this custom name already exists
+                if (!string.IsNullOrWhiteSpace(csvRow.CodCIM) && existingByCustomName.CodCIM != csvRow.CodCIM)
+                {
+                    // Same name but different CodCIM - potential conflict
+                    result.Warnings.Add($"Custom name '{csvRow.DenumireComericala}' already exists with different CodCIM (existing: '{existingByCustomName.CodCIM}', new: '{csvRow.CodCIM}'). Skipping.");
+                    return;
+                }
+                
+                // Check if anything changed and update if necessary
+                var hasChanges = HasCustomNomenclatorChanges(existingByCustomName, csvRow);
+                if (hasChanges)
+                {
+                    var updatedMedication = CreateCustomNomenclatorMedication(csvRow, existingByCustomName.LinkedOfficialMedication);
+                    updatedMedication.Id = existingByCustomName.Id;
+                    updatedMedication.CreatedAt = existingByCustomName.CreatedAt;
+                    
+                    var changedFields = GetChangedFields(existingByCustomName, updatedMedication);
+                    result.UpdatedMedications.Add(new MedicationUpdate
+                    {
+                        ExistingMedication = existingByCustomName,
+                        NewData = updatedMedication,
+                        ChangedFields = changedFields
+                    });
+                }
+                // If no changes, skip (avoid duplicate)
+                return;
+            }
+
+            // No existing entry with this custom name - proceed with creation
             if (!string.IsNullOrWhiteSpace(csvRow.CodCIM))
             {
-                // First check if we have an official medication with this CodCIM
+                // Find official medication for linking
                 var officialMedication = existingMedications.FirstOrDefault(m => 
                     m.CodCIM == csvRow.CodCIM && m.DataSource == "CSV_Import");
                 
-                // Check if we already have a custom nomenclator entry for this CodCIM
-                var existingCustom = existingMedications.FirstOrDefault(m => 
-                    m.CodCIM == csvRow.CodCIM && m.DataSource == "Custom_Nomenclator");
-                
-                if (existingCustom != null)
-                {
-                    // Update existing custom entry
-                    var updatedMedication = CreateCustomNomenclatorMedication(csvRow, officialMedication);
-                    updatedMedication.Id = existingCustom.Id;
-                    updatedMedication.CreatedAt = existingCustom.CreatedAt;
-                    
-                    var changedFields = GetChangedFields(existingCustom, updatedMedication);
-                    if (changedFields.Any())
-                    {
-                        result.UpdatedMedications.Add(new MedicationUpdate
-                        {
-                            ExistingMedication = existingCustom,
-                            NewData = updatedMedication,
-                            ChangedFields = changedFields
-                        });
-                    }
-                }
-                else
-                {
-                    // Create new custom nomenclator entry
-                    var newMedication = CreateCustomNomenclatorMedication(csvRow, officialMedication);
-                    result.NewMedications.Add(newMedication);
-                }
+                var newMedication = CreateCustomNomenclatorMedication(csvRow, officialMedication);
+                result.NewMedications.Add(newMedication);
             }
             else
             {
-                // Case 2: No CodCIM (supplement/non-medication) - check by name and producer
-                var existingByName = existingMedications.FirstOrDefault(m =>
-                    m.Denumire == csvRow.DenumireComericala &&
-                    m.FirmaProducatoare == csvRow.FirmaProducatoare &&
-                    m.DataSource == "Custom_Nomenclator");
-
-                if (existingByName != null)
-                {
-                    // Update existing
-                    var updatedMedication = CreateCustomNomenclatorMedication(csvRow, null);
-                    updatedMedication.Id = existingByName.Id;
-                    updatedMedication.CreatedAt = existingByName.CreatedAt;
-                    
-                    var changedFields = GetChangedFields(existingByName, updatedMedication);
-                    if (changedFields.Any())
-                    {
-                        result.UpdatedMedications.Add(new MedicationUpdate
-                        {
-                            ExistingMedication = existingByName,
-                            NewData = updatedMedication,
-                            ChangedFields = changedFields
-                        });
-                    }
-                }
-                else
-                {
-                    // Create new supplement
-                    var newMedication = CreateCustomNomenclatorMedication(csvRow, null);
-                    result.NewMedications.Add(newMedication);
-                }
+                // No CodCIM - create as supplement
+                var newMedication = CreateCustomNomenclatorMedication(csvRow, null);
+                result.NewMedications.Add(newMedication);
             }
         }
 
@@ -557,6 +539,16 @@ namespace Entities.Services
             };
 
             return medication;
+        }
+
+        // Helper method to check for changes
+        private bool HasCustomNomenclatorChanges(Medication existing, CsvMedicationRow csvRow)
+        {
+            return existing.CustomNomenclatorName != csvRow.DenumireComericala ||
+                   existing.DCI != csvRow.DCI ||
+                   existing.CodATC != csvRow.CodATC ||
+                   existing.ActiuneTerapeutica != csvRow.ActiuneTerapeutica ||
+                   existing.FirmaProducatoare != csvRow.FirmaProducatoare;
         }
     }
 }
