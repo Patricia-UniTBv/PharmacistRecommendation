@@ -216,10 +216,10 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SendEmailAsync()
     {
-        var patient = await _patientService.GetPatientAsync(cardNumber, cnp);
+        var patient = await _patientService.GetPatientAsync(cardNumber, cnp, firstName, lastName);
         if (patient == null)
         {
-            await Shell.Current.DisplayAlert("Eroare", "Pacientul nu a fost găsit în sistem. Introduceți numărul cardului sau CNP.", "OK");
+            await Shell.Current.DisplayAlert("Eroare", "Pacientul nu a fost găsit în sistem.", "OK");
             return;
         }
 

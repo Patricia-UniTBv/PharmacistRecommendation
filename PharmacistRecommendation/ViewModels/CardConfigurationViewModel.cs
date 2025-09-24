@@ -71,7 +71,7 @@ namespace PharmacistRecommendation.ViewModels
                 }
                 catch
                 {
-                    // CNP invalid, nu face nimic
+                 
                 }
             }
         }
@@ -163,10 +163,10 @@ namespace PharmacistRecommendation.ViewModels
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
             string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
-            _consentDecl = _pharmacy.ConsentTemplate
+            _consentDecl = _pharmacy!.ConsentTemplate!
                 .Replace("{PharmacyName}", Safe(_pharmacy.Name))
-                .Replace("{PharmacyAddress}", Safe(_pharmacy.Address))
-                .Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI));
+                .Replace("{PharmacyAddress}", Safe(_pharmacy.Address!))
+                .Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI!));
 
             using var pd = new PrintDocument();
             pd.DefaultPageSettings.Landscape = false;

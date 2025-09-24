@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
              x:DataType="viewmodels:LoginAddUserViewModel"
-             Title="Pharmacist Recommendation - Authentication"
+             Title="Recomandarea Farmacistului - Autentificare"
              Shell.NavBarIsVisible="False"
              BackgroundColor="#F5F5F5">
 
@@ -14,7 +14,7 @@
 		<Border Grid.Row="0"
                 BackgroundColor="#34495E"
                 Padding="15,10">
-			<Label Text="PharmacistRecommendation"
+			<Label Text="Recomandarea Farmacistului"
                    FontSize="18"
                    FontAttributes="Bold"
                    TextColor="White"
@@ -259,7 +259,7 @@
 									<Label Text="NCM" FontSize="11" TextColor="#7F8C8D" />
 									<Border StrokeThickness="1" Stroke="#BDC3C7" BackgroundColor="#FAFAFA" StrokeShape="RoundRectangle 6,6,6,6" Padding="10,0" HeightRequest="36">
 										<Entry Text="{Binding Ncm}"
-                                               Placeholder="NCM (opțional)"
+                                               Placeholder="NCM"
                                                FontSize="12"
                                                BackgroundColor="Transparent"
                                                TextColor="#2C3E50"

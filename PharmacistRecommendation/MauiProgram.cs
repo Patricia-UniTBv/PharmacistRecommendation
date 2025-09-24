@@ -36,27 +36,6 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-//#if WINDOWS
-
-//            builder.ConfigureLifecycleEvents(events =>
-//            {
-//                events.AddWindows(windows =>
-//                {
-//                    windows.OnWindowCreated(window =>
-//                    {
-//                        var hwnd = WindowNative.GetWindowHandle(window);
-//                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-//                        var appWindow = AppWindow.GetFromWindowId(windowId);
-
-//                        var iconPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "logo44x44.ico");
-
-//                        appWindow.SetIcon(iconPath); 
-//                    });
-//                });
-//            });
-//#endif
-
-
             builder.UseMauiCommunityToolkit();
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));
@@ -71,12 +50,10 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<AddPharmacyView>();
             builder.Services.AddTransient<EmailConfigurationView>();
             
-            // ADD THESE MEDICATION VIEWS
             builder.Services.AddTransient<MedicationView>();
             builder.Services.AddTransient<AddEditMedicationView>();
             builder.Services.AddTransient<ConflictResolutionView>();
 
-            // Add Reports View
             builder.Services.AddTransient<ReportsView>();
 
             builder.Services.AddTransient<MainPageView>();
@@ -92,12 +69,10 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<AddPharmacyViewModel>();
             builder.Services.AddTransient<EmailConfigurationViewModel>();
 
-            // ADD THESE MEDICATION VIEWMODELS
             builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<AddEditMedicationViewModel>();
             builder.Services.AddTransient<ConflictResolutionViewModel>();
             
-            // Add Reports ViewModel
             builder.Services.AddTransient<ReportsViewModel>();
             
             builder.Services.AddTransient<MainPageViewModel>();
@@ -133,23 +108,18 @@ namespace PharmacistRecommendation
 
             builder.Services.AddSingleton<IEmailConfigurationService, EmailConfigurationService>();
 
-            // ADD THESE MEDICATION SERVICES
             builder.Services.AddScoped<IMedicationService, MedicationService>();
             builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
             builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
 
-            // Add the secure storage service (MISSING REGISTRATION)
             builder.Services.AddSingleton<ISecureStorageService, MauiSecureStorageService>();
 
-            // Add authentication service (this depends on ISecureStorageService)
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
-            // Add Login View and ViewModel
             builder.Services.AddTransient<LoginView>();
             builder.Services.AddTransient<LoginViewModel>();
 
-            // Add the new LoginAddUser view and viewmodel
             builder.Services.AddTransient<LoginAddUserView>();
             builder.Services.AddTransient<LoginAddUserViewModel>();
 

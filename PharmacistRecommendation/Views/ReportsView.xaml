@@ -15,7 +15,6 @@
                    FontAttributes="Bold" 
                    HorizontalOptions="Center"/>
             
-            <!-- Date Range Selection -->
             <Frame BackgroundColor="LightGray" Padding="15" HasShadow="True">
                 <StackLayout Spacing="10">
                     <Label Text="Perioada raport:" FontAttributes="Bold"/>
@@ -54,7 +53,6 @@
                 </StackLayout>
             </Frame>
             
-            <!-- Report Types -->
             <Label Text="Tipuri Rapoarte:" 
                    FontSize="18" 
                    FontAttributes="Bold"/>
@@ -70,13 +68,11 @@
                                    CornerRadius="10">
                                 <Grid ColumnDefinitions="50,*,120" ColumnSpacing="15">
                                     
-                                    <!-- Icon -->
                                     <Label Grid.Column="0" 
                                            Text="{Binding Icon}" 
                                            FontSize="24"
                                            VerticalOptions="Center"/>
                                     
-                                    <!-- Title and Description -->
                                     <StackLayout Grid.Column="1" VerticalOptions="Center">
                                         <Label Text="{Binding Title}" 
                                                FontAttributes="Bold" 
@@ -86,7 +82,6 @@
                                                TextColor="Gray"/>
                                     </StackLayout>
                                     
-                                    <!-- Load Data Button -->
                                     <Button Grid.Column="2" 
                                             Text="Încarcă Date"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ReportsViewModel}}, Path=SelectReportTypeCommand}"
@@ -102,7 +97,6 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
             
-            <!-- Loading Indicator for Data -->
             <ActivityIndicator IsVisible="{Binding IsLoadingData}" 
                               IsRunning="{Binding IsLoadingData}"
                               Color="#3498db"/>
@@ -112,14 +106,12 @@
                    HorizontalOptions="Center"
                    FontAttributes="Italic"/>
             
-            <!-- Data Display Section -->
             <Frame IsVisible="{Binding SelectedReportType, Converter={StaticResource NotNullToBoolConverter}}"
                    BackgroundColor="White" 
                    HasShadow="True" 
                    Padding="15">
                 <StackLayout Spacing="15">
                     
-                    <!-- Report Header -->
                     <StackLayout Orientation="Horizontal" Spacing="10">
                         <Label Text="{Binding CurrentReportTitle}" 
                                FontSize="20" 
@@ -136,12 +128,10 @@
                                 VerticalOptions="Center"/>
                     </StackLayout>
                     
-                    <!-- Data Count -->
                     <Label Text="{Binding DataCount}" 
                            FontAttributes="Bold"
                            TextColor="#2C3E50"/>
                     
-                    <!-- Data Table -->
                     <Frame IsVisible="{Binding HasData}"
                            BackgroundColor="#F8F9FA"
                            Padding="10">
@@ -254,7 +244,6 @@
                         </StackLayout>
                     </Frame>
                     
-                    <!-- No Data Message -->
                     <Label IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"
                            Text="Nu au fost găsite date pentru criteriile selectate."
                            FontSize="16"
@@ -264,7 +253,6 @@
                 </StackLayout>
             </Frame>
             
-            <!-- PDF Generation Loading -->
             <ActivityIndicator IsVisible="{Binding IsGeneratingReport}" 
                               IsRunning="{Binding IsGeneratingReport}"
                               Color="#E74C3C"/>

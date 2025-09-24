@@ -9,14 +9,14 @@ namespace PharmacistRecommendation
         public App()
         {
             InitializeComponent();
-            Current.UserAppTheme = AppTheme.Light;
+            Current!.UserAppTheme = AppTheme.Light;
             
             MainPage = new AppShell();
         }
 
         public static async Task NavigateToMainShell()
         {
-            if (Current.MainPage is AppShell shell)
+            if (Current!.MainPage is AppShell shell)
             {
                 await shell.GoToAsync("..");
             }
@@ -28,7 +28,7 @@ namespace PharmacistRecommendation
 
         public static async Task NavigateToLogin()
         {
-            if (Current.MainPage is AppShell shell)
+            if (Current!.MainPage is AppShell shell)
             {
                 await shell.GoToAsync("login");
             }

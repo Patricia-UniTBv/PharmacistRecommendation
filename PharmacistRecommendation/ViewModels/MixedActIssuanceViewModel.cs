@@ -120,18 +120,23 @@ namespace PharmacistRecommendation.ViewModels
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService, IMedicationService medicationService)
         {
-            _prescriptionService = prescriptionService;
-            _administrationModeService = administrationModeService;
-            _pharmacyService = pharmacyService;
-            _importService = importService;
-            _medicationService = medicationService;
+            _prescriptionService = prescriptionService ?? throw new ArgumentNullException(nameof(prescriptionService));
+            _administrationModeService = administrationModeService ?? throw new ArgumentNullException(nameof(administrationModeService));
+            _pharmacyService = pharmacyService ?? throw new ArgumentNullException(nameof(pharmacyService));
+            _importService = importService ?? throw new ArgumentNullException(nameof(importService));
+            _medicationService = medicationService ?? throw new ArgumentNullException(nameof(medicationService));
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
-            _ = LoadMedicationsAsync();
-            LoadAdministrationModes();
+            _ = InitAsync();
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        }
+
+        private async Task InitAsync()
+        {
+            await LoadMedicationsAsync();
+            LoadAdministrationModes();
         }
 
         public async Task LoadMedicationsAsync()

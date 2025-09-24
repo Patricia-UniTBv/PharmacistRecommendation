@@ -14,7 +14,7 @@
         <Border Grid.Row="0"
                 BackgroundColor="#34495E"
                 Padding="15,10">
-            <Label Text="PharmacistRecommendation"
+            <Label Text="Recomandarea Farmacistului"
                    FontSize="18"
                    FontAttributes="Bold"
                    TextColor="White"

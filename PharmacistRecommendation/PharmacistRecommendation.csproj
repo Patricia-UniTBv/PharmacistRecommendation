@@ -44,9 +44,13 @@
 		<AppInstallerUri>C:\Users\Patricia\Desktop\APP</AppInstallerUri>
 		<HoursBetweenUpdateChecks>1680</HoursBetweenUpdateChecks>
 	</PropertyGroup>
+	<PropertyGroup>
+       <ApplicationTitle>Recomandarea Farmacistului</ApplicationTitle>
+    </PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\applogo.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -61,12 +65,8 @@
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
-	<ItemGroup>
-	  <MauiImage Remove="Resources\Images\logo.png" />
-	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Platforms\Windows\Assets\logo44x44.ico" />
 	  <None Remove="Platforms\Windows\CidGen64.dll" />
 	  <None Remove="Platforms\Windows\msvcp100.dll" />
 	  <None Remove="Platforms\Windows\msvcr100.dll" />
@@ -74,6 +74,7 @@
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\down_arrow.png" />
 	  <None Remove="Resources\Images\logo.png" />
+	  <None Remove="Resources\Images\logo1.ico" />
 	  <None Remove="Resources\Images\pen.png" />
 	  <None Remove="Resources\Images\view.png" />
 	</ItemGroup>
@@ -91,9 +92,6 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Content Include="Platforms\Windows\Assets\logo44x44.ico">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
 	  <Content Include="Platforms\Windows\CidGen64.dll">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -102,9 +100,6 @@
 	  </Content>
 	  <Content Include="Platforms\Windows\msvcr100.dll">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Resources\Images\logo.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
 
@@ -207,6 +202,10 @@
 	  <None Update="Libraries\msvcr100.dll">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Platforms\Windows\Assets\" />
 	</ItemGroup>
 
 </Project>
