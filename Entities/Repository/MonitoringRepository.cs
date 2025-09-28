@@ -30,5 +30,17 @@ namespace Entities.Repository
                      .ToListAsync();
 
         }
+
+        public async Task<List<Monitoring>> GetByPatientsAndRangeAsync(List<int> patientIds, DateTime from, DateTime to)
+        {
+            return await _context.Monitorings
+                .AsNoTracking()
+                .Where(m => patientIds.Contains(m.PatientId) &&
+                            m.MonitoringDate >= from &&
+                            m.MonitoringDate < to.AddDays(1))
+                .OrderBy(m => m.MonitoringDate)
+                .ToListAsync();
+        }
+
     }
 }

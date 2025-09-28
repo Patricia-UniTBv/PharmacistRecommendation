@@ -74,5 +74,36 @@ namespace Entities.Services
 
             return rows;
         }
+
+        public async Task<IEnumerable<HistoryRowDto>> GetHistoryByPatientIdsAsync(
+    List<int> patientIds, DateTime from, DateTime to)
+        {
+            var entities = await _repo.GetByPatientsAndRangeAsync(patientIds, from, to);
+
+            var rows = new List<HistoryRowDto>();
+
+            foreach (var m in entities)
+            {
+                var dict = string.IsNullOrWhiteSpace(m.ParametersJson)
+                    ? new Dictionary<string, JsonElement>()
+                    : JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(m.ParametersJson!)!;
+
+                rows.Add(new HistoryRowDto
+                {
+                    Date = m.MonitoringDate,
+                    Height = m.Height,
+                    Weight = m.Weight,
+                    MaxBloodPressure = dict.GetIntOrNull("MaxBloodPressure"),
+                    MinBloodPressure = dict.GetIntOrNull("MinBloodPressure"),
+                    HeartRate = dict.GetIntOrNull("HeartRate"),
+                    PulseOximetry = dict.GetIntOrNull("PulseOximetry"),
+                    BloodGlucose = dict.GetDecimalOrNull("BloodGlucose"),
+                    BodyTemperature = dict.GetDecimalOrNull("BodyTemperature")
+                });
+            }
+
+            return rows;
+        }
+
     }
 }

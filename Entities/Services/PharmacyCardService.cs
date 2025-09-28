@@ -63,6 +63,11 @@ namespace Entities.Services
 
             return await _cardRepository.AddCardWithPatientAsync(card, patient);
         }
+
+        public async Task<PharmacyCard?> GetByCodeAsync(string code)
+        {
+            return await _cardRepository.GetByCodeAsync(code);
+        }
     }
     
 }

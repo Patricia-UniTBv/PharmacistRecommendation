@@ -28,7 +28,9 @@ namespace Entities.Repository
         public async Task<Patient?> GetByNameAsync(string? firstName, string? lastName)
         {
             return await _context.Patients
-        .FirstOrDefaultAsync(p => p.FirstName == firstName && p.LastName == lastName);
+    .FirstOrDefaultAsync(p => p.FirstName.ToLower().Trim() == firstName.ToLower().Trim() &&
+                              p.LastName.ToLower().Trim() == lastName.ToLower().Trim());
+
         }
 
         public async Task<Patient?> GetByCardCodeAsync(string cardCode)

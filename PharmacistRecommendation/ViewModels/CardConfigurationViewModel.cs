@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using SD = System.Drawing;
 using System.Runtime.InteropServices;
+using Entities.Services;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -15,6 +16,8 @@ namespace PharmacistRecommendation.ViewModels
     {
         private readonly IPharmacyCardService _pharmacyCardService;
         private readonly IPharmacyService _pharmacyService;
+        private readonly IPatientService _patientService;
+
         [ObservableProperty] private string cardNumber;
         [ObservableProperty] private string firstName;
         [ObservableProperty] private string lastName;
@@ -37,12 +40,52 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private string birthdateString;
 
-        public CardConfigurationViewModel(IPharmacyCardService pharmacyCardService, IPharmacyService pharmacyService)
+        public CardConfigurationViewModel(IPharmacyCardService pharmacyCardService, IPharmacyService pharmacyService, IPatientService patientService)
         {
             _pharmacyCardService = pharmacyCardService;
             _pharmacyService = pharmacyService;
+            _patientService = patientService;
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        }
+
+        partial void OnCardNumberChanged(string oldValue, string newValue)
+        {
+            if (string.IsNullOrWhiteSpace(newValue))
+                return;
+
+            _ = LoadPatientByCardAsync(newValue);
+        }
+
+        private async Task LoadPatientByCardAsync(string cardNumber)
+        {
+            var card = await _pharmacyCardService.GetByCodeAsync(cardNumber.Trim());
+
+            if (card == null)
+            {
+                ValidationMessage = "Cardul nu există în baza de date.";
+                return;
+            }
+
+            var patient = await _patientService.GetByIdAsync(card.PatientId);
+
+            if (patient == null)
+            {
+                ValidationMessage = "Pacientul asociat cardului nu a fost găsit.";
+                return;
+            }
+
+            FirstName = patient.FirstName;
+            LastName = patient.LastName;
+            Cnp = patient.Cnp;
+            Birthdate = patient.Birthdate ?? DateTime.MinValue;
+            Gender = patient.Gender;
+            Phone = patient.Phone;
+            Email = patient.Email;
+            Cid = patient.Cid;
+
+            IsPrintButtonEnabled = true;
+            ValidationMessage = string.Empty;
         }
 
         partial void OnCnpChanged(string value)
@@ -253,13 +296,16 @@ namespace PharmacistRecommendation.ViewModels
             g.DrawString(_consentDecl, fontText, Brushes.Black, rect);
 
             float footerSpacing = 10;
+            float footerY = bottom - 3 * lineHeight - footerSpacing;
 
-            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, Brushes.Black,
-                new SD.PointF(left, bottom - 3 * lineHeight - footerSpacing));
-            g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-                new SD.PointF(left, bottom - 2 * lineHeight - footerSpacing);
-            g.DrawString("Semnătura: ______________________", fontText, Brushes.Black,
-                new SD.PointF(left, bottom - 1 * lineHeight - footerSpacing));
+            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, SD.Brushes.Black,
+                new SD.PointF(left, footerY));
+
+            g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black,
+                new SD.PointF(left, footerY + lineHeight));
+
+            g.DrawString("Semnătura: ______________________", fontText, SD.Brushes.Black,
+                new SD.PointF(left, footerY + 2 * lineHeight));
         }
 
         [RelayCommand]

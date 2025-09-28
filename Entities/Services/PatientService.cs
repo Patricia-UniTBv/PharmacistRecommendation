@@ -15,13 +15,12 @@ namespace Entities.Services
             _repository = repository;
         }
 
-        public async Task<Patient> GetOrCreatePatientAsync(Patient dto)
+        public async Task<Patient> GetOrCreatePatientAsync(string cardNumber, Patient dto)
         {
             Patient? patient = null;
-            if (!string.IsNullOrWhiteSpace(dto.Cnp))
-            {
-                patient = await _repository.GetByCnpAsync(dto.Cnp);
-            }
+  
+            patient = await GetPatientAsync(cardNumber, dto.Cnp, dto.FirstName, dto.LastName);
+            
 
             if (patient == null)
             {
@@ -65,18 +64,53 @@ namespace Entities.Services
 
         public async Task<Patient?> GetPatientAsync(string? cardCode = null, string? cnp = null, string? firstName = null, string? lastName = null)
         {
+            Patient? patient = null;
+
+            // 1. Caută după cardCode
             if (!string.IsNullOrWhiteSpace(cardCode))
-                return await _repository.GetByCardCodeAsync(cardCode);
+            {
+                patient = await _repository.GetByCardCodeAsync(cardCode);
+            }
 
-            if (!string.IsNullOrWhiteSpace(cnp))
-                return await _repository.GetByCnpAsync(cnp);
+            // 2. Caută după CNP, dacă nu a fost găsit deja
+            if (patient == null && !string.IsNullOrWhiteSpace(cnp))
+            {
+                patient = await _repository.GetByCnpAsync(cnp);
+            }
 
-            if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
-                return await _repository.GetByNameAsync(firstName, lastName);
+            // 3. Caută după nume + prenume, dacă nu a fost găsit deja
+            if (patient == null && !string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                patient = await _repository.GetByNameAsync(firstName.Trim(), lastName.Trim());
+            }
 
-            return null;
+            // Dacă există pacient, actualizează câmpurile cu cele noi
+            if (patient != null)
+            {
+                if (!string.IsNullOrWhiteSpace(firstName)) patient.FirstName = firstName.Trim();
+                if (!string.IsNullOrWhiteSpace(lastName)) patient.LastName = lastName.Trim();
+                if (!string.IsNullOrWhiteSpace(cnp)) patient.Cnp = cnp.Trim();
+
+                await _repository.UpdateAsync(patient);
+            }
+
+            return patient;
         }
 
+        public async Task<Patient?> GetByCnpAsync(string cnp)
+        {
+            return await _repository.GetByCnpAsync(cnp);
+        }
+
+        public async Task<Patient?> GetByCardCodeAsync(string cardCode)
+        {
+            return await _repository.GetByCardCodeAsync(cardCode);
+        }
+
+        public async Task<Patient?> GetByNameAsync(string firstName, string lastName)
+        {
+            return await _repository.GetByNameAsync(firstName, lastName);
+        }
 
         public async Task<Patient?> GetByIdAsync(int id)
         {

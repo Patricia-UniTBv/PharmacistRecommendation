@@ -1,6 +1,7 @@
 ﻿using Entities.Data;
 using Entities.Models;
 using Entities.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Entities.Repository
 {
@@ -31,6 +32,16 @@ namespace Entities.Repository
             await _context.SaveChangesAsync();
 
             return card;
+        }
+
+        public async Task<PharmacyCard?> GetByCodeAsync(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return null;
+
+            return await _context.PharmacyCards
+                .Include(pc => pc.Patient)
+                .FirstOrDefaultAsync(pc => pc.Code == code.Trim());
         }
     }
 }

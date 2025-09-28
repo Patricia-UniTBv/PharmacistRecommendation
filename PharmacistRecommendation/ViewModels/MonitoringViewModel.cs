@@ -140,7 +140,7 @@ public partial class MonitoringViewModel : ObservableObject
             Gender = Gender
         };
 
-        var patient = await _patientService.GetOrCreatePatientAsync(patientDto);
+        var patient = await _patientService.GetOrCreatePatientAsync(cardNumber, patientDto);
 
         var dto = new MonitoringDTO
         {
@@ -175,36 +175,52 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        var patient = await _patientService.GetPatientAsync(cardNumber, cnp, firstName, lastName);
+        // 1️⃣ Găsește pacientul după orice criteriu disponibil
+        var patientIds = new List<int>();
 
-        if (patient == null)
+        if (!string.IsNullOrWhiteSpace(cnp))
         {
-            ValidationMessage = "Datele pacientului nu au fost introduse.";
+            var p = await _patientService.GetByCnpAsync(cnp.Trim());
+            if (p != null) patientIds.Add(p.Id);
+        }
+
+        if (!string.IsNullOrWhiteSpace(cardNumber))
+        {
+            var p = await _patientService.GetByCardCodeAsync(cardNumber.Trim());
+            if (p != null && !patientIds.Contains(p.Id)) patientIds.Add(p.Id);
+        }
+
+        if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+        {
+            var p = await _patientService.GetByNameAsync(firstName.Trim(), lastName.Trim());
+            if (p != null && !patientIds.Contains(p.Id)) patientIds.Add(p.Id);
+        }
+
+        if (!patientIds.Any())
+        {
+            ValidationMessage = "Nu există date pentru acest pacient.";
             return;
         }
 
-        PatientId = patient.Id;
-
-        if (PatientId == 0)
-        {
-            ValidationMessage = "Pacient invalid.";
-            return;
-        }
+        PatientId = patientIds.First(); // Poți păstra primul ID ca referință
 
         if (HistoryList != null)
             HistoryList.Clear();
         else
             HistoryList = new ObservableCollection<object>();
-        ValidationMessage = string.Empty; 
+
+        ValidationMessage = string.Empty;
 
         var start = StartDate.Date;
         var end = EndDate.Date.AddDays(1).AddTicks(-1);
 
-        var rows = await _monitoringService.GetHistoryAsync(PatientId, start, end);
+        // 2️⃣ Încarcă toate monitorizările pentru toate ID-urile găsite
+        var rows = await _monitoringService.GetHistoryByPatientIdsAsync(patientIds, start, end);
 
         foreach (var row in rows)
             HistoryList.Add(row);
     }
+
 
     [RelayCommand]
     private async Task GeneratePdfAsync()
@@ -213,6 +229,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
     }
+
     [RelayCommand]
     private async Task SendEmailAsync()
     {

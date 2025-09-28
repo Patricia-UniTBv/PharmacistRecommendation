@@ -252,12 +252,12 @@
             HorizontalOptions="Center"
             Margin="0,8,0,0">
 
-            <Button Text="Card nou"
+            <Button Text="Resetează"
             FontSize="15"
             FontAttributes="None"
             Command="{Binding NewCardCommand}"
-            BackgroundColor="#4F46E5"
-            TextColor="White"
+            BackgroundColor="#f4f4f6"
+            TextColor="#36317f"
             CornerRadius="10"
             WidthRequest="120"
             HeightRequest="48"/>
