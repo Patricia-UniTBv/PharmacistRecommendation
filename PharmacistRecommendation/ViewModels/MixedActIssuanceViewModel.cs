@@ -128,16 +128,12 @@ namespace PharmacistRecommendation.ViewModels
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
-            _ = InitAsync();
+            LoadMedicationsAsync();
+            LoadAdministrationModes();
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
 
-        private async Task InitAsync()
-        {
-            await LoadMedicationsAsync();
-            LoadAdministrationModes();
-        }
 
         public async Task LoadMedicationsAsync()
         {
@@ -149,7 +145,7 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         public void UpdateSuggestions(string text)
-        {
+       {
             Suggestions.Clear();
 
             if (string.IsNullOrWhiteSpace(text))
