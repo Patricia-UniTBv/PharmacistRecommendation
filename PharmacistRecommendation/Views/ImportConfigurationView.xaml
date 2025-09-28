@@ -11,16 +11,15 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header Section -->
             <StackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,32">
                 <Label Text="Configurare importuri" 
-                       FontSize="28" 
+                       FontSize="24" 
                        FontAttributes="Bold" 
                        TextColor="#1F2937"
                        HorizontalOptions="Start"/>
                 <BoxView HeightRequest="3" 
                          WidthRequest="60" 
-                         BackgroundColor="#6366F1" 
+                         BackgroundColor="LightBlue" 
                          HorizontalOptions="Start"/>
                 <Label Text="Configurează căile pentru importul documentelor" 
                        FontSize="16" 
@@ -28,10 +27,8 @@
                        Margin="0,8,0,0"/>
             </StackLayout>
 
-            <!-- Main Content -->
             <StackLayout Grid.Row="1" Spacing="24">
 
-                <!-- Prescription Path Card -->
                 <Border BackgroundColor="White"
                         StrokeThickness="0"
                         Padding="20">
@@ -44,7 +41,7 @@
 
                     <StackLayout Spacing="12">
                         <StackLayout Orientation="Horizontal" Spacing="8">
-                            <Label Text="📋" FontSize="20"/>
+                            <Label Text="📋" FontSize="16"/>
                             <Label Text="Director rețete" 
                                    FontSize="18" 
                                    FontAttributes="Bold" 
@@ -73,7 +70,6 @@
                     </StackLayout>
                 </Border>
 
-                <!-- Receipt Path Card -->
                 <Border BackgroundColor="White"
                         StrokeThickness="0"
                         Padding="20">
@@ -86,7 +82,7 @@
 
                     <StackLayout Spacing="12">
                         <StackLayout Orientation="Horizontal" Spacing="8">
-                            <Label Text="🧾" FontSize="20"/>
+                            <Label Text="🧾" FontSize="16"/>
                             <Label Text="Director bonuri" 
                                    FontSize="18" 
                                    FontAttributes="Bold" 
@@ -115,39 +111,17 @@
                     </StackLayout>
                 </Border>
 
-                <!-- Action Section -->
                 <StackLayout Spacing="16" Margin="0,16,0,0">
                     <Button Text="Salvează configurația" 
                             Command="{Binding SaveCommand}"
-                            BackgroundColor="#6366F1"
+                            BackgroundColor="Green"
                             TextColor="White"
-                            FontSize="16"
-                            FontAttributes="Bold"
+                            FontSize="14"
                             Padding="20,12"
                             CornerRadius="10"
-                            HorizontalOptions="FillAndExpand">
-                        
+                            WidthRequest="180"
+                            HorizontalOptions="Start">
                     </Button>
-
-                    <!-- Success Message -->
-                    <Border BackgroundColor="#ECFDF5"
-                            StrokeThickness="1"
-                            Stroke="#A7F3D0"
-                            Padding="16"
-                            IsVisible="{Binding HasSuccessMessage}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8"/>
-                        </Border.StrokeShape>
-                        <StackLayout Orientation="Horizontal" Spacing="8">
-                            <Label Text="✅" FontSize="16" VerticalOptions="Center"/>
-                            <Label Text="{Binding Message}" 
-                                   TextColor="#065F46"
-                                   FontSize="14"
-                                   FontAttributes="Bold"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="FillAndExpand"/>
-                        </StackLayout>
-                    </Border>
                 </StackLayout>
             </StackLayout>
         </Grid>

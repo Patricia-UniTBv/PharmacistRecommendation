@@ -175,7 +175,6 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        // 1️⃣ Găsește pacientul după orice criteriu disponibil
         var patientIds = new List<int>();
 
         if (!string.IsNullOrWhiteSpace(cnp))
@@ -202,7 +201,7 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        PatientId = patientIds.First(); // Poți păstra primul ID ca referință
+        PatientId = patientIds.First(); 
 
         if (HistoryList != null)
             HistoryList.Clear();
@@ -214,7 +213,6 @@ public partial class MonitoringViewModel : ObservableObject
         var start = StartDate.Date;
         var end = EndDate.Date.AddDays(1).AddTicks(-1);
 
-        // 2️⃣ Încarcă toate monitorizările pentru toate ID-urile găsite
         var rows = await _monitoringService.GetHistoryByPatientIdsAsync(patientIds, start, end);
 
         foreach (var row in rows)

@@ -9,4 +9,14 @@ public partial class EmailConfigurationView : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
 	}
+    private async void OnSecurityLinkTapped(object sender, EventArgs e)
+    {
+        await Launcher.OpenAsync("https://myaccount.google.com/security");
+    }
+
+    private async void OnAppPasswordsTapped(object sender, EventArgs e)
+    {
+        await Launcher.OpenAsync("https://myaccount.google.com/apppasswords");
+    }
+
 }

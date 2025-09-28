@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Entities.Helpers;
 using Entities.Models;
 using Entities.Services;
 using Entities.Services.Interfaces;
@@ -145,7 +146,7 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         public void UpdateSuggestions(string text)
-       {
+        {
             Suggestions.Clear();
 
             if (string.IsNullOrWhiteSpace(text))
@@ -203,7 +204,7 @@ namespace PharmacistRecommendation.ViewModels
 
             try
             {
-                await Task.Delay(100, _cts.Token); 
+                await Task.Delay(100, _cts.Token);
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
@@ -218,7 +219,7 @@ namespace PharmacistRecommendation.ViewModels
                     var filtered = AllMedications
                         .Where(m => m.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                         .Take(10)
-                        .ToList(); 
+                        .ToList();
 
                     foreach (var med in filtered)
                     {
@@ -351,18 +352,6 @@ namespace PharmacistRecommendation.ViewModels
                 DoctorStamp = this.DoctorStamp,
                 IssueDate = DateTime.Now,
                 PrescriptionMedications = this.MedicationsWithPrescription
-         .Select(m => new PrescriptionMedication
-         {
-             Name = m.Name,
-             Morning = m.Morning,
-             Noon = m.Noon,
-             Evening = m.Evening,
-             Night = m.Night,
-             AdministrationModeId = m.AdministrationMode?.Id,
-             IsWithPrescription = true
-         })
-         .Concat(
-             this.MedicationsWithoutPrescription
                  .Select(m => new PrescriptionMedication
                  {
                      Name = m.Name,
@@ -371,18 +360,79 @@ namespace PharmacistRecommendation.ViewModels
                      Evening = m.Evening,
                      Night = m.Night,
                      AdministrationModeId = m.AdministrationMode?.Id,
-                     IsWithPrescription = false
+                     IsWithPrescription = true
                  })
-         )
-         .ToList()
+                 .Concat(
+                     this.MedicationsWithoutPrescription
+                         .Select(m => new PrescriptionMedication
+                         {
+                             Name = m.Name,
+                             Morning = m.Morning,
+                             Noon = m.Noon,
+                             Evening = m.Evening,
+                             Night = m.Night,
+                             AdministrationModeId = m.AdministrationMode?.Id,
+                             IsWithPrescription = false
+                         })
+                 )
+                 .ToList()
             };
 
             await _prescriptionService.AddPrescriptionAsync(prescription);
             IsPrintButtonEnabled = true;
             await ShowAlert("Rețeta a fost salvată cu succes!");
+
+            var pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+            var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+
+            var exportDto = new PrescriptionExportDto
+            {
+                PharmacyName = pharmacy.Name,
+                PharmacyAdress = pharmacy.Address,
+                PharmacyCUI = pharmacy.CUI,
+                PharmacyPhone = pharmacy.Phone,
+                PharmacyEmail = pharmacy.Email,
+                PacientCard = cardNumber,
+                CardAderenta = "",
+                RetetaType = showWithPrescription ? "Compensată" : "Necompensată",
+                Note = pharmacistObservations,
+                ConfirmareAdresareMedic = "Da",
+                ConfirmareRidicareReteta = "Nu",
+                MedicParafa = doctorStamp,
+                MedicEmail = "",
+                SerieReteta = prescriptionSeries,
+                NrReteta = prescriptionNumber,
+                Reteta = new List<MedicationExportDto>()
+            };
+
+            if (showWithPrescription)
+            {
+                exportDto.Reteta = MedicationsWithPrescription.Select(m => new MedicationExportDto
+                {
+                    MedicineName = m.Name,
+                    MedicineMorning = m.Morning,
+                    MedicineLunch = m.Noon,
+                    MedicineEvening = m.Evening,
+                    MedicineNight = m.Night,
+                    MedicineAdministration = administrationModes
+                        .FirstOrDefault(x => x.Id == m.AdministrationModeId)?.Name
+                }).ToList();
+            }
+            else
+            {
+                exportDto.Reteta = MedicationsWithoutPrescription.Select(m => new MedicationExportDto
+                {
+                    MedicineName = m.Name,
+                    MedicineMorning = m.Morning,
+                    MedicineLunch = m.Noon,
+                    MedicineEvening = m.Evening,
+                    MedicineNight = m.Night,
+                    MedicineAdministration = m.AdministrationMode.ToString()
+                }).ToList();
+            }
         }
 
-       
+
 
         [RelayCommand]
         public async void SelectMedication(string medName)

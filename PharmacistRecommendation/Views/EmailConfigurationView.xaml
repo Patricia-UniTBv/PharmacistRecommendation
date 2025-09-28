@@ -1,54 +1,335 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PharmacistRecommendation.Views.EmailConfigurationView">
+             x:Class="PharmacistRecommendation.Views.EmailConfigurationView"
+             BackgroundColor="#F8F9FA">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            <Label Text="Configurare Email" FontAttributes="Bold" FontSize="20"/>
+        <Grid Margin="24,40,24,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                <Label Text="Ghid generare parolă Gmail" FontAttributes="Bold" VerticalOptions="Center" />
+            <!-- Header Section -->
+            <StackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,32">
+                <Label Text="Configurare Email" 
+                       FontSize="24" 
+                       FontAttributes="Bold" 
+                       TextColor="#1F2937"
+                       HorizontalOptions="Start"/>
+                <BoxView HeightRequest="3" 
+                         WidthRequest="60" 
+                         BackgroundColor="#EF4444" 
+                         HorizontalOptions="Start"/>
+                <Label Text="Configurează conexiunea Gmail pentru trimiterea emailurilor" 
+                       FontSize="14" 
+                       TextColor="#6B7280"
+                       Margin="0,8,0,0"/>
+            </StackLayout>
 
-                <Image Source="info.png"
-           WidthRequest="16"
-           HeightRequest="16"
-           VerticalOptions="Center">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleHelpCommand}" />
-                    </Image.GestureRecognizers>
-                </Image>
-            </HorizontalStackLayout>
+            <!-- Main Content -->
+            <StackLayout Grid.Row="1" Spacing="20">
 
-            <Frame BackgroundColor="#f2f2f2"
-       BorderColor="#cccccc"
-       Padding="10"
-       IsVisible="{Binding ShowGmailHelp}"
-       Margin="0,5">
-                <Label FontSize="12" TextColor="Black">
-                    <Label.Text>
-                        🔐 Cum generezi parola aplicației Gmail:
+                <!-- Gmail Help Card -->
+                <Border BackgroundColor="White"
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.Shadow>
+                        <Shadow Brush="#E5E7EB" Offset="0,2" Radius="8" Opacity="0.1"/>
+                    </Border.Shadow>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
 
-1. Autentifică-te în contul Gmail.
-2. Activează verificarea în doi pași:
-   👉 https://myaccount.google.com/security
-3. După activare, mergi la:
-   👉 https://myaccount.google.com/apppasswords
-4. Alege "Mail", apoi "Alt dispozitiv" și scrie: Farmacie
-5. Apasă "Generează" și copiază parola de 16 caractere.
-   (ex: xvhszldwomirrwta — fără spații)
-6. Introdu adresa Gmail și parola de aplicație mai jos și apasă „Salvează”.
+                    <StackLayout Spacing="16">
+                        <!-- Collapsible Header -->
+                        <Border BackgroundColor="#FEF2F2"
+                                StrokeThickness="1"
+                                Stroke="#FECACA"
+                                Padding="16">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleHelpCommand}" />
+                            </Border.GestureRecognizers>
 
-📎 Notă: Parola de aplicație NU este parola obișnuită de Gmail.
-                    </Label.Text>
-                </Label>
-            </Frame>
-            <Label Text="Adresă Gmail" FontAttributes="Bold" />
-            <Entry Text="{Binding Email, Mode=TwoWay}" Placeholder="ex: farmacia@gmail.com" Keyboard="Email" />
+                            <StackLayout Orientation="Horizontal" Spacing="12">
+                                <Label Text="🔐" FontSize="16" VerticalOptions="Center"/>
+                                <StackLayout HorizontalOptions="FillAndExpand" Spacing="4">
+                                    <Label Text="Ghid generare parolă Gmail" 
+                                           FontSize="14" 
+                                           FontAttributes="Bold" 
+                                           TextColor="#DC2626"
+                                           VerticalOptions="Center"/>
+                                    <Label Text="Apasă pentru a vedea instrucțiunile detaliate" 
+                                           FontSize="12" 
+                                           TextColor="#991B1B"
+                                           VerticalOptions="Center"/>
+                                </StackLayout>
+                                <Label Text="{Binding ShowGmailHelp, Converter={StaticResource BoolToChevronConverter}}" 
+                                       FontSize="16" 
+                                       TextColor="#DC2626"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                        </Border>
 
-            <Label Text="Parolă aplicație Gmail" FontAttributes="Bold" />
-            <Entry Text="{Binding AppPassword, Mode=TwoWay}" IsPassword="True" Placeholder="Parola aplicației" />
+                        <!-- Expandable Help Content -->
+                        <Border BackgroundColor="#F8FAFC"
+                                StrokeThickness="1"
+                                Stroke="#E2E8F0"
+                                Padding="20"
+                                IsVisible="{Binding ShowGmailHelp}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
 
-            <Button Text="Salvează" Command="{Binding SaveCommand}" BackgroundColor="Green" HorizontalOptions="Start" WidthRequest="100" />
-        </VerticalStackLayout>
+                            <StackLayout Spacing="12">
+                                <Label Text="Pași pentru generarea parolei de aplicație:" 
+                                       FontSize="14" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#475569"/>
+
+                                <StackLayout Spacing="8">
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Border BackgroundColor="#EF4444" 
+                                                WidthRequest="20" 
+                                                HeightRequest="20"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="1" 
+                                                   FontSize="12" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+                                        <Label Text="Autentifică-te în contul Gmail" 
+                                               FontSize="13" 
+                                               TextColor="#374151"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="FillAndExpand"/>
+                                    </StackLayout>
+
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Border BackgroundColor="#EF4444" 
+                                                WidthRequest="20" 
+                                                HeightRequest="20"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="2" 
+                                                   FontSize="12" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+                                        <StackLayout HorizontalOptions="FillAndExpand">
+                                            <Label Text="Activează verificarea în doi pași" 
+                                                   FontSize="13" 
+                                                   TextColor="#374151"/>
+                                            <Label x:Name="MyLinkLabel"
+       Text="👉 myaccount.google.com/security"
+       FontSize="12"
+       TextColor="#6366F1"
+       TextDecorations="Underline">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnSecurityLinkTapped" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+
+                                        </StackLayout>
+                                    </StackLayout>
+
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Border BackgroundColor="#EF4444" 
+                                                WidthRequest="20" 
+                                                HeightRequest="20"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="3" 
+                                                   FontSize="12" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+                                        <StackLayout HorizontalOptions="FillAndExpand">
+                                            <Label Text="Mergi la App Passwords" 
+                                                   FontSize="13" 
+                                                   TextColor="#374151"/>
+                                            <Label x:Name="AppPasswordsLabel"
+       Text="👉 myaccount.google.com/apppasswords"
+       FontSize="12"
+       TextColor="#6366F1"
+       TextDecorations="Underline">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnAppPasswordsTapped" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </StackLayout>
+                                    </StackLayout>
+
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Border BackgroundColor="#EF4444" 
+                                                WidthRequest="20" 
+                                                HeightRequest="20"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="4" 
+                                                   FontSize="12" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+                                        <Label Text="Alege 'Mail', apoi 'Alt dispozitiv' și scrie" 
+                                               FontSize="13" 
+                                               TextColor="#374151"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="FillAndExpand"/>
+                                    </StackLayout>
+
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Border BackgroundColor="#EF4444" 
+                                                WidthRequest="20" 
+                                                HeightRequest="20"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="5" 
+                                                   FontSize="12" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+                                        <StackLayout HorizontalOptions="FillAndExpand">
+                                            <Label Text="Apasă 'Generează' și copiază parola de 16 caractere" 
+                                                   FontSize="13" 
+                                                   TextColor="#374151"/>
+                                            <Label Text="(ex: xvhszldwomirrwta — fără spații)" 
+                                                   FontSize="12" 
+                                                   TextColor="#6B7280"
+                                                   FontAttributes="Italic"/>
+                                        </StackLayout>
+                                    </StackLayout>
+                                </StackLayout>
+
+                                <!-- Important note -->
+                                <Border BackgroundColor="#FEF3C7"
+                                        StrokeThickness="1"
+                                        Stroke="#F59E0B"
+                                        Padding="12"
+                                        Margin="0,8,0,0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="6"/>
+                                    </Border.StrokeShape>
+                                    <StackLayout Orientation="Horizontal" Spacing="8">
+                                        <Label Text="⚠️" FontSize="16" VerticalOptions="Start"/>
+                                        <Label Text="Parola de aplicație NU este parola obișnuită de Gmail." 
+                                               FontSize="13" 
+                                               TextColor="#92400E"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="FillAndExpand"/>
+                                    </StackLayout>
+                                </Border>
+                            </StackLayout>
+                        </Border>
+                    </StackLayout>
+                </Border>
+
+                <!-- Email Configuration Card -->
+                <Border BackgroundColor="White"
+                        StrokeThickness="0"
+                        Padding="20">
+                    <Border.Shadow>
+                        <Shadow Brush="#E5E7EB" Offset="0,2" Radius="8" Opacity="0.1"/>
+                    </Border.Shadow>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
+
+                    <StackLayout Spacing="20">
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Label Text="Configurație Email" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#374151"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+
+                        <!-- Gmail Address Field -->
+                        <StackLayout Spacing="8">
+                            <Label Text="Adresă Gmail" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#374151"/>
+                            <Border BackgroundColor="#F9FAFB"
+                                    StrokeThickness="1"
+                                    Stroke="#E5E7EB">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <Entry Text="{Binding Email, Mode=TwoWay}" 
+                                       Placeholder="ex: farmacia@gmail.com" 
+                                       PlaceholderColor="#9CA3AF"
+                                       TextColor="#374151"
+                                       BackgroundColor="Transparent"
+                                       Keyboard="Email"
+                                       Margin="12,0"/>
+                            </Border>
+                        </StackLayout>
+
+                        <!-- App Password Field -->
+                        <StackLayout Spacing="8">
+                            <Label Text="Parolă aplicație Gmail" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#374151"/>
+                            <Border BackgroundColor="#F9FAFB"
+                                    StrokeThickness="1"
+                                    Stroke="#E5E7EB">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <Entry Text="{Binding AppPassword, Mode=TwoWay}" 
+                                       IsPassword="True"
+                                       Placeholder="Introdu parola de aplicație de 16 caractere" 
+                                       PlaceholderColor="#9CA3AF"
+                                       TextColor="#374151"
+                                       BackgroundColor="Transparent"
+                                       Margin="12,0"/>
+                            </Border>
+                        </StackLayout>
+                    </StackLayout>
+                </Border>
+
+                <!-- Action Button -->
+                <Button Text="Salvează configurația" 
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        FontSize="14"
+                        Padding="20,12"
+                        CornerRadius="10"
+                        HorizontalOptions="Start">
+                </Button>
+            </StackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>
