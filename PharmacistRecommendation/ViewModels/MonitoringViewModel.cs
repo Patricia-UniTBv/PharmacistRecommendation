@@ -16,15 +16,17 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly IPatientService _patientService;
     private readonly IPdfReportService _pdfReportService;
     private readonly IEmailConfigurationService _emailConfigurationService;
+    private readonly IPharmacyService _pharmacyService;
     private readonly int _pharmacyId;
 
     public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService)
+                               IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
         _emailConfigurationService = emailConfigurationService;
+        _pharmacyService = pharmacyService;
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
@@ -238,6 +240,7 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
+        var pharmacy = await _pharmacyService.GetByIdAsync(_pharmacyId);
         string patientEmail = (PatientEmail?.Trim()) ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
@@ -276,7 +279,7 @@ public partial class MonitoringViewModel : ObservableObject
             };
 
             var sender = new EmailSenderService(emailConfig);
-            await sender.SendEmailWithAttachmentAsync(patientEmail, subject, body, pdfPath);
+            await sender.SendEmailWithAttachmentAsync(pharmacy.Name, patientEmail, subject, body, pdfPath);
 
             await Shell.Current.DisplayAlert("Succes", "Emailul a fost trimis cu succes.", "OK");
         }
@@ -285,6 +288,7 @@ public partial class MonitoringViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
         }
     }
+
     [RelayCommand]
     private void Clear()
     {

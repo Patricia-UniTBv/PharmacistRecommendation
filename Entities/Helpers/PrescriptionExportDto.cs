@@ -24,5 +24,6 @@ namespace Entities.Helpers
         public string SerieReteta { get; set; }
         public string NrReteta { get; set; }
         public List<MedicationExportDto> Reteta { get; set; }
+
     }
 }

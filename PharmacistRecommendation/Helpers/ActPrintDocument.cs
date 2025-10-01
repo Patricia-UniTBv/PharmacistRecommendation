@@ -64,7 +64,7 @@ namespace PharmacistRecommendation.Helpers
 
             try
             {
-                using var logo = SD.Image.FromFile("Resources/Images/logo.png");
+                using var logo = SD.Image.FromFile("Resources/Images/farma.png");
                 g.DrawImage(logo, left, y, 60, 60);
             }
             catch { }
@@ -105,7 +105,7 @@ namespace PharmacistRecommendation.Helpers
             g.DrawString($"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
 
-            g.DrawString($"Aparținător: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString($"APARȚINĂTOR: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
             g.DrawString($"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
 

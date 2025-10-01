@@ -313,22 +313,39 @@ Placeholder="Nume medicament"/>
 
 
             <HorizontalStackLayout Spacing="14" Padding="0,8,0,0">
+
+                <Entry Placeholder="Email pacient"
+           Text="{Binding PatientEmail}"
+           FontSize="12"
+           WidthRequest="180"
+           VerticalOptions="Center"/>
+
+                <Button Text="Trimite Mail"
+            Command="{Binding SendEmailCommand}"
+            FontSize="12"
+            HeightRequest="34"
+            CornerRadius="8"
+            BackgroundColor="#007bff"
+            TextColor="White"/>
+
                 <Button Text="Salvează"
-                        Command="{Binding SaveCommand}"
-                        FontSize="14"
-                        HeightRequest="34"
-                        CornerRadius="8"
-                        BackgroundColor="Green"
-                        TextColor="White"/>
+            Command="{Binding SaveCommand}"
+            FontSize="14"
+            HeightRequest="34"
+            CornerRadius="8"
+            BackgroundColor="Green"
+            TextColor="White"/>
+
                 <Button Text="Printează"
-                        Command="{Binding PrintCommand}"
-                        IsEnabled="True"
-                        FontSize="14"
-                        HeightRequest="34"
-                        CornerRadius="8"
-                        BackgroundColor="#f4f4f6"
-                        TextColor="#36317f"/>
+            Command="{Binding PrintCommand}"
+            FontSize="14"
+            HeightRequest="34"
+            CornerRadius="8"
+            BackgroundColor="#f4f4f6"
+            TextColor="#36317f"/>
+
             </HorizontalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

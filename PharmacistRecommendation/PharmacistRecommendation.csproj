@@ -67,12 +67,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiFont Remove="Resources\Fonts\OpenSans-Regular2.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\farma.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Platforms\Windows\CidGen64.dll" />
 	  <None Remove="Platforms\Windows\msvcp100.dll" />
 	  <None Remove="Platforms\Windows\msvcr100.dll" />
+	  <None Remove="Resources\Fonts\OpenSans-Regular2.ttf" />
 	  <None Remove="Resources\Images\calendar.png" />
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\down_arrow.png" />
+	  <None Remove="Resources\Images\farma.png" />
 	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Images\logo1.ico" />
 	  <None Remove="Resources\Images\pen.png" />
@@ -102,6 +112,10 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Fonts\OpenSans-Regular2.ttf" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
@@ -120,6 +134,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="MimeKit" Version="4.13.0" />
+		<PackageReference Include="PDFsharp" Version="6.2.2" />
 		<PackageReference Include="QuestPDF" Version="2025.5.1" />
 		<PackageReference Include="ScottPlot" Version="4.1.74" />
 		<PackageReference Include="ClosedXML" Version="0.102.2" />
@@ -206,6 +221,10 @@
 
 	<ItemGroup>
 	  <Folder Include="Platforms\Windows\Assets\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiAsset Include="Resources\Images\farma.png" />
 	</ItemGroup>
 
 </Project>

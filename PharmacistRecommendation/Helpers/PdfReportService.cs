@@ -330,7 +330,6 @@ public class PdfReportService : IPdfReportService
         Add("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
         Add("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-        // 3️⃣  Output PDF în Documents
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         Directory.CreateDirectory(folder);
         var filePath = Path.Combine(folder,
@@ -355,13 +354,12 @@ public class PdfReportService : IPdfReportService
                     col.Item().Text(txt =>
                     {
                         txt.Span("Pacient: ").SemiBold();
-                        txt.Span($"{patientName}   ");          // ex: „Ion Popescu”
+                        txt.Span($"{patientName}   ");         
                         txt.Span("CNP: ").SemiBold();
                         txt.Span($"{patientCnp}   ");
                         txt.Span("CID: ").SemiBold();
                         txt.Span($"{patientCid}");
                     });
-                    // ─── TABEL ───
                     col.Item().PaddingTop(10).Table(tab =>
                     {
                         tab.ColumnsDefinition(c =>
@@ -400,7 +398,6 @@ public class PdfReportService : IPdfReportService
                         }
                     });
 
-                    // ─── GRAFICE (2 pe rând) ───
                     if (charts.Count > 0)
                     {
                         col.Item().PaddingTop(15).Column(imgCol =>
@@ -438,7 +435,6 @@ public class PdfReportService : IPdfReportService
         return filePath;
     }
 
-    // ───────── Grafic cu ScottPlot 4.x ─────────
     private static byte[]? PlotLine<T>(IEnumerable<HistoryRowDto> data,
                                        Func<HistoryRowDto, T> selector,
                                        string yLabel)
@@ -470,7 +466,7 @@ public class PdfReportService : IPdfReportService
         plt.XAxis.DateTimeFormat(true);
         plt.Title(yLabel);
 
-        return plt.GetImageBytes();   // disponibil în v4
+        return plt.GetImageBytes();  
     }
 
 }

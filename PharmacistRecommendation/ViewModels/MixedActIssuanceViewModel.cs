@@ -11,7 +11,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using QuestPDF.Helpers;
+using Document = QuestPDF.Fluent.Document;
+using IContainer = QuestPDF.Infrastructure.IContainer;
+using MimeKit;
+
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -26,6 +33,7 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IPharmacyService _pharmacyService;
         private readonly IImportConfigurationService _importService;
         private readonly IMedicationService _medicationService;
+        private readonly IEmailConfigurationService _emailConfigurationService;
 
         [ObservableProperty]
         string mode;
@@ -98,6 +106,8 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         AdministrationMode? administrationMode;
         [ObservableProperty]
+        private string? patientEmail;
+        [ObservableProperty]
         bool canPrint = false;
         [ObservableProperty]
         bool isPrintButtonEnabled = false;
@@ -119,13 +129,15 @@ namespace PharmacistRecommendation.ViewModels
         private CancellationTokenSource _cts;
 
 
-        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService, IImportConfigurationService importService, IMedicationService medicationService)
+        public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService,
+            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService)
         {
             _prescriptionService = prescriptionService ?? throw new ArgumentNullException(nameof(prescriptionService));
             _administrationModeService = administrationModeService ?? throw new ArgumentNullException(nameof(administrationModeService));
             _pharmacyService = pharmacyService ?? throw new ArgumentNullException(nameof(pharmacyService));
             _importService = importService ?? throw new ArgumentNullException(nameof(importService));
             _medicationService = medicationService ?? throw new ArgumentNullException(nameof(medicationService));
+            _emailConfigurationService = emailConfigurationService;
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
@@ -563,6 +575,191 @@ namespace PharmacistRecommendation.ViewModels
             if (pd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 printDoc.Print();
+            }
+        }
+
+        [RelayCommand]
+        private async Task<byte[]> CreatePrescriptionPdf()
+        {
+            var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+
+            var medsWithPrescription = MedicationsWithPrescription.Select(m => new ActPdfDocument.MedicationLine
+            {
+                Name = m.Name,
+                Morning = m.Morning,
+                Noon = m.Noon,
+                Evening = m.Evening,
+                Night = m.Night,
+                AdministrationMode = m.AdministrationMode?.Name ?? ""
+            }).ToList();
+
+            var medsWithoutPrescription = MedicationsWithoutPrescription.Select(m => new ActPdfDocument.MedicationLine
+            {
+                Name = m.Name,
+                Morning = m.Morning,
+                Noon = m.Noon,
+                Evening = m.Evening,
+                Night = m.Night,
+                AdministrationMode = m.AdministrationMode?.Name ?? ""
+            }).ToList();
+
+            var pdfDoc = new ActPdfDocument
+            {
+                PharmacyName = _pharmacy!.Name,
+                PharmacyAddress = _pharmacy.Address!,
+                PharmacyPhone = _pharmacy!.Phone!,
+                Series = this.PrescriptionSeries!,
+                Number = this.PrescriptionNumber!,
+                IssueDate = DateTime.Now,
+                PatientName = this.PatientName!,
+                PatientCnp = this.PatientCnp!,
+                CaregiverName = this.CaregiverName!,
+                CaregiverCnp = this.CaregiverCnp!,
+                ModeCode = mode switch
+                {
+                    "withprescription" => "AC",
+                    "withoutprescription" => "AP",
+                    "mixed" => "AM",
+                    _ => "XX"
+                },
+                DoctorStamp = this.DoctorStamp!,
+                Diagnostic = this.PrescriptionDiagnosis!,
+                DiagnosisMentioned = this.PatientDiagnosis!,
+                MedicationsMentioned = this.UsedMedications!,
+                Symptoms = this.Symptoms!,
+                Suspicion = this.Suspicion!,
+                PharmacistObservations = this.PharmacistObservations!,
+                NotesToDoctor = this.NotesToDoctor!,
+                PharmacistRecommendation = this.PharmacistRecommendation,
+                PharmaceuticalService = this.SelectedPharmaceuticalService,
+                MedicationsWithPrescription = medsWithPrescription,
+                MedicationsWithoutPrescription = medsWithoutPrescription
+            };
+
+            byte[] pdfBytes = pdfDoc.GeneratePdf();
+
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Prescription.pdf");
+            await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+            return pdfBytes;
+        }
+
+        [RelayCommand]
+        private async Task SendEmailAsync()
+        {
+            string patientEmail = PatientEmail?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
+            {
+                patientEmail = await Shell.Current.DisplayPromptAsync(
+                    "Adresă e-mail",
+                    $"Pacientul {PatientName} nu are e-mail salvat.\nIntrodu adresa:",
+                    "OK", "Renunță", "ex: ion.popescu@mail.com");
+
+                if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
+                {
+                    await Shell.Current.DisplayAlert("Anulat", "Email invalid sau trimiterea a fost anulată.", "OK");
+                    return;
+                }
+            }
+
+            var config = await _emailConfigurationService.GetByPharmacyIdAsync(pharmacyId);
+            if (config == null || string.IsNullOrWhiteSpace(config.Username) || string.IsNullOrWhiteSpace(config.Password))
+            {
+                await Shell.Current.DisplayAlert("Eroare", "Configurarea email nu este completă.", "OK");
+                return;
+            }
+
+            var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+
+            byte[] pdfBytes = await CreatePrescriptionPdf(); 
+
+            var exportDto = new PrescriptionExportDto
+            {
+                PharmacyName = pharmacy.Name,
+                PharmacyAdress = pharmacy.Address,
+                PharmacyCUI = pharmacy.CUI,
+                PharmacyPhone = pharmacy.Phone,
+                PharmacyEmail = pharmacy.Email,
+                PacientCard = cardNumber,
+                CardAderenta = "",
+                RetetaType = ShowWithPrescription && ShowWithoutPrescription ? "Mixtă" :
+                             ShowWithPrescription ? "Compensată" : "Necompensată",
+                Note = pharmacistObservations,
+                ConfirmareAdresareMedic = "Da",
+                ConfirmareRidicareReteta = "Nu",
+                MedicParafa = doctorStamp,
+                MedicEmail = "",
+                SerieReteta = prescriptionSeries,
+                NrReteta = prescriptionNumber,
+                Reteta = MedicationsWithPrescription
+                         .Select(m => new MedicationExportDto
+                         {
+                             MedicineName = m.Name,
+                             MedicineMorning = m.Morning,
+                             MedicineLunch = m.Noon,
+                             MedicineEvening = m.Evening,
+                             MedicineNight = m.Night,
+                             MedicineAdministration = m.AdministrationMode?.Name ?? ""
+                         })
+                         .Concat(MedicationsWithoutPrescription.Select(m => new MedicationExportDto
+                         {
+                             MedicineName = m.Name,
+                             MedicineMorning = m.Morning,
+                             MedicineLunch = m.Noon,
+                             MedicineEvening = m.Evening,
+                             MedicineNight = m.Night,
+                             MedicineAdministration = m.AdministrationMode?.Name ?? ""
+                         }))
+                         .ToList()
+            };
+            string jsonContent = JsonSerializer.Serialize(exportDto, new JsonSerializerOptions { WriteIndented = true });
+
+            string actName;
+
+            switch (exportDto.RetetaType)
+            {
+                case "Mixtă":
+                    actName = "Act Mixt";
+                    break;
+                case "Compensată":
+                    actName = "Act consecutiv prescriptiei";
+                    break;
+                default:
+                    actName = "Act propriu";
+                    break;
+            }
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(pharmacy.Name, config.Username));
+            message.To.Add(MailboxAddress.Parse(patientEmail));
+            message.Subject = $"{actName} - {PatientName}";
+
+            var builder = new BodyBuilder
+            {
+                TextBody = $"Bună ziua,\n\nVă trimitem rețeta în format PDF și JSON.\n\nO zi frumoasă!\n{pharmacy.Name}, {pharmacy.Address}"
+            };
+
+
+            builder.Attachments.Add($"{actName}.pdf", pdfBytes);
+            builder.Attachments.Add($"{actName}.json", System.Text.Encoding.UTF8.GetBytes(jsonContent));
+
+
+            message.Body = builder.ToMessageBody();
+
+            try
+            {
+                using var client = new MailKit.Net.Smtp.SmtpClient();
+                client.Timeout = 60000;
+                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(config.Username, config.Password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+
+                await Shell.Current.DisplayAlert("Succes", "Emailul a fost trimis cu succes.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
             }
         }
 

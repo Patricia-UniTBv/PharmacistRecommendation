@@ -13,6 +13,8 @@ using PharmacistRecommendation.Services;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
 using WinRT.Interop;
+using QuestPDF.Infrastructure;
+
 #if WINDOWS
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -36,6 +38,7 @@ namespace PharmacistRecommendation
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            QuestPDF.Settings.License = LicenseType.Community;
             builder.UseMauiCommunityToolkit();
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));
