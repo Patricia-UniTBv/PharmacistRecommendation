@@ -14,6 +14,8 @@ using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
 using WinRT.Interop;
 using QuestPDF.Infrastructure;
+using System.Text.Json;
+
 
 #if WINDOWS
 using Microsoft.UI;
@@ -39,9 +41,24 @@ namespace PharmacistRecommendation
                 });
 
             QuestPDF.Settings.License = LicenseType.Community;
+
             builder.UseMauiCommunityToolkit();
+
+            var configPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+
+            if (!File.Exists(configPath))
+                throw new FileNotFoundException("Fișierul de configurare nu există.", configPath);
+
+            var json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+            string server = config["SqlServer"].ToString();
+            string database = config["Database"].ToString();
+
+            string connectionString = $"Server={server};Database={database};Trusted_Connection=True;TrustServerCertificate=True;";
+
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
-                options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;"));
+                options.UseSqlServer(connectionString));
 
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();

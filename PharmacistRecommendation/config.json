@@ -1,0 +1,5 @@
+{
+  "SqlServer": "localhost\\SQLEXPRESS",
+  "Database": "PharmacistRecommendationDB",
+  "TrustServerCertificate": true
+}

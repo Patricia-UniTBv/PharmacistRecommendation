@@ -208,6 +208,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="config.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Libraries\CidGen64.dll">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
