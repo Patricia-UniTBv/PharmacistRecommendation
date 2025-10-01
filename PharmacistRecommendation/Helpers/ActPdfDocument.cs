@@ -5,6 +5,7 @@ using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 
 namespace PharmacistRecommendation.Helpers
 {
@@ -47,10 +48,9 @@ namespace PharmacistRecommendation.Helpers
 
         public byte[] GeneratePdf()
         {
-            PdfDocument pdf = new PdfDocument();
-            PdfPage page = pdf.AddPage();
+            PdfDocument pdfDoc = new PdfDocument();
+            PdfPage page = pdfDoc.AddPage();
             page.Size = PdfSharp.PageSize.A4;
-
             XGraphics g = XGraphics.FromPdfPage(page);
 
             double left = 10;
@@ -69,11 +69,15 @@ namespace PharmacistRecommendation.Helpers
             try
             {
                 var logo = XImage.FromFile("Resources/Images/farma.png");
-                g.DrawImage(logo, left, y, 60, 60);
+                double logoWidth = 60;
+                double logoHeight = 60;
+                double logoX = page.Width.Point - left - logoWidth; // dreapta
+                g.DrawImage(logo, logoX, y, logoWidth, logoHeight);
             }
             catch { }
 
-            double textStartX = left + 90;
+            double textStartX = left + 10; // text aproape de margine
+
 
             string pageTitle = ModeCode switch
             {
@@ -87,10 +91,8 @@ namespace PharmacistRecommendation.Helpers
             y += 50;
 
             string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{new Random().Next(1000, 9999):D4}";
-            var codeSize = g.MeasureString(code, fontText);
-
             g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, XBrushes.Black, textStartX, y);
-            g.DrawString(code, fontText, XBrushes.Black, page.Width.Point - 250, y);
+            g.DrawString(code, fontText, XBrushes.Black, page.Width.Point - 150, y);
             y += lineHeight;
 
             g.DrawString($"FARMACIST: {SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}", fontText, XBrushes.Black, textStartX, y);
@@ -135,84 +137,131 @@ namespace PharmacistRecommendation.Helpers
             DrawWrappedText($"SIMPTOMATOLOGIE: {Symptoms}");
             DrawWrappedText($"SUSPICIUNE: {Suspicion}");
             DrawWrappedText($"CONSTATĂRILE FARMACISTULUI: {PharmacistObservations}");
-            y += 5;
+            y += 10;
 
             if (MedicationsWithPrescription.Count > 0)
             {
-                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ", MedicationsWithPrescription, fontSection, fontText);
+                y = DrawMedicationSection(pdfDoc, ref g, textStartX, y, contentWidth,
+                                          "MEDICAMENTE ELIBERATE CU REȚETĂ:", MedicationsWithPrescription, fontSection, fontText);
                 y += 10;
             }
 
             if (MedicationsWithoutPrescription.Count > 0)
             {
-                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ", MedicationsWithoutPrescription, fontSection, fontText);
+                y = DrawMedicationSection(pdfDoc, ref g, textStartX, y, contentWidth,
+                                          "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ:", MedicationsWithoutPrescription, fontSection, fontText);
+                y += 10;
             }
 
-            DrawWrappedText(NotesToDoctor ?? "");
-            DrawWrappedText(PharmacistRecommendation ?? "");
-            DrawWrappedText($"Serviciu farmaceutic: {PharmaceuticalService}");
+            // Asigurăm că textele sub tabel apar corect
+            void DrawTextBelowTable(string text)
+            {
+                if (string.IsNullOrEmpty(text)) return;
+
+                double spaceNeeded = g.MeasureString(text, fontText).Height + 10;
+                if (y + spaceNeeded > page.Height.Point - 40)
+                {
+                    var page = pdfDoc.AddPage();
+                    page.Size = PdfSharp.PageSize.A4;
+                    g.Dispose();
+                    g = XGraphics.FromPdfPage(page);
+                    y = 40; // marginTop
+                }
+
+                DrawWrappedText(text);
+            }
+
+            DrawTextBelowTable(NotesToDoctor ?? "");
+            DrawTextBelowTable(PharmacistRecommendation ?? "");
+            DrawTextBelowTable($"Serviciu farmaceutic: {PharmaceuticalService}");
 
             using var ms = new MemoryStream();
-            pdf.Save(ms, false);
+            pdfDoc.Save(ms, false);
             return ms.ToArray();
         }
 
-        private double DrawMedicationSection(XGraphics g, double left, double y, double width, string title,
-                                     List<MedicationLine> meds, XFont sectionFont, XFont textFont)
+
+        private double DrawMedicationSection(PdfDocument pdfDoc, ref XGraphics g, double left, double y, double width, string title,
+                               List<MedicationLine> meds, XFont sectionFont, XFont textFont)
         {
             XTextFormatter tf = new XTextFormatter(g);
-
-            g.DrawString(title, sectionFont, XBrushes.Black, left, y);
-            y += sectionFont.GetHeight() * 1.5;
+            double pageHeight = g.PageSize.Height;
+            double marginTop = 40;
+            double rowHeight = sectionFont.GetHeight() * 1.5;
 
             double[] colWidths = { 30, 200, 65, 65, 65, 90, 130 };
             double totalWidth = 0;
             foreach (var w in colWidths) totalWidth += w;
             double scale = totalWidth > width ? width / totalWidth : 1.0;
-            for (int i = 0; i < colWidths.Length; i++) colWidths[i] = Math.Max(30, colWidths[i] * scale); // min width 30
+            for (int i = 0; i < colWidths.Length; i++) colWidths[i] = Math.Max(30, colWidths[i] * scale);
 
             string[] headers = { "NR CRT", "MEDICAMENT", "DIMIN.", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
 
-            double rowHeight = sectionFont.GetHeight() * 1.5;
+            var f = new XFont("OpenSans", 12, XFontStyleEx.Bold);
+            // Desenează titlul
+            g.DrawString(title, f, XBrushes.Black, left, y);
+            y += 5;
+
+            // Desenează antet
             double x = left;
             for (int i = 0; i < headers.Length; i++)
             {
                 g.DrawRectangle(XPens.Gray, x, y, colWidths[i], rowHeight);
-                var rectHeader = new XRect(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
-                tf.DrawString(headers[i], sectionFont, XBrushes.Black, rectHeader, XStringFormats.TopLeft);
+                tf.DrawString(headers[i], sectionFont, XBrushes.Black,
+                              new XRect(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4), XStringFormats.TopLeft);
                 x += colWidths[i];
             }
             y += rowHeight;
 
-            for (int r = 0; r < meds.Count; r++)
+            foreach (var med in meds.Select((value, index) => new { value, index }))
             {
-                x = left;
-                var med = meds[r];
+                double maxRowHeight = rowHeight;
                 string[] values = {
-            (r + 1).ToString(),
-            med.Name ?? "-",
-            med.Morning ?? "-",
-            med.Noon ?? "-",
-            med.Evening ?? "-",
-            med.Night ?? "-",
-            med.AdministrationMode ?? "-"
+            (med.index + 1).ToString(),
+            med.value.Name ?? "-",
+            med.value.Morning ?? "-",
+            med.value.Noon ?? "-",
+            med.value.Evening ?? "-",
+            med.value.Night ?? "-",
+            med.value.AdministrationMode ?? "-"
         };
 
-                double maxRowHeight = 0;
                 for (int i = 0; i < values.Length; i++)
                 {
-                    var rectMeasure = new XRect(0, 0, colWidths[i] - 4, 1000);
                     var size = g.MeasureString(values[i], textFont);
                     double h = Math.Ceiling(size.Height * Math.Max(1, values[i].Length * textFont.Size / colWidths[i]));
                     if (h > maxRowHeight) maxRowHeight = h;
                 }
-                maxRowHeight = Math.Max(maxRowHeight, rowHeight); 
 
+                if (y + maxRowHeight + 20 > pageHeight)
+                {
+                    // Creează pagina nouă
+                    var page = pdfDoc.AddPage();
+                    page.Size = PdfSharp.PageSize.A4;
+                    g.Dispose();
+                    g = XGraphics.FromPdfPage(page);
+                    pageHeight = page.Height;
+                    y = marginTop;
+
+                    // Redesenare antet pe pagina nouă
+                    x = left;
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        g.DrawRectangle(XPens.Gray, x, y, colWidths[i], rowHeight);
+                        tf = new XTextFormatter(g);
+                        tf.DrawString(headers[i], sectionFont, XBrushes.Black,
+                                      new XRect(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4), XStringFormats.TopLeft);
+                        x += colWidths[i];
+                    }
+                    y += rowHeight;
+                }
+
+                x = left;
                 for (int i = 0; i < values.Length; i++)
                 {
                     g.DrawRectangle(XPens.Gray, x, y, colWidths[i], maxRowHeight);
-                    var rectText = new XRect(x + 2, y + 2, colWidths[i] - 4, maxRowHeight - 4);
-                    tf.DrawString(values[i], textFont, XBrushes.Black, rectText, XStringFormats.TopLeft);
+                    tf.DrawString(values[i], textFont, XBrushes.Black,
+                                  new XRect(x + 2, y + 2, colWidths[i] - 4, maxRowHeight - 4), XStringFormats.TopLeft);
                     x += colWidths[i];
                 }
 

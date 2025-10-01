@@ -712,7 +712,16 @@ namespace PharmacistRecommendation.ViewModels
                          }))
                          .ToList()
             };
-            string jsonContent = JsonSerializer.Serialize(exportDto, new JsonSerializerOptions { WriteIndented = true });
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            string jsonContent = JsonSerializer.Serialize(exportDto, options);
+
 
             string actName;
 
@@ -732,7 +741,7 @@ namespace PharmacistRecommendation.ViewModels
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(pharmacy.Name, config.Username));
             message.To.Add(MailboxAddress.Parse(patientEmail));
-            message.Subject = $"{actName} - {PatientName}";
+            message.Subject = $"{actName}  {PatientName}";
 
             var builder = new BodyBuilder
             {
