@@ -27,7 +27,7 @@ public class PdfReportService : IPdfReportService
     public async Task<string> CreatePatientReportAsync(int patientId, DateTime from, DateTime to)
     {
         System.Diagnostics.Debug.WriteLine("=== CreatePatientReportAsync: Starting ===");
-        
+
         try
         {
             System.Diagnostics.Debug.WriteLine("Step 1: Getting patient data");
@@ -39,7 +39,7 @@ public class PdfReportService : IPdfReportService
             string patientName = $"{p.FirstName} {p.LastName}";
             string patientCnp = p.Cnp ?? "—";
             string patientCid = p.Cid ?? "—";
-            
+
             System.Diagnostics.Debug.WriteLine("Step 3: Getting monitoring history");
             var rows = (await _monitoringService.GetHistoryAsync(patientId, from, to))
                        .OrderBy(r => r.Date)
@@ -49,7 +49,7 @@ public class PdfReportService : IPdfReportService
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var reportsFolder = Path.Combine(folder, "PharmacistReports");
             Directory.CreateDirectory(reportsFolder);
-            
+
             var filePath = Path.Combine(reportsFolder,
                 $"Raport_Pacient_{patientId}_{DateTime.Now:yyyyMMddHHmmss}.pdf");
 
@@ -57,9 +57,9 @@ public class PdfReportService : IPdfReportService
 
             System.Diagnostics.Debug.WriteLine("Step 6: Setting QuestPDF license");
             QuestPDF.Settings.License = LicenseType.Community;
-            
+
             System.Diagnostics.Debug.WriteLine("Step 7: Starting PDF document creation");
-            
+
             try
             {
                 System.Diagnostics.Debug.WriteLine("Step 7a: Creating minimal document");
@@ -85,7 +85,7 @@ public class PdfReportService : IPdfReportService
                                 x.Item().Text($"Patient: {patientName}");
                                 x.Item().Text($"Period: {from:dd.MM.yyyy} - {to:dd.MM.yyyy}");
                                 x.Item().Text($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                                
+
                                 if (!rows.Any())
                                 {
                                     x.Item().Text("No monitoring data available for this period.");
@@ -121,19 +121,19 @@ public class PdfReportService : IPdfReportService
     public async Task<string> CreateMixedActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter)
     {
         System.Diagnostics.Debug.WriteLine("=== CreateMixedActsReportAsync: Starting ===");
-        
+
         try
         {
             System.Diagnostics.Debug.WriteLine("Step 1: Getting prescriptions data");
             var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
             System.Diagnostics.Debug.WriteLine($"Step 2: Found {prescriptions.Count} total prescriptions");
-            
+
             var filteredPrescriptions = prescriptions
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
-                .Where(p => string.IsNullOrEmpty(patientFilter) || 
+                .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
-                .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true) && 
+                .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true) &&
                            p.PrescriptionMedications.Any(m => m.IsWithPrescription == false))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
@@ -151,14 +151,14 @@ public class PdfReportService : IPdfReportService
     public async Task<string> CreateOwnActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter)
     {
         System.Diagnostics.Debug.WriteLine("=== CreateOwnActsReportAsync: Starting ===");
-        
+
         try
         {
             var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-            
+
             var filteredPrescriptions = prescriptions
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
-                .Where(p => string.IsNullOrEmpty(patientFilter) || 
+                .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
                 .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
@@ -178,14 +178,14 @@ public class PdfReportService : IPdfReportService
     public async Task<string> CreateConsecutivePrescriptionActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter)
     {
         System.Diagnostics.Debug.WriteLine("=== CreateConsecutivePrescriptionActsReportAsync: Starting ===");
-        
+
         try
         {
             var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-            
+
             var filteredPrescriptions = prescriptions
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
-                .Where(p => string.IsNullOrEmpty(patientFilter) || 
+                .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
                 .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true))
@@ -205,13 +205,13 @@ public class PdfReportService : IPdfReportService
     public async Task<string> CreateMonitoringListReportAsync(DateTime startDate, DateTime endDate, string patientFilter)
     {
         System.Diagnostics.Debug.WriteLine("=== CreateMonitoringListReportAsync: Starting ===");
-        
+
         try
         {
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var reportsFolder = Path.Combine(folder, "PharmacistReports");
             Directory.CreateDirectory(reportsFolder);
-            
+
             var filePath = Path.Combine(reportsFolder, $"Raport_Monitorizari_{DateTime.Now:yyyyMMddHHmmss}.pdf");
 
             System.Diagnostics.Debug.WriteLine("Setting QuestPDF license for monitoring report");
@@ -225,13 +225,13 @@ public class PdfReportService : IPdfReportService
                     page.Size(PageSizes.A4);
                     page.Margin(2, Unit.Centimetre);
                     page.PageColor(Colors.White);
-                    
+
                     page.Content().Column(col =>
                     {
                         col.Spacing(10);
                         col.Item().Text("Lista Monitorizări").FontSize(18).SemiBold();
                         col.Item().Text($"Perioadă: {startDate:dd.MM.yyyy} – {endDate:dd.MM.yyyy}");
-                        
+
                         if (!string.IsNullOrEmpty(patientFilter))
                         {
                             col.Item().Text($"Filtru pacient: {patientFilter}");
@@ -256,13 +256,13 @@ public class PdfReportService : IPdfReportService
     private async Task<string> CreateActsReport(IEnumerable<Prescription> prescriptions, string reportTitle, DateTime startDate, DateTime endDate, string reportType)
     {
         System.Diagnostics.Debug.WriteLine($"=== CreateActsReport: Starting {reportType} ===");
-        
+
         try
         {
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var reportsFolder = Path.Combine(folder, "PharmacistReports");
             Directory.CreateDirectory(reportsFolder);
-            
+
             var filePath = Path.Combine(reportsFolder, $"Raport_{reportType}_{DateTime.Now:yyyyMMddHHmmss}.pdf");
 
             System.Diagnostics.Debug.WriteLine($"Setting up PDF for {reportType}, path: {filePath}");
@@ -276,7 +276,7 @@ public class PdfReportService : IPdfReportService
                     page.Size(PageSizes.A4);
                     page.Margin(2, Unit.Centimetre);
                     page.DefaultTextStyle(x => x.FontSize(12));
-                    
+
                     page.Content().Column(col =>
                     {
                         col.Spacing(10);
@@ -349,17 +349,18 @@ public class PdfReportService : IPdfReportService
 
                     col.Item().Row(row =>
                     {
-                        row.RelativeItem().Text("Raport monitorizare")
-                                          .FontSize(18)
-                                          .Bold();
-
+                        row.RelativeItem()
+                           .Text("Raport monitorizare")
+                           .FontSize(18)
+                           .Bold();
                     });
+
 
                     col.Item().Text($"Perioadă: {from:dd.MM.yyyy} – {to:dd.MM.yyyy}");
                     col.Item().Text(txt =>
                     {
                         txt.Span("Pacient: ").SemiBold();
-                        txt.Span($"{patientName}   ");         
+                        txt.Span($"{patientName}   ");
                         txt.Span("CNP: ").SemiBold();
                         txt.Span($"{patientCnp}   ");
                         txt.Span("CID: ").SemiBold();
@@ -428,6 +429,32 @@ public class PdfReportService : IPdfReportService
                         });
                     }
                 });
+                page.Footer()
+       .AlignLeft()
+       .Column(col =>
+       {
+           col.Spacing(2);
+
+           col.Item().Text($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}")
+                     .FontSize(9);
+
+           string pharmacistName =
+               $"{SessionManager.CurrentUser?.FirstName} " +
+               $"{SessionManager.CurrentUser?.LastName} " +
+               $"{SessionManager.CurrentUser?.Ncm}";
+
+           col.Item().Text($"Farmacist: {pharmacistName.ToUpper()}")
+                     .FontSize(9);
+
+           col.Item().Text("Semnătură: ______________________")
+                     .FontSize(9);
+
+           col.Item().PaddingTop(5)
+                     .Text("Document generat cu Recomandarea Farmacistului")
+                     .FontSize(8)
+                     .Italic()
+                     .FontColor(Colors.Grey.Darken1);
+       });
             });
         })
         .GeneratePdf(filePath);
@@ -466,7 +493,7 @@ public class PdfReportService : IPdfReportService
         plt.XAxis.DateTimeFormat(true);
         plt.Title(yLabel);
 
-        return plt.GetImageBytes();  
+        return plt.GetImageBytes();
     }
 
 }

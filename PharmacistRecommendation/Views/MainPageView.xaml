@@ -108,7 +108,7 @@
                         <Button Grid.Column="0"
                     Style="{StaticResource CardButton}"
                     Text="📊 Monitorizare"
-                    BackgroundColor="#C0B3DA"  
+                    BackgroundColor="#9488BB"  
                             TextColor="White"
                     Command="{Binding NavigateToMonitoringCommand}" />
 

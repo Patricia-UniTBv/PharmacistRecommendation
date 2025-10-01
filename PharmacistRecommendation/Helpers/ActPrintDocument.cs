@@ -151,7 +151,7 @@ namespace PharmacistRecommendation.Helpers
             g.DrawString(pharmacistName.ToUpper(), fontText, Brushes.Black, left, footerY);
             g.DrawString(PatientName?.ToUpper(), fontText, Brushes.Black, right - 120, footerY);
 
-            g.DrawString("Document generat cu recomandarea farmacistului", fontSmall, Brushes.Gray, left, footerY + 35);
+            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 35);
         }
 
 

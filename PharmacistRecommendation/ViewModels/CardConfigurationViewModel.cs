@@ -198,7 +198,9 @@ namespace PharmacistRecommendation.ViewModels
                     email: Email,
                     phone: Phone, 
                     gender: Gender,
-                    birthdate: birthdate
+                    birthdate: birthdate == default(DateTime)
+                         ? new DateTime(1900, 1, 1)
+                         : birthdate
                 );
 
                 IsPrintButtonEnabled = true;
@@ -258,7 +260,7 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
-        private void Pd_PrintPage(object sender, PrintPageEventArgs e)
+        private async void Pd_PrintPage(object sender, PrintPageEventArgs e)
         {
             var g = e.Graphics;
 
@@ -274,10 +276,21 @@ namespace PharmacistRecommendation.ViewModels
 
             string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
+            try
+            {
+                using var logo = SD.Image.FromFile("Resources/Images/farma.png");
+                float logoWidth = 80;  
+                float logoHeight = 80; 
+                float logoX = right - logoWidth;
+                float logoY = top - 15;             
+                g.DrawImage(logo, logoX, logoY, logoWidth, logoHeight);
+            }
+            catch {  }
+
             float y = top;
 
             g.DrawString($"Număr card: {Safe(cardNumber)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+            g.DrawString($"Nume pacient: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
             g.DrawString($"CNP: {Safe(Cnp)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
             g.DrawString($"CID: {Safe(Cid)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
             g.DrawString($"Telefon: {Safe(phone)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
@@ -298,14 +311,41 @@ namespace PharmacistRecommendation.ViewModels
             float footerSpacing = 10;
             float footerY = bottom - 3 * lineHeight - footerSpacing;
 
-            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, SD.Brushes.Black,
-                new SD.PointF(left, footerY));
+            float indent = 20; // distanța față de marginea stângă
 
-            g.DrawString($"Nume: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black,
-                new SD.PointF(left, footerY + lineHeight));
+            // Data generării
+            g.DrawString(
+                $"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
+                fontText,
+                SD.Brushes.Black,
+                new SD.PointF(left + indent, footerY)
+            );
 
-            g.DrawString("Semnătura: ______________________", fontText, SD.Brushes.Black,
-                new SD.PointF(left, footerY + 2 * lineHeight));
+            // Numele farmacistului + NCM
+            string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
+            g.DrawString(
+                $"Farmacist: {Safe(pharmacistName.Trim())}",
+                fontText,
+                SD.Brushes.Black,
+                new SD.PointF(left + indent, footerY + lineHeight)
+            );
+
+            // Semnătura
+            g.DrawString(
+                "Semnătura: ______________________",
+                fontText,
+                SD.Brushes.Black,
+                new SD.PointF(left + indent, footerY + 2 * lineHeight)
+            );
+
+            // Textul fix
+            g.DrawString(
+                "Document generat cu Recomandarea Farmacistului",
+                fontText,
+                SD.Brushes.Gray,
+                new SD.PointF(left + indent, footerY + 3 * lineHeight)
+            );
+
         }
 
         [RelayCommand]

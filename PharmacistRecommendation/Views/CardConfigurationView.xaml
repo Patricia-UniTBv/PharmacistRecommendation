@@ -271,7 +271,7 @@
                     WidthRequest="120"
                     HeightRequest="48"
                     Command="{Binding PrintCommand}"
-                    IsEnabled="{Binding IsPrintButtonEnabled}"
+                    IsEnabled="True"
                     Shadow="{OnPlatform 
                         Default='0,2,8,0,#301565C0',
                         iOS='0,1,4,0,#351565C0'}"/>
@@ -289,10 +289,10 @@
                         Default='0,2,8,0,#302E7D32',
                         iOS='0,1,4,0,#352E7D32'}"/>
 
-            <!--<Label Text="{Binding ValidationMessage}"
+            <Label Text="{Binding ValidationMessage}"
                    TextColor="Black"
                    FontAttributes="Italic"
-                   Margin="0,10,0,0"/>-->
+                   Margin="0,10,0,0"/>
         </HorizontalStackLayout>
 
     </Grid>

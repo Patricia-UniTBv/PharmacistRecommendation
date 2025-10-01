@@ -1,9 +1,12 @@
-﻿using PdfSharp.Drawing;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
+using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Fonts;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Xml.Linq;
 
@@ -71,12 +74,12 @@ namespace PharmacistRecommendation.Helpers
                 var logo = XImage.FromFile("Resources/Images/farma.png");
                 double logoWidth = 60;
                 double logoHeight = 60;
-                double logoX = page.Width.Point - left - logoWidth; // dreapta
+                double logoX = page.Width.Point - left - logoWidth; 
                 g.DrawImage(logo, logoX, y, logoWidth, logoHeight);
             }
             catch { }
 
-            double textStartX = left + 10; // text aproape de margine
+            double textStartX = left + 10; 
 
 
             string pageTitle = ModeCode switch
@@ -153,7 +156,6 @@ namespace PharmacistRecommendation.Helpers
                 y += 10;
             }
 
-            // Asigurăm că textele sub tabel apar corect
             void DrawTextBelowTable(string text)
             {
                 if (string.IsNullOrEmpty(text)) return;
@@ -165,7 +167,7 @@ namespace PharmacistRecommendation.Helpers
                     page.Size = PdfSharp.PageSize.A4;
                     g.Dispose();
                     g = XGraphics.FromPdfPage(page);
-                    y = 40; // marginTop
+                    y = 40; 
                 }
 
                 DrawWrappedText(text);
@@ -174,6 +176,15 @@ namespace PharmacistRecommendation.Helpers
             DrawTextBelowTable(NotesToDoctor ?? "");
             DrawTextBelowTable(PharmacistRecommendation ?? "");
             DrawTextBelowTable($"Serviciu farmaceutic: {PharmaceuticalService}");
+
+            double footerStartY = y + 20;
+            double pageWidth = page.Width.Point;
+
+            string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
+            g.DrawString(pharmacistName.ToUpper(), fontText, XBrushes.Black, left, footerStartY);
+
+            XFont fontSmall = new XFont("OpenSans", 8, XFontStyleEx.Italic);
+            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, XBrushes.Gray, left, footerStartY + 20);
 
             using var ms = new MemoryStream();
             pdfDoc.Save(ms, false);

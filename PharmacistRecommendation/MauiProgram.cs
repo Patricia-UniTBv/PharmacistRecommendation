@@ -15,7 +15,8 @@ using PharmacistRecommendation.Views;
 using WinRT.Interop;
 using QuestPDF.Infrastructure;
 using System.Text.Json;
-
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 
 #if WINDOWS
 using Microsoft.UI;
@@ -44,18 +45,39 @@ namespace PharmacistRecommendation
 
             builder.UseMauiCommunityToolkit();
 
-            var configPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+            // se creeaza automat fisierul de configurare in C:\ProgramData\PharmacistRecommendation\config.json
+            string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PharmacistRecommendation");
+            string configPath = Path.Combine(configFolder, "config.json");
+
+            if (!Directory.Exists(configFolder))
+                Directory.CreateDirectory(configFolder);
+
+            Dictionary<string, object> config;
 
             if (!File.Exists(configPath))
-                throw new FileNotFoundException("Fișierul de configurare nu există.", configPath);
+            {
+                config = new Dictionary<string, object>
+            {
+                { "SqlServer", "localhost\\SQLEXPRESS" },
+                { "Database", "PharmacistRecommendationDB" },
+                { "TrustServerCertificate", true }
+            };
 
-            var json = File.ReadAllText(configPath);
-            var config = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                File.WriteAllText(configPath, JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
+            }
+            else
+            {
+                var json = File.ReadAllText(configPath);
+                config = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            }
 
             string server = config["SqlServer"].ToString();
             string database = config["Database"].ToString();
 
             string connectionString = $"Server={server};Database={database};Trusted_Connection=True;TrustServerCertificate=True;";
+
+            builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
+                options.UseSqlServer(connectionString));
 
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -148,6 +170,22 @@ namespace PharmacistRecommendation
 #endif
 
             return builder.Build();
+#if WINDOWS
+            builder.ConfigureLifecycleEvents(events =>
+            {
+                events.AddWindows(windows =>
+                {
+                    windows.OnWindowCreated(window =>
+                    {
+                        var hwnd = WindowNative.GetWindowHandle(window);
+                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+                        var appWindow = AppWindow.GetFromWindowId(windowId);
+
+                        appWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+                    });
+                });
+            });
+#endif
         }
     }
 }
