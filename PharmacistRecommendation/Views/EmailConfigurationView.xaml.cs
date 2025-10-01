@@ -19,4 +19,10 @@ public partial class EmailConfigurationView : ContentPage
         await Launcher.OpenAsync("https://myaccount.google.com/apppasswords");
     }
 
+    private void OnTogglePasswordClicked(object sender, EventArgs e)
+    {
+        PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
+    }
+
+
 }

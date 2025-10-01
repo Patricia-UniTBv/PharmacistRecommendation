@@ -13,7 +13,7 @@
         <CollectionView ItemsSource="{Binding Modes}" SelectionMode="Single" SelectedItem="{Binding SelectedMode}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="3*,50,150,100" Padding="3" Margin="20,2,20,2" VerticalOptions="Center">
+                    <Grid ColumnDefinitions="3*,50,150,100" Padding="1" Margin="20,2,20,2" VerticalOptions="Center">
                         <Entry Grid.Column="0" Text="{Binding Name, Mode=TwoWay}" Placeholder="Nume mod administrare" VerticalOptions="Center"/>
                         <CheckBox Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}" VerticalOptions="Center" Color="#5E89AD"/>
                         <Button Grid.Column="2" Text="Adaugă/Editează" BackgroundColor="#34495E"

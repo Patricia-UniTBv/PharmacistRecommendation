@@ -72,7 +72,6 @@ namespace PharmacistRecommendation.ViewModels
             }
 
             await Shell.Current.DisplayAlert("Succes", "Datele au fost salvate.", "OK");
-            await Shell.Current.GoToAsync("..");
         }
 
         [RelayCommand]

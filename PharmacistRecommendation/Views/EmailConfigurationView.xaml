@@ -295,27 +295,44 @@
                             </Border>
                         </StackLayout>
 
-                        <!-- App Password Field -->
                         <StackLayout Spacing="8">
                             <Label Text="Parolă aplicație Gmail" 
-                                   FontSize="14" 
-                                   FontAttributes="Bold" 
-                                   TextColor="#374151"/>
+           FontSize="14" 
+           FontAttributes="Bold" 
+           TextColor="#374151"/>
                             <Border BackgroundColor="#F9FAFB"
-                                    StrokeThickness="1"
-                                    Stroke="#E5E7EB">
+            StrokeThickness="1"
+            Stroke="#E5E7EB">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8"/>
                                 </Border.StrokeShape>
-                                <Entry Text="{Binding AppPassword, Mode=TwoWay}" 
-                                       IsPassword="True"
-                                       Placeholder="Introdu parola de aplicație de 16 caractere" 
-                                       PlaceholderColor="#9CA3AF"
-                                       TextColor="#374151"
-                                       BackgroundColor="Transparent"
-                                       Margin="12,0"/>
+
+                                <Grid>
+                                    <Entry x:Name="PasswordEntry"
+                   Text="{Binding AppPassword, Mode=TwoWay}" 
+                   IsPassword="True"
+                   Placeholder="Introdu parola de aplicație de 16 caractere" 
+                   PlaceholderColor="#9CA3AF"
+                   TextColor="#374151"
+                   BackgroundColor="Transparent"
+                   Margin="12,0,40,0"/>
+                                    <!-- lasă spațiu pentru buton -->
+                                    <ImageButton Source="view.png"
+             Clicked="OnTogglePasswordClicked"
+             BackgroundColor="Transparent"
+             WidthRequest="20"
+             HeightRequest="20"
+             MinimumWidthRequest="20"
+             MinimumHeightRequest="20"
+             Aspect="AspectFit"
+             Margin="0,0,8,0"
+             HorizontalOptions="End"
+             VerticalOptions="Center"/>
+
+                                </Grid>
                             </Border>
                         </StackLayout>
+
                     </StackLayout>
                 </Border>
 

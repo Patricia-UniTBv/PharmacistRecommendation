@@ -268,7 +268,11 @@ public partial class MonitoringViewModel : ObservableObject
 
         var pdfPath = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId, StartDate, EndDate);
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
-        string body = $"Bună ziua,\n\nAtașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\nVă mulțumim!";
+        string body =
+      $"Bună ziua,\n\n" +
+      $"Atașat găsiți raportul de monitorizare pentru perioada {StartDate:dd.MM.yyyy} – {EndDate:dd.MM.yyyy}.\n\n" +
+      $"Cu stimă,\n" +
+      $"{pharmacy.Name}, {pharmacy.Address}";
 
         try
         {

@@ -745,7 +745,7 @@ namespace PharmacistRecommendation.ViewModels
 
             var builder = new BodyBuilder
             {
-                TextBody = $"Bună ziua,\n\nVă trimitem rețeta în format PDF și JSON.\n\nO zi frumoasă!\n{pharmacy.Name}, {pharmacy.Address}"
+                TextBody = $"Bună ziua,\n\nVă trimitem rețeta în format PDF și JSON.\n\nCu stimă,\n{pharmacy.Name}, {pharmacy.Address}"
             };
 
 

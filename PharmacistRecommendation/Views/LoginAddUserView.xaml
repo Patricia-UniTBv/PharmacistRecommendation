@@ -6,7 +6,7 @@
              x:DataType="viewmodels:LoginAddUserViewModel"
              Title="Recomandarea Farmacistului - Autentificare"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#fdfdfd">
 
 	<Grid RowDefinitions="Auto, *">
 
@@ -30,6 +30,11 @@
 
 				<!-- Header Section -->
 				<StackLayout Grid.Row="0" Spacing="5">
+                    <Image Source="logo.png"
+           WidthRequest="130"
+           HeightRequest="130"
+           Aspect="AspectFit"
+           HorizontalOptions="Center"/>
 					<Label Text="Autentificare și Înregistrare"
                            FontSize="20"
                            FontAttributes="Bold"

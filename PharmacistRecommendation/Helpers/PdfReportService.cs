@@ -333,7 +333,7 @@ public class PdfReportService : IPdfReportService
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         Directory.CreateDirectory(folder);
         var filePath = Path.Combine(folder,
-            $"Raport_{patientId}_{DateTime.Now:yyyyMMddHHmmss}.pdf");
+            $"Raport {patientName}.pdf");
 
         QuestPDF.Settings.License = LicenseType.Community;
 
@@ -347,8 +347,13 @@ public class PdfReportService : IPdfReportService
                 {
                     col.Spacing(10);
 
-                    col.Item().Text($"Raport monitorizare")
-                              .FontSize(18).Bold();
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text("Raport monitorizare")
+                                          .FontSize(18)
+                                          .Bold();
+
+                    });
 
                     col.Item().Text($"Perioadă: {from:dd.MM.yyyy} – {to:dd.MM.yyyy}");
                     col.Item().Text(txt =>
@@ -414,14 +419,9 @@ public class PdfReportService : IPdfReportService
                                     void AddChartCell(RowDescriptor row, string k)
                                     {
                                         if (charts.TryGetValue(k, out var bytes))
+                                        {
                                             row.ConstantItem(260).Image(bytes);
-                                        else
-                                            row.ConstantItem(260)
-                                               .Border(1)
-                                               .AlignMiddle()
-                                               .AlignCenter()
-                                               .Text("Fără date")
-                                               .FontSize(10);
+                                        }
                                     }
                                 });
                             }

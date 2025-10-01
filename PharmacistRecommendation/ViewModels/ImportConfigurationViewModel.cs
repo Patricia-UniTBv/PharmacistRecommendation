@@ -35,7 +35,7 @@ namespace PharmacistRecommendation.ViewModels
                 Preferences.Set(nameof(ReceiptPath), ReceiptPath ?? string.Empty);
                 Preferences.Set(nameof(PrescriptionPath), PrescriptionPath ?? string.Empty);
 
-                Message = "Configurarea a fost salvată!";
+                App.Current.MainPage.DisplayAlert("Succes", "Configurarea a fost salvată!", "OK");
             }
             catch (Exception ex)
             {

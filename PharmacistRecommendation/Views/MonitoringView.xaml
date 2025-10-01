@@ -287,7 +287,7 @@
                 <Entry Text="{Binding PatientEmail}" Grid.Column="1" 
                        Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12" HeightRequest="35"/>
 
-                <Button Text="Printare PDF" Grid.Column="3" Command="{Binding GeneratePdfCommand}"
+                <Button Text="Generare PDF" Grid.Column="3" Command="{Binding GeneratePdfCommand}"
                         BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="8,4" WidthRequest="100"/>
 
                 <Button Text="Trimite Mail" Grid.Column="2" Command="{Binding SendEmailCommand}"
