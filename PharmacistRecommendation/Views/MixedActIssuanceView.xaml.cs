@@ -37,14 +37,5 @@ public partial class MixedActIssuanceView : ContentPage
             vm.UpdateSuggestions(e.NewTextValue);
     }
 
-    //private void OnRowSearchTextChanged(object sender, TextChangedEventArgs e)
-    //{
-    //    if (sender is Entry entry && entry.BindingContext is ReceiptDrugModel row &&
-    //        BindingContext is MixedActIssuanceViewModel vm)
-    //    {
-    //        vm.UpdateSuggestionsForRow(row, e.NewTextValue);
-    //    }
-    //}
-
 
 }

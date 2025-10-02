@@ -260,7 +260,8 @@
                                         <Label Text="{Binding BodyTemperature}" Grid.Column="6" FontSize="12" HorizontalTextAlignment="Center"/>
                                         <Label Text="{Binding Weight}" Grid.Column="7" FontSize="12" HorizontalTextAlignment="Center"/>
                                         <Label Text="{Binding Height}" Grid.Column="8" FontSize="12" HorizontalTextAlignment="Center"/>
-                                    </Grid>
+                                           
+                                        </Grid>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>

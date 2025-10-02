@@ -324,7 +324,14 @@ public class PdfReportService : IPdfReportService
                 charts[key] = bytes;
         }
 
-        Add("hta", PlotLine(rows, r => (r.MaxBloodPressure, r.MinBloodPressure), "TA mmHg"));
+        Add("hta", PlotDualLine(
+      rows,
+      r => r.MaxBloodPressure,
+      r => r.MinBloodPressure,
+      "Tensiune arterială (mmHg)",
+      "Sist.",
+      "Diast."
+  ));
         Add("puls", PlotLine(rows, r => r.HeartRate, "Puls bpm"));
         Add("spo2", PlotLine(rows, r => r.PulseOximetry, "SpO₂ %"));
         Add("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
@@ -495,5 +502,59 @@ public class PdfReportService : IPdfReportService
 
         return plt.GetImageBytes();
     }
+
+    private static byte[]? PlotDualLine(
+    IEnumerable<HistoryRowDto> data,
+    Func<HistoryRowDto, int?> selector1,
+    Func<HistoryRowDto, int?> selector2,
+    string title,
+    string label1,
+    string label2)
+    {
+        var points1 = data.Select(r =>
+        {
+            double y = selector1(r) ?? double.NaN;
+            return (x: r.Date.ToOADate(), y);
+        }).Where(p => !double.IsNaN(p.y)).ToList();
+
+        var points2 = data.Select(r =>
+        {
+            double y = selector2(r) ?? double.NaN;
+            return (x: r.Date.ToOADate(), y);
+        }).Where(p => !double.IsNaN(p.y)).ToList();
+
+        if (points1.Count == 0 && points2.Count == 0)
+            return null;
+
+        var plt = new ScottPlot.Plot(500, 300);
+
+        if (points1.Count > 0)
+        {
+            var xs1 = points1.Select(p => p.x).ToArray();
+            var ys1 = points1.Select(p => p.y).ToArray();
+            plt.AddScatter(xs1, ys1, label: label1, lineWidth: 2);
+        }
+
+        if (points2.Count > 0)
+        {
+            var xs2 = points2.Select(p => p.x).ToArray();
+            var ys2 = points2.Select(p => p.y).ToArray();
+            plt.AddScatter(xs2, ys2,
+                   label: label2,
+                   lineWidth: 3,
+                   markerSize: 6,
+                   markerShape: ScottPlot.MarkerShape.filledCircle);
+        }
+
+        plt.XAxis.DateTimeFormat(true);
+        plt.Title(title);
+        plt.Legend();
+
+        plt.SetAxisLimits(yMin: 50);
+
+        return plt.GetImageBytes();
+    }
+
+
 
 }

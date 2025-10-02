@@ -161,28 +161,23 @@
                             <DataTemplate>
                                 <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <StackLayout Grid.Column="1" Orientation="Vertical">
+                                    <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry
-                                Text="{Binding Name}"
-                                TextChanged="OnMedicationNameTextChanged"
-                                Placeholder="Nume medicament"/>
-                                       <CollectionView
-    ItemsSource="{Binding FilteredMedications}"
-    IsVisible="{Binding ShowSuggestions}"
-    HeightRequest="150">
-    <CollectionView.ItemTemplate>
-        <DataTemplate>
-            <Label Text="{Binding .}">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectMedicationCommand}"
-                        CommandParameter="{Binding .}" />
-                </Label.GestureRecognizers>
-            </Label>
-        </DataTemplate>
-    </CollectionView.ItemTemplate>
-</CollectionView>
+        Text="{Binding Name}"
+        Placeholder="Nume medicament"
+        HorizontalOptions="FillAndExpand"/>
+                                        <Button
+        Text="🔍"
+        WidthRequest="36"
+        HeightRequest="36"
+        BackgroundColor="Transparent"
+        BorderColor="Transparent"
+        BorderWidth="0"
+        Padding="0"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
+        CommandParameter="{Binding .}"/>
                                     </StackLayout>
+
                                     <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
                                     <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
                                     <Entry Grid.Column="4" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
@@ -244,26 +239,21 @@
                             <DataTemplate>
                                 <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <StackLayout Grid.Column="1" Orientation="Vertical">
+                                    <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry
 Text="{Binding Name}"
-TextChanged="OnMedicationNameTextChanged"
-Placeholder="Nume medicament"/>
-                                        <CollectionView ItemsSource="{Binding FilteredMedications}" 
-            IsVisible="{Binding ShowSuggestions}">
-                                            <CollectionView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Label Text="{Binding .}" FontSize="16">
-                                                        <Label.GestureRecognizers>
-                                                            <TapGestureRecognizer 
-                    Command="{Binding BindingContext.SelectMedicationCommand, Source={x:Reference MixedActIssuance}}"
-                    CommandParameter="{Binding .}"/>
-                                                        </Label.GestureRecognizers>
-                                                    </Label>
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
-                                        </CollectionView>
-
+Placeholder="Nume medicament"
+HorizontalOptions="FillAndExpand"/>
+                                        <Button
+        Text="🔍"
+        WidthRequest="36"
+        HeightRequest="36"
+        BackgroundColor="Transparent"
+        BorderColor="Transparent"
+        BorderWidth="0"
+        Padding="0"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
+        CommandParameter="{Binding .}"/>
                                     </StackLayout>
                                     <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
                                     <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
@@ -323,7 +313,7 @@ Placeholder="Nume medicament"/>
 
                 <Entry Placeholder="Email pacient"
            Text="{Binding PatientEmail}"
-           FontSize="12"
+           FontSize="14"
            WidthRequest="180"
            VerticalOptions="Center"/>
 

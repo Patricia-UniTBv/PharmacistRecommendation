@@ -75,6 +75,7 @@
 
 	<ItemGroup>
 	  <MauiImage Remove="Resources\Images\farma.png" />
+	  <MauiImage Remove="Resources\Images\farma2.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -86,6 +87,7 @@
 	  <None Remove="Resources\Images\delete.png" />
 	  <None Remove="Resources\Images\down_arrow.png" />
 	  <None Remove="Resources\Images\farma.png" />
+	  <None Remove="Resources\Images\farma2.png" />
 	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Images\logo1.ico" />
 	  <None Remove="Resources\Images\pen.png" />
@@ -228,6 +230,7 @@
 
 	<ItemGroup>
 	  <MauiAsset Include="Resources\Images\farma.png" />
+	  <MauiAsset Include="Resources\Images\farma2.png" />
 	</ItemGroup>
 
 </Project>

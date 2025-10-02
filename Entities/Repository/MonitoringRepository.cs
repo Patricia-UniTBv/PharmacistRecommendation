@@ -18,6 +18,16 @@ namespace Entities.Repository
             return entity.Id;
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _context.Monitorings.FindAsync(id);
+            if (entity == null)
+                throw new Exception("Monitorizare inexistentă");
+
+            _context.Monitorings.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<Monitoring>> GetByPatientAndRangeAsync(
          int patientId, DateTime from, DateTime to)
         {

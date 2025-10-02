@@ -45,6 +45,11 @@ namespace Entities.Services
             return await _repo.AddAsync(entity);
         }
 
+        public async Task DeleteHistoryRowAsync(int id)
+        {
+            await _repo.DeleteAsync(id);
+        }
+
         public async Task<IEnumerable<HistoryRowDto>> GetHistoryAsync(
         int patientId, DateTime from, DateTime to)
         {

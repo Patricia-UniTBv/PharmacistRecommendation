@@ -74,7 +74,7 @@ public partial class MonitoringViewModel : ObservableObject
 
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5) 
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 3) 
             _ = SearchPatientAsync();
     }
 

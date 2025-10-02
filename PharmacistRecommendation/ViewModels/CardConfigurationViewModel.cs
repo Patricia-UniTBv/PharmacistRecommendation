@@ -63,7 +63,6 @@ namespace PharmacistRecommendation.ViewModels
 
             if (card == null)
             {
-                ValidationMessage = "Cardul nu există în baza de date.";
                 return;
             }
 

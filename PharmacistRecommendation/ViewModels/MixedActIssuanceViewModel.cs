@@ -34,6 +34,7 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IImportConfigurationService _importService;
         private readonly IMedicationService _medicationService;
         private readonly IEmailConfigurationService _emailConfigurationService;
+        private readonly IPatientService _patientService;
 
         [ObservableProperty]
         string mode;
@@ -131,32 +132,62 @@ namespace PharmacistRecommendation.ViewModels
 
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService,
-            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService)
+            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService, IPatientService patientService)
         {
             _prescriptionService = prescriptionService ?? throw new ArgumentNullException(nameof(prescriptionService));
             _administrationModeService = administrationModeService ?? throw new ArgumentNullException(nameof(administrationModeService));
             _pharmacyService = pharmacyService ?? throw new ArgumentNullException(nameof(pharmacyService));
             _importService = importService ?? throw new ArgumentNullException(nameof(importService));
             _medicationService = medicationService ?? throw new ArgumentNullException(nameof(medicationService));
+            _patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
             _emailConfigurationService = emailConfigurationService;
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
-            LoadMedicationsAsync();
-            LoadAdministrationModes();
+            Task.Run(async () => await LoadMedicationsAsync());
+            Task.Run(async () => await LoadAdministrationModes());
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
 
+        partial void OnCardNumberChanged(string value)
+        {
+            _ = LoadPatientByCard(value);
+        }
+
+        private async Task LoadPatientByCard(string cardNumber)
+        {
+            if (string.IsNullOrWhiteSpace(cardNumber) || cardNumber.Length < 3)
+                return;
+
+            var patient = await _patientService.GetPatientByCardCodeAsync(cardNumber);
+            if (patient != null)
+            {
+                PatientName = patient.FirstName + " " + patient.LastName;
+                PatientEmail = patient.Email;
+            }
+            else
+            {
+                PatientName = null;
+                PatientEmail = null;
+            }
+        }
+
+        private List<string> _allMedicationsCache;
 
         public async Task LoadMedicationsAsync()
         {
+            if (_allMedicationsCache != null)
+                return;
+
             var all = await _medicationService.GetAllMedicationsAsync();
-            foreach (var med in all)
-            {
-                AllMedications.Add(med.Denumire);
-            }
+            _allMedicationsCache = all.Select(m => m.Denumire).ToList();
+
+            AllMedications.Clear();
+            foreach (var med in _allMedicationsCache)
+                AllMedications.Add(med);
         }
+
 
         public void UpdateSuggestions(string text)
         {
@@ -212,6 +243,8 @@ namespace PharmacistRecommendation.ViewModels
 
         public async void FilterMedications(string searchText, PrescriptionDrugModel drug)
         {
+            await LoadMedicationsAsync();
+
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
 
@@ -670,7 +703,7 @@ namespace PharmacistRecommendation.ViewModels
 
             var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
 
-            byte[] pdfBytes = await CreatePrescriptionPdf(); 
+            byte[] pdfBytes = await CreatePrescriptionPdf();
 
             var exportDto = new PrescriptionExportDto
             {
@@ -771,13 +804,90 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async Task OpenMedicationPopup(PrescriptionDrugModel drug)
+        {
+            if (_allMedicationsCache == null || !_allMedicationsCache.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Se încarcă...",
+                    "Vă rugăm să așteptați câteva secunde.",
+                    "OK");
+                return;
+            }
+
+            var filtered = _allMedicationsCache
+                            .Where(m => string.IsNullOrWhiteSpace(drug.Name) || m.Contains(drug.Name, StringComparison.OrdinalIgnoreCase))
+                            .Take(10)
+                            .ToArray();
+
+
+            if (!filtered.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert("Info", "Nu există medicamente care să corespundă.", "OK");
+                return;
+            }
+
+            string selected = null;
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                selected = await Application.Current.MainPage.DisplayActionSheet(
+                    "Selectați medicamentul",
+                    "Anulare",
+                    null,
+                    filtered);
+            });
+
+            if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
+                drug.Name = selected;
+        }
+
+        [RelayCommand]
+        private async Task OpenMedicationPopupReceipt(ReceiptDrugModel drug)
+        {
+            if (_allMedicationsCache == null || !_allMedicationsCache.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Se încarcă...",
+                    "Vă rugăm să așteptați câteva secunde.",
+                    "OK");
+                return;
+            }
+
+            var filtered = _allMedicationsCache
+                            .Where(m => string.IsNullOrWhiteSpace(drug.Name) || m.Contains(drug.Name, StringComparison.OrdinalIgnoreCase))
+                            .Take(10)
+                            .ToArray();
+
+
+            if (!filtered.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert("Info", "Nu există medicamente care să corespundă.", "OK");
+                return;
+            }
+
+            string selected = null;
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                selected = await Application.Current.MainPage.DisplayActionSheet(
+                    "Selectați medicamentul",
+                    "Anulare",
+                    null,
+                    filtered);
+            });
+
+            if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
+                drug.Name = selected;
+        }
 
         private Task ShowAlert(string message)
         {
             return Shell.Current?.DisplayAlert("Info", message, "OK") ?? Task.CompletedTask;
         }
 
-        private async void LoadAdministrationModes()
+        private async Task LoadAdministrationModes()
         {
             var modes = await _administrationModeService.GetAllAsync();
             var activeModes = modes.Where(c => (bool)c.IsActive).ToList();

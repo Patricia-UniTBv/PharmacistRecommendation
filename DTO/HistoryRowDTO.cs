@@ -8,6 +8,7 @@ namespace DTO
 {
     public class HistoryRowDto
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public int? MaxBloodPressure { get; set; }
         public int? MinBloodPressure { get; set; }
