@@ -67,10 +67,11 @@
                                            TextColor="#991B1B"
                                            VerticalOptions="Center"/>
                                 </StackLayout>
-                                <Label Text="{Binding ShowGmailHelp, Converter={StaticResource BoolToChevronConverter}}" 
-                                       FontSize="16" 
-                                       TextColor="#DC2626"
-                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding GmailHelpChevron}" 
+       FontSize="16" 
+       TextColor="#DC2626"
+       VerticalOptions="Center"/>
+
                             </StackLayout>
                         </Border>
 

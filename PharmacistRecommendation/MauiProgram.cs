@@ -79,9 +79,6 @@ namespace PharmacistRecommendation
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();
             builder.Services.AddTransient<CardConfigurationView>();

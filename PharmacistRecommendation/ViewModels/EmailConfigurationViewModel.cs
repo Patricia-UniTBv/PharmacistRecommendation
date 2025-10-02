@@ -20,6 +20,8 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool showGmailHelp;
 
+        public string GmailHelpChevron => ShowGmailHelp ? "⌄" : "⌃";
+
         private readonly IEmailConfigurationService _emailService;
         private readonly int _pharmacyId;
 
@@ -78,6 +80,11 @@ namespace PharmacistRecommendation.ViewModels
         private void ToggleHelp()
         {
             ShowGmailHelp = !ShowGmailHelp;
+        }
+
+        partial void OnShowGmailHelpChanged(bool value)
+        {
+            OnPropertyChanged(nameof(GmailHelpChevron));
         }
 
     }

@@ -126,6 +126,7 @@ namespace PharmacistRecommendation.ViewModels
 
         public ObservableCollection<string> FilteredMedications { get; } = new();
         public bool ShowSuggestions { get; set; }
+
         private CancellationTokenSource _cts;
 
 
@@ -262,22 +263,19 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task ImportDataAsync()
         {
-            var imp = await _importService.GetById(pharmacyId);
-            if (imp == null)
+            ReceiptsPath = Preferences.Get("ReceiptPath", string.Empty);
+            PrescriptionsPath = Preferences.Get("PrescriptionPath", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(ReceiptsPath) || string.IsNullOrWhiteSpace(PrescriptionsPath))
             {
                 await ShowAlert("Configurați calea directoarelor!");
-            }
-            else
-            {
-                ReceiptsPath = imp.ReceiptPath!;
-                PrescriptionsPath = imp.PrescriptionPath!;
+                return;
             }
 
             try
             {
                 if (mode == "mixed" || mode == "withoutprescription")
                 {
-
                     var lastFolder = ReceiptImportService.GetLastDatedFolder(ReceiptsPath);
                     if (lastFolder == null)
                     {
@@ -293,6 +291,7 @@ namespace PharmacistRecommendation.ViewModels
                         MedicationsWithoutPrescription.Add(drug);
                     }
                 }
+
                 if (mode == "mixed" || mode == "withprescription")
                 {
                     string filePath = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
@@ -315,6 +314,7 @@ namespace PharmacistRecommendation.ViewModels
                         MedicationsWithPrescription.Add(drug);
                     }
                 }
+
                 if (mode == "mixed")
                 {
                     var prescriptionNames = MedicationsWithPrescription.Select(m => m.Name).ToHashSet();
@@ -327,7 +327,6 @@ namespace PharmacistRecommendation.ViewModels
                     foreach (var med in filtered)
                         MedicationsWithoutPrescription.Add(med);
                 }
-
             }
             catch (Exception ex)
             {
