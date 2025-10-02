@@ -14,6 +14,21 @@ namespace Entities.Repository
             _context = context;
         }
 
+        public async Task<PharmacyCard?> GetByPatientAndPharmacyAsync(int patientId, int pharmacyId)
+        {
+            return await _context.PharmacyCards
+                .Include(c => c.Patient)
+                .FirstOrDefaultAsync(c => c.PatientId == patientId && c.PharmacyId == pharmacyId);
+        }
+
+        public async Task<PharmacyCard> UpdateAsync(PharmacyCard card)
+        {
+            _context.PharmacyCards.Update(card);
+            await _context.SaveChangesAsync();
+            return card;
+        }
+
+      
         public async Task<PharmacyCard> AddCardWithPatientAsync(PharmacyCard card, Patient patient)
         {
             if (patient.Id == 0)

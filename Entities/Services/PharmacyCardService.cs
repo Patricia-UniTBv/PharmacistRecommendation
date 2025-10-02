@@ -54,6 +54,13 @@ namespace Entities.Services
                 await _patientRepository.UpdateAsync(patient);
             }
 
+            var existingCard = await _cardRepository.GetByPatientAndPharmacyAsync(patient.Id, pharmacyId);
+            if (existingCard != null)
+            {
+                existingCard.Code = code; 
+                return await _cardRepository.UpdateAsync(existingCard);
+            }
+
             var card = new PharmacyCard
             {
                 Code = code,

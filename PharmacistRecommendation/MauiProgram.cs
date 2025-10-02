@@ -116,45 +116,45 @@ namespace PharmacistRecommendation
             
             builder.Services.AddTransient<MainPageViewModel>();
 
-            builder.Services.AddSingleton<IMonitoringService, MonitoringService>();
-            builder.Services.AddSingleton<IMonitoringRepository, MonitoringRepository>();
+            builder.Services.AddScoped<IMonitoringService, MonitoringService>();
+            builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 
-            builder.Services.AddSingleton<IPatientService, PatientService>();
-            builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
+            builder.Services.AddScoped<IPatientService, PatientService>();
+            builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
-            builder.Services.AddSingleton<IPdfReportService, PdfReportService>();
+            builder.Services.AddScoped<IPdfReportService, PdfReportService>();
 
-            builder.Services.AddSingleton<IUserService, UserService>();
-            builder.Services.AddSingleton<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-            builder.Services.AddSingleton<IPharmacyCardService, PharmacyCardService>();
-            builder.Services.AddSingleton<IPharmacyCardRepository, PharmacyCardRepository>();
+            builder.Services.AddScoped<IPharmacyCardService, PharmacyCardService>();
+            builder.Services.AddScoped<IPharmacyCardRepository, PharmacyCardRepository>();
 
-            builder.Services.AddSingleton<IPharmacyService, PharmacyService>();
-            builder.Services.AddSingleton<IPharmacyRepository, PharmacyRepository>();
+            builder.Services.AddScoped<IPharmacyService, PharmacyService>();
+            builder.Services.AddScoped<IPharmacyRepository, PharmacyRepository>();
 
-            builder.Services.AddSingleton<IPrescriptionRepository, PrescriptionRepository>();
-            builder.Services.AddSingleton<IPrescriptionService, PrescriptionService>();
+            builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+            builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 
-            builder.Services.AddSingleton<IPrescriptionMedicationRepository, PrescriptionMedicationRepository>();
-            builder.Services.AddSingleton<IPrescriptionMedicationService, PrescriptionMedicationService>();
+            builder.Services.AddScoped<IPrescriptionMedicationRepository, PrescriptionMedicationRepository>();
+            builder.Services.AddScoped<IPrescriptionMedicationService, PrescriptionMedicationService>();
 
-            builder.Services.AddSingleton<IAdministrationModeRepository, AdministrationModeRepository>();
-            builder.Services.AddSingleton<IAdministrationModeService, AdministrationModeService>();
+            builder.Services.AddScoped<IAdministrationModeRepository, AdministrationModeRepository>();
+            builder.Services.AddScoped<IAdministrationModeService, AdministrationModeService>();
 
-            builder.Services.AddSingleton<IImportConfigurationRepository, ImportConfigurationRepository>();
-            builder.Services.AddSingleton<IImportConfigurationService, ImportConfigurationService>();
+            builder.Services.AddScoped<IImportConfigurationRepository, ImportConfigurationRepository>();
+            builder.Services.AddScoped<IImportConfigurationService, ImportConfigurationService>();
 
-            builder.Services.AddSingleton<IEmailConfigurationService, EmailConfigurationService>();
+            builder.Services.AddScoped<IEmailConfigurationService, EmailConfigurationService>();
 
             builder.Services.AddScoped<IMedicationService, MedicationService>();
             builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
             builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
 
-            builder.Services.AddSingleton<ISecureStorageService, MauiSecureStorageService>();
+            builder.Services.AddScoped<ISecureStorageService, MauiSecureStorageService>();
 
-            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddTransient<LoginView>();
             builder.Services.AddTransient<LoginViewModel>();
