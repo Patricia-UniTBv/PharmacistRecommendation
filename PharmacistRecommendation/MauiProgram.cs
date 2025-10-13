@@ -75,9 +75,11 @@ namespace PharmacistRecommendation
             string database = config["Database"].ToString();
 
             string connectionString = $"Server={server};Database={database};Trusted_Connection=True;TrustServerCertificate=True;";
-
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString),
+                contextLifetime: ServiceLifetime.Transient,
+                optionsLifetime: ServiceLifetime.Transient);
+
 
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();

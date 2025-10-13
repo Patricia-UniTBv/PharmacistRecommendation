@@ -9,11 +9,11 @@
     x:Name="MixedActIssuance"
     BackgroundColor="White">
 
-    <ContentPage.Resources>
+    <!--<ContentPage.Resources>
         <ResourceDictionary>
             <helpers:ZeroToBoolConverter x:Key="ZeroToBoolConverter" />
         </ResourceDictionary>
-    </ContentPage.Resources>
+    </ContentPage.Resources>-->
 
     <ScrollView>
         <VerticalStackLayout Padding="18" Spacing="12" BackgroundColor="White">
@@ -78,9 +78,9 @@
 
                 <CollectionView ItemsSource="{Binding Suggestions}" 
                     SelectionMode="Single"
-                    HeightRequest="200"
+                    MaximumHeightRequest="100"
                     VerticalScrollBarVisibility="Always"
-                    IsVisible="{Binding Suggestions.Count, Converter={StaticResource ZeroToBoolConverter}}">
+                    IsVisible="{Binding HasSuggestions}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="5">

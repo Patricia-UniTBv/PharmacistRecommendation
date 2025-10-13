@@ -18,6 +18,9 @@ using QuestPDF.Helpers;
 using Document = QuestPDF.Fluent.Document;
 using IContainer = QuestPDF.Infrastructure.IContainer;
 using MimeKit;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace PharmacistRecommendation.ViewModels
@@ -52,6 +55,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 PageTitle = "Emitere act propriu";
             }
+
         }
 
         private int pharmacyId { get; set; }
@@ -120,13 +124,15 @@ namespace PharmacistRecommendation.ViewModels
         private string selectedMedication;
 
         public ObservableCollection<string> AllMedications { get; } = new ObservableCollection<string>();
-        public ObservableCollection<string> Suggestions { get; } = new ObservableCollection<string>();
+
+        [ObservableProperty]
+        private ObservableCollection<string> suggestions = new ObservableCollection<string>();
 
         public IRelayCommand<string> AddSuggestionCommand { get; }
         public Entry SearchEntryReference { get; set; }
 
         public ObservableCollection<string> FilteredMedications { get; } = new();
-        public bool ShowSuggestions { get; set; }
+        public bool HasSuggestions => Suggestions != null && Suggestions.Count > 0;
 
         private CancellationTokenSource _cts;
 
@@ -191,27 +197,31 @@ namespace PharmacistRecommendation.ViewModels
 
         public void UpdateSuggestions(string text)
         {
-            Suggestions.Clear();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Suggestions.Clear();
 
-            if (string.IsNullOrWhiteSpace(text))
-                return;
+                if (string.IsNullOrWhiteSpace(text))
+                    return;
 
-            var separators = new char[] { ' ', ',' };
-            var parts = text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            var lastWord = parts.LastOrDefault()?.Trim() ?? string.Empty;
+                var separators = new char[] { ' ', ',' };
+                var parts = text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                var lastWord = parts.LastOrDefault()?.Trim() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(lastWord))
-                return;
+                if (string.IsNullOrEmpty(lastWord))
+                    return;
 
-            var filtered = AllMedications
-                .Where(m => m.IndexOf(lastWord, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderBy(m => m)
-                .Take(20);
+                var filtered = AllMedications
+                    .Where(m => m.IndexOf(lastWord, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .OrderBy(m => m)
+                    .Take(20);
 
-            foreach (var med in filtered)
-                Suggestions.Add(med);
+                foreach (var med in filtered)
+                    Suggestions.Add(med);
+
+                OnPropertyChanged(nameof(HasSuggestions));
+            });
         }
-
 
         public void AddSuggestionToText(string suggestion)
         {
