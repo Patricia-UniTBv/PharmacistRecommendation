@@ -109,10 +109,7 @@
 
                             <Label Text="Parametri monitorizați" FontSize="14" FontAttributes="Bold"/>
 
-                            <HorizontalStackLayout Grid.Column="1" Spacing="5">
-                                <Button Text="Resetează" Command="{Binding ClearCommand}" BackgroundColor="#007bff" TextColor="White" FontSize="10" Padding="4,2" WidthRequest="65"/>
-                                <Button Text="Salvează" Command="{Binding SaveCommand}" BackgroundColor="#28a745" TextColor="White" FontSize="10" Padding="4,2" WidthRequest="70"/>
-                            </HorizontalStackLayout>
+                            
                         </Grid>
 
                         <Grid ColumnSpacing="10">
@@ -273,27 +270,33 @@
         </ScrollView>
 
         <Border Grid.Row="1" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5"
-                Stroke="#DDDDDD" BackgroundColor="White" Padding="15" Margin="15,0,15,15">
+        Stroke="#DDDDDD" BackgroundColor="White" Padding="15" Margin="15,0,15,15">
 
-            <Grid ColumnSpacing="10">
+            <Grid ColumnSpacing="10" VerticalOptions="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Label Text="Email pacient:" Grid.Column="0" VerticalOptions="Center" FontSize="12"/>
 
                 <Entry Text="{Binding PatientEmail}" Grid.Column="1" 
-                       Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12" HeightRequest="35"/>
+               Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12" HeightRequest="35"/>
 
-                <Button Text="Generare PDF" Grid.Column="3" Command="{Binding GeneratePdfCommand}"
-                        BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="8,4" WidthRequest="100"/>
-
-                <Button Text="Trimite Mail" Grid.Column="2" Command="{Binding SendEmailCommand}"
-                        BackgroundColor="#007bff" TextColor="White" FontSize="12" Padding="8,4" WidthRequest="100"/>
+                <HorizontalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                    <Button Text="Trimite Mail" Command="{Binding SendEmailCommand}"
+  BackgroundColor="#ece8fa" TextColor="#36317f"  FontSize="12" Padding="8,4" WidthRequest="100"/>
+                    <Button Text="Generare PDF" Command="{Binding GeneratePdfCommand}"
+                    BackgroundColor="#ece8fa" TextColor="#36317f" FontSize="12" Padding="8,4" WidthRequest="100"/>
+                   
+                    <Button Text="Resetează" Command="{Binding ClearCommand}" 
+                    BackgroundColor="#007bff" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
+                    <Button Text="Salvează" Command="{Binding SaveCommand}" 
+                    BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
+                </HorizontalStackLayout>
             </Grid>
+
         </Border>
 
     </Grid>

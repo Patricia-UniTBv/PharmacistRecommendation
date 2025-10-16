@@ -4,23 +4,16 @@
     xmlns:local="clr-namespace:PharmacistRecommendation.ViewModels"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
-    xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
     x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
     x:Name="MixedActIssuance"
     BackgroundColor="White">
 
-    <!--<ContentPage.Resources>
-        <ResourceDictionary>
-            <helpers:ZeroToBoolConverter x:Key="ZeroToBoolConverter" />
-        </ResourceDictionary>
-    </ContentPage.Resources>-->
-
     <ScrollView>
-        <VerticalStackLayout Padding="18" Spacing="12" BackgroundColor="White">
+        <VerticalStackLayout Padding="10" Spacing="4" BackgroundColor="White">
             <HorizontalStackLayout Spacing="10" Padding="0,0,0,8">
                
                 <Label Text="{Binding PageTitle}"
-                       FontSize="19"
+                       FontSize="18"
                        FontAttributes="Bold"
                        VerticalOptions="Center"
                        HorizontalOptions="StartAndExpand"
@@ -33,11 +26,11 @@
                 <Button Text="Import date"
                          Command="{Binding ImportDataCommand}"
                          FontSize="14" HeightRequest="34"
-                         BackgroundColor="#ece8fa" TextColor="#36317f"
+                         BackgroundColor="#007bff"
                          CornerRadius="8" />
             </HorizontalStackLayout>
 
-            <Frame CornerRadius="14" BorderColor="#e0e3e9" Padding="14" BackgroundColor="White">
+            <Frame CornerRadius="14" BorderColor="#e0e3e9" Padding="14" HeightRequest ="80" BackgroundColor="White">
                 <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="Auto">
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="Nr. card" TextColor="Black" FontAttributes="Bold"/>
@@ -66,7 +59,7 @@
             <Label Text="Diagnostic menționat de pacient/aparținător" TextColor="Black" FontAttributes="Bold"/>
             <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}" />
 
-            <VerticalStackLayout Padding="10">
+            <VerticalStackLayout Padding="5">
                 <Label Text="Medicamente utilizate de pacient"
            TextColor="Black"
            FontAttributes="Bold"/>
@@ -96,7 +89,7 @@
             </VerticalStackLayout>
 
 
-            <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}" >
+            <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}" HeightRequest ="90" >
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
                         <Label Text="Parafa medic" TextColor="Black"  FontAttributes="Bold"/>
@@ -117,7 +110,7 @@
                 </Grid>
             </Frame>
 
-            <Frame CornerRadius="10" BorderColor="#ececec" Padding="12" BackgroundColor="White">
+            <Frame CornerRadius="10" BorderColor="#ececec" Padding="12" BackgroundColor="White" HeightRequest ="80" >
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16" BackgroundColor="White">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
                         <Label Text="Simptomatologie" TextColor="Black"  FontAttributes="Bold"/>
@@ -141,7 +134,29 @@
             </Frame>
 
             <!-- Medications With Prescription -->
-            <Label Text="Medicamente eliberate cu rețetă" FontAttributes="Bold" Margin="0,4" TextColor="#222" IsVisible="{Binding ShowWithPrescription}"/>
+            <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="5"
+             IsVisible="{Binding ShowWithPrescription}">
+                <Label Text="Medicamente eliberate cu rețetă"
+           FontAttributes="Bold"
+           Margin="0,4"
+           TextColor="#222"/>
+
+                <Button Text="+"
+        Command="{Binding AddMedicationWithPrescriptionCommand}"
+        IsVisible="{Binding ShowWithPrescription}" 
+        FontSize="16"
+        HeightRequest="20"
+        WidthRequest="20"
+        MinimumHeightRequest="28"
+        MinimumWidthRequest="28"
+        CornerRadius="9"
+        BackgroundColor="#ece8fa"
+        TextColor="#34495E"
+        Padding="0"
+        VerticalOptions="Center" />
+
+            </StackLayout>
+
             <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}">
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
@@ -205,7 +220,7 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
+            <!--<StackLayout Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
                 <Button Text="Adaugă medicament"
             Command="{Binding AddMedicationWithPrescriptionCommand}"
             IsVisible="{Binding ShowWithPrescription}" 
@@ -216,10 +231,27 @@
             BackgroundColor="#ece8fa"
             TextColor="#34495E"/>
 
-            </StackLayout>
+            </StackLayout>-->
             
             <!-- Medications Without Prescription -->
-            <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222" IsVisible="{Binding ShowWithoutPrescription}"/>
+            <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="5"
+ IsVisible="{Binding ShowWithoutPrescription}">
+               
+                <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222" IsVisible="{Binding ShowWithoutPrescription}"/>
+                <Button Text="+"
+  Command="{Binding AddMedicationWithoutPrescriptionCommand}"
+  IsVisible="{Binding ShowWithoutPrescription}"
+FontSize="16"
+HeightRequest="20"
+WidthRequest="20"
+MinimumHeightRequest="28"
+MinimumWidthRequest="28"
+CornerRadius="9"
+BackgroundColor="#ece8fa"
+TextColor="#34495E"
+Padding="0"
+VerticalOptions="Center" />
+            </StackLayout>
             <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White" IsVisible="{Binding ShowWithoutPrescription}">
@@ -281,7 +313,7 @@ HorizontalOptions="FillAndExpand"/>
                    
                 </VerticalStackLayout>
             </Frame>
-            <Button Text="Adaugă medicament"
+            <!--<Button Text="Adaugă medicament"
          Command="{Binding AddMedicationWithoutPrescriptionCommand}"
          IsVisible="{Binding ShowWithoutPrescription}"
          Margin="0,2,0,0"
@@ -291,7 +323,7 @@ HorizontalOptions="FillAndExpand"/>
          HorizontalOptions="Start"
          CornerRadius="8"
          BackgroundColor="#ece8fa"
-         TextColor="#34495E"/>
+         TextColor="#34495E"/>-->
 
             <Editor Placeholder="Stimate coleg, cu privire la pacientul/pacienta care s-a prezentat în farmacie vă supun atenției următoarele:"
                     Text="{Binding NotesToDoctor}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />
