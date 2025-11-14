@@ -9,4 +9,14 @@ public partial class AddPharmacyView : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
 	}
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is AddPharmacyViewModel vm)
+        {
+            await vm.LoadPharmacyAsync();
+        }
+    }
 }

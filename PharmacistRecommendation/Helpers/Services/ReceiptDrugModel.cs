@@ -32,5 +32,11 @@ namespace PharmacistRecommendation.Helpers.Services
 
         [ObservableProperty]
         bool showSuggestions;
+
+        [ObservableProperty]
+        string? totalQuantity;
+
+        [ObservableProperty]
+        string? totalDays;
     }
 }

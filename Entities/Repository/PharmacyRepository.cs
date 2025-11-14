@@ -2,6 +2,7 @@
 using Entities.Models;
 using Entities.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Entities.Repository
 {
@@ -69,6 +70,11 @@ namespace Entities.Repository
             var hasAny = await _context.Pharmacies.AnyAsync();
             return hasAny;
         }
+        public async Task<Pharmacy?> GetFirstOrDefaultAsync()
+        {
+            return await _context.Pharmacies.FirstOrDefaultAsync();
+        }
+
 
         public async Task<int> GetPharmacyId()
         {
@@ -80,6 +86,17 @@ namespace Entities.Repository
                 throw new Exception("Nu există farmacii în baza de date");
 
             return pharmacy.Id;
+        }
+
+        public async Task<Pharmacy?> GetByConditionAsync(Expression<Func<Pharmacy, bool>> predicate)
+        {
+            return await _context.Pharmacies.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task UpdateAsync(Pharmacy entity)
+        {
+            _context.Pharmacies.Update(entity); 
+            await _context.SaveChangesAsync();
         }
     }
 }

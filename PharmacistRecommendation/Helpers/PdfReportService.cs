@@ -504,46 +504,42 @@ public class PdfReportService : IPdfReportService
     }
 
     private static byte[]? PlotDualLine(
-    IEnumerable<HistoryRowDto> data,
-    Func<HistoryRowDto, int?> selector1,
-    Func<HistoryRowDto, int?> selector2,
-    string title,
-    string label1,
-    string label2)
+     IEnumerable<HistoryRowDto> data,
+     Func<HistoryRowDto, int?> selector1,
+     Func<HistoryRowDto, int?> selector2,
+     string title,
+     string label1,
+     string label2)
     {
-        var points1 = data.Select(r =>
-        {
-            double y = selector1(r) ?? double.NaN;
-            return (x: r.Date.ToOADate(), y);
-        }).Where(p => !double.IsNaN(p.y)).ToList();
+        var points1 = data
+            .Where(r => selector1(r).HasValue)
+            .Select(r => (x: r.Date.ToOADate(), y: (double)selector1(r).Value))
+            .ToList();
 
-        var points2 = data.Select(r =>
-        {
-            double y = selector2(r) ?? double.NaN;
-            return (x: r.Date.ToOADate(), y);
-        }).Where(p => !double.IsNaN(p.y)).ToList();
+        var points2 = data
+            .Where(r => selector2(r).HasValue)
+            .Select(r => (x: r.Date.ToOADate(), y: (double)selector2(r).Value))
+            .ToList();
 
-        if (points1.Count == 0 && points2.Count == 0)
+        if (!points1.Any() && !points2.Any())
             return null;
 
         var plt = new ScottPlot.Plot(500, 300);
 
-        if (points1.Count > 0)
+        if (points1.Any())
         {
-            var xs1 = points1.Select(p => p.x).ToArray();
-            var ys1 = points1.Select(p => p.y).ToArray();
-            plt.AddScatter(xs1, ys1, label: label1, lineWidth: 2);
+            plt.AddScatter(points1.Select(p => p.x).ToArray(),
+                           points1.Select(p => p.y).ToArray(),
+                           label: label1, lineWidth: 2);
         }
 
-        if (points2.Count > 0)
+        if (points2.Any())
         {
-            var xs2 = points2.Select(p => p.x).ToArray();
-            var ys2 = points2.Select(p => p.y).ToArray();
-            plt.AddScatter(xs2, ys2,
-                   label: label2,
-                   lineWidth: 3,
-                   markerSize: 6,
-                   markerShape: ScottPlot.MarkerShape.filledCircle);
+            plt.AddScatter(points2.Select(p => p.x).ToArray(),
+                           points2.Select(p => p.y).ToArray(),
+                           label: label2, lineWidth: 3,
+                           markerSize: 6,
+                           markerShape: ScottPlot.MarkerShape.filledCircle);
         }
 
         plt.XAxis.DateTimeFormat(true);
@@ -554,7 +550,5 @@ public class PdfReportService : IPdfReportService
 
         return plt.GetImageBytes();
     }
-
-
 
 }

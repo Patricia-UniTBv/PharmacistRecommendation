@@ -189,17 +189,16 @@
                                        FontSize="11"
                                        IsVisible="{Binding HasNoPharmacy}" />
 
-								<Button Text="Adăugare farmacie"
+								<Button Text="Adăugare/Editare farmacie"
                                         Command="{Binding AddPharmacyCommand}"
                                         BackgroundColor="#34495E"
                                         TextColor="White"
                                         FontSize="11"
                                         FontAttributes="Bold"
                                         CornerRadius="6"
-                                        HeightRequest="30"
-                                        WidthRequest="130"
-                                        HorizontalOptions="Start"
-                                        IsVisible="{Binding HasNoPharmacy}" />
+                                        HeightRequest="25"
+                                        WidthRequest="180"
+                                        HorizontalOptions="Start" />
 							</VerticalStackLayout>
 
 							<!-- Name Fields -->

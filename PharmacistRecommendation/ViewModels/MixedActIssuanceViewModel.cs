@@ -53,7 +53,7 @@ namespace PharmacistRecommendation.ViewModels
             }
             else if (!ShowWithPrescription && ShowWithoutPrescription)
             {
-                PageTitle = "Emitere act propriu";
+                PageTitle = "Emitere act farmaceutic";
             }
 
         }
@@ -110,6 +110,12 @@ namespace PharmacistRecommendation.ViewModels
         ObservableCollection<AdministrationMode> administrationModes = new();
         [ObservableProperty]
         AdministrationMode? administrationMode;
+        [ObservableProperty]
+        private string totalQuantity; 
+
+        [ObservableProperty]
+        private string totalDays; 
+
         [ObservableProperty]
         private string? patientEmail;
         [ObservableProperty]
@@ -171,11 +177,13 @@ namespace PharmacistRecommendation.ViewModels
             {
                 PatientName = patient.FirstName + " " + patient.LastName;
                 PatientEmail = patient.Email;
+                PatientCnp = patient.Cnp;
             }
             else
             {
                 PatientName = null;
                 PatientEmail = null;
+                PatientCnp = null;
             }
         }
 
@@ -317,65 +325,104 @@ namespace PharmacistRecommendation.ViewModels
 
             try
             {
-                if (mode == "mixed" || mode == "withoutprescription")
+                string lastFolder = ReceiptImportService.GetLastDatedFolder(ReceiptsPath);
+                if (lastFolder == null)
                 {
-                    var lastFolder = ReceiptImportService.GetLastDatedFolder(ReceiptsPath);
-                    if (lastFolder == null)
+                    await ShowAlert("Nu există fișier de bon de importat.");
+                    return;
+                }
+
+                string logFile = ReceiptImportService.FindTextOrLogFile(lastFolder);
+                if (logFile == null)
+                {
+                    await ShowAlert("Nu există fișier de bon de importat.");
+                    return;
+                }
+
+                var medicationsWithPrescription = new List<PrescriptionDrugModel>();
+                var medicationsWithoutPrescription = new List<ReceiptDrugModel>();
+                PrescriptionImportModel patientInfo = null;
+
+                if (ShowWithPrescription)
+                {
+                    // 1. Import date pacient din XML
+                    string prescriptionFile = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
+                    if (prescriptionFile == null)
                     {
-                        await ShowAlert("Nu există fișier de importat.");
+                        await ShowAlert("Nu există fișier de prescripție de importat.");
                         return;
                     }
-                    string logFile = ReceiptImportService.FindTextOrLogFile(lastFolder);
-                    var import = ReceiptImportService.ImportLastReceipt(logFile);
 
-                    MedicationsWithoutPrescription.Clear();
-                    foreach (var drug in import.Medications)
-                    {
-                        MedicationsWithoutPrescription.Add(drug);
-                    }
+                    patientInfo = PrescriptionImportService.ImportFromXml(prescriptionFile);
+                    PatientCnp = patientInfo.PatientCnp;
+                    PrescriptionSeries = patientInfo.PrescriptionSeries;
+                    PrescriptionNumber = patientInfo.PrescriptionNumber;
+                    DoctorStamp = patientInfo.DoctorStamp;
+                    PrescriptionDiagnosis = patientInfo.Diagnosis;
+
+                    // 2. Ia doar medicamentele compensate din ultimul bon
+                    ImportDrugsFromLastCompensatedReceipt(logFile, medicationsWithPrescription);
                 }
-
-                if (mode == "mixed" || mode == "withprescription")
+                else if (ShowWithoutPrescription)
                 {
-                    string filePath = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
-                    if (filePath == null)
-                    {
-                        await ShowAlert("Nu există fișier de importat.");
-                        return;
-                    }
-                    var import = PrescriptionImportService.ImportFromXml(filePath);
-
-                    PatientCnp = import.PatientCnp;
-                    PrescriptionSeries = import.PrescriptionSeries;
-                    PrescriptionNumber = import.PrescriptionNumber;
-                    DoctorStamp = import.DoctorStamp;
-                    PrescriptionDiagnosis = import.Diagnosis;
-
-                    MedicationsWithPrescription.Clear();
-                    foreach (var drug in import.Drugs)
-                    {
-                        MedicationsWithPrescription.Add(drug);
-                    }
+                    // Ia medicamentele din ultimele două bonuri necompensate (dacă ambele sunt necompensate, ia doar ultimul)
+                    ImportDrugsFromLastTwoNonCompensatedReceipts(logFile, medicationsWithoutPrescription);
                 }
 
-                if (mode == "mixed")
-                {
-                    var prescriptionNames = MedicationsWithPrescription.Select(m => m.Name).ToHashSet();
+                // 3. Populez listele vizuale
+                MedicationsWithPrescription.Clear();
+                foreach (var drug in medicationsWithPrescription)
+                    MedicationsWithPrescription.Add(drug);
 
-                    var filtered = MedicationsWithoutPrescription
-                        .Where(m => !prescriptionNames.Contains(m.Name))
-                        .ToList();
-
-                    MedicationsWithoutPrescription.Clear();
-                    foreach (var med in filtered)
-                        MedicationsWithoutPrescription.Add(med);
-                }
+                MedicationsWithoutPrescription.Clear();
+                foreach (var drug in medicationsWithoutPrescription)
+                    MedicationsWithoutPrescription.Add(drug);
             }
             catch (Exception ex)
             {
                 await ShowAlert($"Eroare la import: {ex.Message}");
             }
         }
+
+        private void ImportDrugsFromLastCompensatedReceipt(string logFilePath, List<PrescriptionDrugModel> medicationsWithPrescription)
+        {
+            var lines = File.ReadAllLines(logFilePath).ToList();
+            var receipts = new List<List<string>>();
+            var currentReceipt = new List<string>();
+
+            foreach (var line in lines)
+            {
+                if (line.Contains("Adaug fisier in coada"))
+                    currentReceipt = new List<string>();
+
+                currentReceipt.Add(line);
+
+                if (line.Contains("Bon fiscal inchis"))
+                    receipts.Add(currentReceipt);
+            }
+
+            if (!receipts.Any()) return;
+
+            var lastCompensated = receipts.LastOrDefault(r => r.Any(l => l.Contains("Compensat:")));
+            if (lastCompensated == null) return;
+
+            int index = 1;
+            foreach (var line in lastCompensated.Where(l => l.Contains("Vanzare:")))
+            {
+                var idx = line.IndexOf("Vanzare:") + "Vanzare:".Length;
+                var after = line.Substring(idx).Trim();
+                var endIdx = after.IndexOf("->");
+                var name = (endIdx > 0 ? after.Substring(0, endIdx) : after).Trim();
+
+                medicationsWithPrescription.Add(new PrescriptionDrugModel
+                {
+                    Index = index++,
+                    Name = name
+                });
+            }
+        }
+
+
 
         [RelayCommand]
         private async Task SaveAsync()
@@ -481,7 +528,7 @@ namespace PharmacistRecommendation.ViewModels
                     MedicineLunch = m.Noon,
                     MedicineEvening = m.Evening,
                     MedicineNight = m.Night,
-                    MedicineAdministration = m.AdministrationMode.ToString()
+                    MedicineAdministration = m.AdministrationMode?.ToString() ?? "Null"
                 }).ToList();
             }
         }
@@ -741,7 +788,9 @@ namespace PharmacistRecommendation.ViewModels
                              MedicineLunch = m.Noon,
                              MedicineEvening = m.Evening,
                              MedicineNight = m.Night,
-                             MedicineAdministration = m.AdministrationMode?.Name ?? ""
+                             MedicineAdministration = m.AdministrationMode?.Name ?? "",
+                             MedicineTotalQuantity = m.TotalQuantity,
+                             TreatmentPeriod = m.TotalDays
                          })
                          .Concat(MedicationsWithoutPrescription.Select(m => new MedicationExportDto
                          {
@@ -750,7 +799,9 @@ namespace PharmacistRecommendation.ViewModels
                              MedicineLunch = m.Noon,
                              MedicineEvening = m.Evening,
                              MedicineNight = m.Night,
-                             MedicineAdministration = m.AdministrationMode?.Name ?? ""
+                             MedicineAdministration = m.AdministrationMode?.Name ?? "",
+                             MedicineTotalQuantity = m.TotalQuantity,
+                             TreatmentPeriod = m.TotalDays
                          }))
                          .ToList()
             };
@@ -764,9 +815,7 @@ namespace PharmacistRecommendation.ViewModels
 
             string jsonContent = JsonSerializer.Serialize(exportDto, options);
 
-
             string actName;
-
             switch (exportDto.RetetaType)
             {
                 case "Mixtă":
@@ -776,7 +825,7 @@ namespace PharmacistRecommendation.ViewModels
                     actName = "Act consecutiv prescriptiei";
                     break;
                 default:
-                    actName = "Act propriu";
+                    actName = "Act farmaceutic";
                     break;
             }
 
@@ -790,10 +839,8 @@ namespace PharmacistRecommendation.ViewModels
                 TextBody = $"Bună ziua,\n\nVă trimitem rețeta în format PDF și JSON.\n\nCu stimă,\n{pharmacy.Name}, {pharmacy.Address}"
             };
 
-
             builder.Attachments.Add($"{actName}.pdf", pdfBytes);
             builder.Attachments.Add($"{actName}.json", System.Text.Encoding.UTF8.GetBytes(jsonContent));
-
 
             message.Body = builder.ToMessageBody();
 
@@ -813,6 +860,7 @@ namespace PharmacistRecommendation.ViewModels
                 await Shell.Current.DisplayAlert("Eroare", $"Trimiterea eșuată: {ex.Message}", "OK");
             }
         }
+
 
         [RelayCommand]
         private async Task OpenMedicationPopup(PrescriptionDrugModel drug)
@@ -890,6 +938,52 @@ namespace PharmacistRecommendation.ViewModels
 
             if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
                 drug.Name = selected;
+        }
+
+       
+
+        private void ImportDrugsFromLastTwoNonCompensatedReceipts(string logFilePath, List<ReceiptDrugModel> medicationsWithoutPrescription)
+        {
+            var lines = File.ReadAllLines(logFilePath).ToList();
+            var receipts = new List<List<string>>();
+            var currentReceipt = new List<string>();
+
+            foreach (var line in lines)
+            {
+                if (line.Contains("Adaug fisier in coada"))
+                    currentReceipt = new List<string>();
+
+                currentReceipt.Add(line);
+
+                if (line.Contains("Bon fiscal inchis"))
+                    receipts.Add(currentReceipt);
+            }
+
+            if (!receipts.Any()) return;
+
+            // Ultimele bonuri necompensate
+            var nonCompensatedReceipts = receipts.Where(r => !r.Any(l => l.Contains("Compensat:"))).ToList();
+            if (!nonCompensatedReceipts.Any()) return;
+
+            // Dacă sunt două, luam doar ultimul
+            var receiptToImport = nonCompensatedReceipts.Count >= 2
+                ? nonCompensatedReceipts.Last()
+                : nonCompensatedReceipts.Last();
+
+            int index = 1;
+            foreach (var line in receiptToImport.Where(l => l.Contains("Vanzare:")))
+            {
+                var idx = line.IndexOf("Vanzare:") + "Vanzare:".Length;
+                var after = line.Substring(idx).Trim();
+                var endIdx = after.IndexOf("->");
+                var name = (endIdx > 0 ? after.Substring(0, endIdx) : after).Trim();
+
+                medicationsWithoutPrescription.Add(new ReceiptDrugModel
+                {
+                    Index = index++,
+                    Name = name
+                });
+            }
         }
 
         private Task ShowAlert(string message)

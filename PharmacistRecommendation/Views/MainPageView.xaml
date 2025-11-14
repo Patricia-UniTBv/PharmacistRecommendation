@@ -119,12 +119,6 @@
                                 TextColor="White"
                     Command="{Binding NavigateToNewCardCommand}" />
 
-                        <Button Grid.Column="2"
-                    Style="{StaticResource CardButton}"
-                    Text="💊 Medicamente"
-                    BackgroundColor="#AAB7B8"  
-                                    TextColor="White"
-                    Command="{Binding NavigateToMedicationsCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -143,22 +137,15 @@
 
                         <Button Grid.Column="0"
                     Style="{StaticResource CardButton}"
-                    Text="📄 Act Mixt"
-                    BackgroundColor="#7DCEA0"  
-                            TextColor="White"
-                    Command="{Binding NavigateToMixedIssuanceCommand}" />
-
-                        <Button Grid.Column="1"
-                    Style="{StaticResource CardButton}"
                     Text="📝 Act cu Prescripție"
                     FontSize="14"
                     BackgroundColor="#9AB1C2" 
                                 TextColor="White"
                     Command="{Binding NavigateToPrescriptionOnlyCommand}" />
 
-                        <Button Grid.Column="2"
+                        <Button Grid.Column="1"
                     Style="{StaticResource CardButton}"
-                    Text="✍️ Act Propriu"
+                    Text="✍️ Act Farmaceutic"
                     BackgroundColor="#7BA7D9" 
                                     TextColor="White"
                     Command="{Binding NavigateToWithoutPrescriptionCommand}" />

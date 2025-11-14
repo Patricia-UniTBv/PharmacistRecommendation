@@ -38,51 +38,7 @@ namespace PharmacistRecommendation.Helpers.Services
             return Directory.GetFiles(folderPath, "*.log").FirstOrDefault();
         }
 
-        public static ReceiptImportModel ImportLastReceipt(string logFilePath)
-        {
-            var lines = File.ReadAllLines(logFilePath);
-            var receiptLines = new List<string>();
-            bool inLastReceipt = false;
-
-            for (int i = lines.Length - 1; i >= 0; i--)
-            {
-                if (lines[i].Contains("Bon fiscal inchis") && !inLastReceipt)
-                {
-                    inLastReceipt = true;
-                    continue;
-                }
-                if (inLastReceipt)
-                {
-                    if (lines[i].Contains("Bon fiscal inchis"))
-                        break;
-                    if (lines[i].Contains("Vanzare:"))
-                        receiptLines.Add(lines[i]);
-                }
-            }
-            receiptLines.Reverse();
-
-            int index = 1;
-            var model = new ReceiptImportModel
-            {
-                Medications = receiptLines
-                    .Select(line =>
-                    {
-
-                        var idx = line.IndexOf("Vanzare:") + "Vanzare:".Length;
-                        var afterVanzare = line.Substring(idx).TrimStart();
-                        var endIdx = afterVanzare.IndexOf("->");
-                        var name = (endIdx > 0 ? afterVanzare.Substring(0, endIdx) : afterVanzare).Trim();
-                        return new ReceiptDrugModel {
-                            Index = index++,
-                            Name = name };
-                    })
-                    .GroupBy(drug => drug.Name, StringComparer.InvariantCultureIgnoreCase)
-                    .Select(g => g.First())
-                    .ToList()
-            };
-
-            return model;
-        }
+       
 
     }
 }

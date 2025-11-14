@@ -31,12 +31,33 @@ Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu 
         {
             return await _repository.GetById(id);
         }
+        public async Task<Pharmacy?> GetExistingPharmacyAsync()
+        {
+            return await _repository.GetFirstOrDefaultAsync();
+        }
 
-        public async Task AddPharmacyAsync(Pharmacy pharmacy)
+        public async Task AddOrUpdatePharmacyAsync(Pharmacy pharmacy)
         {
             pharmacy.ConsentTemplate = DEFAULT_CONSENT_TEMPLATE;
-            await _repository.AddAsync(pharmacy);
+
+            var existingPharmacy = await _repository.GetByConditionAsync(p => p.CUI == pharmacy.CUI);
+
+            if (existingPharmacy != null)
+            {
+                existingPharmacy.Name = pharmacy.Name;
+                existingPharmacy.Address = pharmacy.Address;
+                existingPharmacy.Email = pharmacy.Email;
+                existingPharmacy.Phone = pharmacy.Phone;
+                existingPharmacy.Logo = pharmacy.Logo;
+
+                await _repository.UpdateAsync(existingPharmacy);
+            }
+            else
+            {
+                await _repository.AddAsync(pharmacy);
+            }
         }
+
 
         public async Task<string> GetConsentTemplateAsync(int pharmacyId)
         {

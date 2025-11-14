@@ -41,6 +41,12 @@ namespace PharmacistRecommendation.Helpers.Services
         string night = string.Empty;
 
         [ObservableProperty]
+        string? totalQuantity;
+
+        [ObservableProperty]
+        string? totalDays;
+
+        [ObservableProperty]
         ObservableCollection<string> filteredMedications = new();
 
         [ObservableProperty]

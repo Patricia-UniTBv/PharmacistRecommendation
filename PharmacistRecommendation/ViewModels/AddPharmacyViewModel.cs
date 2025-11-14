@@ -24,6 +24,28 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] private string? consentTemplate;
 
         [RelayCommand]
+        public async Task LoadPharmacyAsync()
+        {
+            var pharmacy = await _pharmacyService.GetExistingPharmacyAsync();
+
+            if (pharmacy != null)
+            {
+                Name = pharmacy.Name;
+                Address = pharmacy.Address;
+                Cui = pharmacy.CUI;
+                Email = pharmacy.Email;
+                Phone = pharmacy.Phone;
+                Logo = pharmacy.Logo;
+                ConsentTemplate = pharmacy.ConsentTemplate;
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Info", "Nu există nicio farmacie înregistrată.", "OK");
+            }
+        }
+
+
+        [RelayCommand]
         private async Task SelectLogoAsync()
         {
             var result = await FilePicker.PickAsync(new PickOptions
@@ -57,8 +79,8 @@ namespace PharmacistRecommendation.ViewModels
 
             try
             {
-                await _pharmacyService.AddPharmacyAsync(pharmacy);
-                await Shell.Current.DisplayAlert("Succes", "Farmacia a fost adăugată!", "OK");
+                await _pharmacyService.AddOrUpdatePharmacyAsync(pharmacy);
+                await Shell.Current.DisplayAlert("Succes", "Farmacia a fost salvată!", "OK");
                 await Shell.Current.GoToAsync(nameof(LoginAddUserView));
             }
             catch (Exception ex)

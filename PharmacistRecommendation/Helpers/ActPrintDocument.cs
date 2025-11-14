@@ -46,12 +46,14 @@ namespace PharmacistRecommendation.Helpers
             public string? AdministrationMode { get; set; }
         }
 
-
         protected override void OnPrintPage(PrintPageEventArgs e)
         {
             var g = e.Graphics;
-            float left = 30, top = 40;
-            float right = e.PageBounds.Width - 100;
+            float margin = 50;
+            float left = margin;
+            float top = margin;
+            float right = e.PageBounds.Width - margin;
+            float bottom = e.PageBounds.Height - margin;
             float y = top;
             float contentWidth = right - left;
 
@@ -60,38 +62,39 @@ namespace PharmacistRecommendation.Helpers
             using var fontSmall = new SD.Font("Arial", 7f, FontStyle.Regular);
             using var fontSection = new SD.Font("Arial", 12f, FontStyle.Bold);
 
-            float lineHeight = fontText.GetHeight(g) * 1.2f;
+            float lineHeight = fontText.GetHeight(g) * 1.5f; // uniform spacing for all rows
 
             try
             {
                 using var logo = SD.Image.FromFile("Resources/Images/farma.png");
-                g.DrawImage(logo, left, y, 60, 60);
+                float logoWidth = 80;
+                float logoHeight = 80;
+                float logoX = right - logoWidth;
+                g.DrawImage(logo, logoX, y, logoWidth, logoHeight);
             }
             catch { }
 
-            float textStartX = left + 90;
-            float titleWidth = contentWidth - 90;
-            StringFormat format = new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near, FormatFlags = StringFormatFlags.LineLimit };
+            float textStartX = left;
+            float titleWidth = contentWidth - 80;
+            var format = new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
             string pageTitle = ModeCode switch
             {
                 "AC" => "Act consecutiv prescripției",
-                "AP" => "Act propriu",
+                "AP" => "Act farmaceutic",
                 "AM" => "Act mixt",
                 _ => "Document farmaceutic"
             };
-            RectangleF rectTitle = new RectangleF(textStartX, y, titleWidth, 40);
-            g.DrawString(pageTitle, fontTitle, Brushes.Black, rectTitle, format);
-
-            y += 50;
+            g.DrawString(pageTitle, fontTitle, Brushes.Black, textStartX, y);
+            y += lineHeight * 2.5f; 
 
             string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{new Random().Next(1000, 9999):D4}";
             g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
-            g.DrawString(code, fontText, Brushes.Black, right - 150, y);
-            y += lineHeight;
-            g.DrawString($"FARMACIST: {SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString(code, fontText, Brushes.Black, right - 180, y);
             y += lineHeight;
 
+            g.DrawString($"FARMACIST: {SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}", fontText, Brushes.Black, textStartX, y);
+            y += lineHeight;
             g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
             g.DrawString($"ADRESA: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
@@ -99,8 +102,7 @@ namespace PharmacistRecommendation.Helpers
             g.DrawString($"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
 
-            float cnpOffset = 200; 
-
+            float cnpOffset = 350;
             g.DrawString($"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
             g.DrawString($"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
@@ -109,26 +111,41 @@ namespace PharmacistRecommendation.Helpers
             g.DrawString($"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
 
-            void DrawWrappedText(string text)
+            void DrawParagraph(string label, string value)
             {
-                RectangleF rect = new RectangleF(textStartX, y, contentWidth, e.PageBounds.Height - y - 150);
-                g.DrawString(text, fontText, Brushes.Black, rect, format);
-                y += g.MeasureString(text, fontText, (int)contentWidth).Height + lineHeight / 2;
+                string text = $"{label} {value}";
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    g.DrawString(text, fontText, Brushes.Black, textStartX, y);
+                    y += lineHeight; 
+                }
+                else
+                {
+                    var rect = new RectangleF(textStartX, y, contentWidth, bottom - y - 150);
+                    var textSize = g.MeasureString(text, fontText, (int)contentWidth);
+
+                    g.DrawString(text, fontText, Brushes.Black, rect, format);
+                    int lineCount = (int)Math.Ceiling(textSize.Height / fontText.GetHeight(g));
+                    y += lineCount * lineHeight * 0.75f;
+                }
             }
 
-            DrawWrappedText($"DIAGNOSTIC MENȚIONAT DE PACIENT: {DiagnosisMentioned}");
-            DrawWrappedText($"MEDICAMENTE UTILIZATE DE PACIENT: {MedicationsMentioned}");
+            DrawParagraph("DIAGNOSTIC MENȚIONAT DE PACIENT:", DiagnosisMentioned);
+            DrawParagraph("MEDICAMENTE UTILIZATE DE PACIENT:", MedicationsMentioned);
+
             if (ModeCode == "AC" || ModeCode == "AM")
             {
-                float offset = 250; 
+                float offset = 250;
                 g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
                 g.DrawString($"SERIE/NUMĂR MEDIC: {Series}", fontText, Brushes.Black, textStartX + offset, y);
-                y += fontText.GetHeight(g) * 1.1f;
-                DrawWrappedText($"DIAGNOSTIC: {Diagnostic}");
+                y += lineHeight;
+                DrawParagraph("DIAGNOSTIC:", Diagnostic);
             }
-            DrawWrappedText($"SIMPTOMATOLOGIE: {Symptoms}");
-            DrawWrappedText($"SUSPICIUNE: {Suspicion}");
-            DrawWrappedText($"CONSTATĂRILE FARMACISTULUI: {PharmacistObservations}");
+
+            DrawParagraph("SIMPTOMATOLOGIE:", Symptoms);
+            DrawParagraph("SUSPICIUNE:", Suspicion);
+            DrawParagraph("CONSTATĂRILE FARMACISTULUI:", PharmacistObservations);
 
             if (MedicationsWithPrescription?.Count > 0)
             {
@@ -142,20 +159,16 @@ namespace PharmacistRecommendation.Helpers
                                           MedicationsWithoutPrescription, fontSection, fontText, fontText, false);
             }
 
-            y = DrawWrappedTextCustom(g, NotesToDoctor, fontText, textStartX, y, contentWidth);
-            y = DrawWrappedTextCustom(g, PharmacistRecommendation, fontText, textStartX, y, contentWidth);
-            DrawWrappedText($"Serviciu farmaceutic: {PharmaceuticalService}");
+            DrawParagraph("NOTE CĂTRE MEDIC:", NotesToDoctor);
+            DrawParagraph("RECOMANDAREA FARMACISTULUI:", PharmacistRecommendation);
+            DrawParagraph("Serviciu farmaceutic:", PharmaceuticalService);
 
-            float footerY = e.PageBounds.Bottom - 100;
+            float footerY = bottom - 100;
             string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
             g.DrawString(pharmacistName.ToUpper(), fontText, Brushes.Black, left, footerY);
-            g.DrawString(PatientName?.ToUpper(), fontText, Brushes.Black, right - 120, footerY);
-
+            g.DrawString(PatientName?.ToUpper(), fontText, Brushes.Black, right - 220, footerY);
             g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 35);
         }
-
-
-
 
         private float DrawMedicationSection(SD.Graphics g, float left, float y, float contentWidth, string title,
                                     List<MedicationLine> medications, SD.Font sectionFont, SD.Font textFont, SD.Font headerFont,

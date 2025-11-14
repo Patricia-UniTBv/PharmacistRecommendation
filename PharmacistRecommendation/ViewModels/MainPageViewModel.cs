@@ -114,7 +114,7 @@ namespace PharmacistRecommendation.ViewModels
             }
             catch (Exception ex)
             {
-                await ShowErrorAsync("Eroare Navigare", $"Nu s-a putut accesa pagina de emitere act propriu: {ex.Message}");
+                await ShowErrorAsync("Eroare Navigare", $"Nu s-a putut accesa pagina de emitere act farmaceutic: {ex.Message}");
             }
         }
 

@@ -46,23 +46,9 @@ namespace PharmacistRecommendation.Helpers.Services
                 Diagnosis = prescriptionNode.Attributes["diagnostic"]?.InnerText
             };
 
-            int index = 1;
-            foreach (XmlNode drugNode in prescriptionNode.SelectNodes("p:prescriptionDrug", ns))
-            {
-                var drug = new PrescriptionDrugModel
-                {
-                    Index = index++,
-                    Name = drugNode.Attributes["activeSubstance"]?.InnerText,
-                    Concentration = drugNode.Attributes["concentration"]?.InnerText,
-                    PharmaceuticalForm = drugNode.Attributes["pharmaceuticalForm"]?.InnerText,
-                    Dose = drugNode.Attributes["dose"]?.InnerText,
-                    DiseaseCode = drugNode.Attributes["diseaseCode"]?.InnerText,
-                };
-                model.Drugs.Add(drug);
-            }
-
             return model;
         }
+
 
     }
 }

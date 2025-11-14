@@ -161,57 +161,60 @@
                 <VerticalStackLayout Spacing="6">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,110,110,110,110,210,60">
+                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="2" Text="CANTITATE TOTALĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="3" Text="ZILE TRATAM." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="4" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="5" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="6" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="7" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Text=" " />
                             </Grid>
                         </CollectionView.Header>
+
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
+                                <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                                        <Entry
-        Text="{Binding Name}"
-        Placeholder="Nume medicament"
-        HorizontalOptions="FillAndExpand"/>
-                                        <Button
-        Text="🔍"
-        WidthRequest="36"
-        HeightRequest="36"
-        BackgroundColor="Transparent"
-        BorderColor="Transparent"
-        BorderWidth="0"
-        Padding="0"
-        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
-        CommandParameter="{Binding .}"/>
+                                        <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
+                                        <Button Text="🔍"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="Transparent"
+                                    BorderWidth="0"
+                                    Padding="0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
+                                    CommandParameter="{Binding .}"/>
                                     </StackLayout>
 
-                                    <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="4" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="5" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Picker
-                                        Grid.Column="6"
-                                        TitleColor="LightGray"
-                                        ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
-                                        ItemDisplayBinding="{Binding Name}"
-                                        SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
-                                    <StackLayout Grid.Column="7" Orientation="Horizontal" Spacing="4">
+                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+
+                                    <Picker Grid.Column="8"
+                                TitleColor="LightGray"
+                                ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
+
+                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="4">
                                         <Button Text="✕"
-                                                TextColor="Red"
-                                                Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
-                                                CommandParameter="{Binding .}"
-                                                HeightRequest="20"
-                                                WidthRequest="20"
-                                                BackgroundColor="#faf6f6"
-                                                ToolTipProperties.Text="Șterge medicament"/>
+                                    TextColor="Red"
+                                    Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                    CommandParameter="{Binding .}"
+                                    HeightRequest="20"
+                                    WidthRequest="20"
+                                    BackgroundColor="#faf6f6"
+                                    ToolTipProperties.Text="Șterge medicament"/>
                                     </StackLayout>
                                 </Grid>
                             </DataTemplate>
@@ -220,110 +223,92 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!--<StackLayout Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
-                <Button Text="Adaugă medicament"
-            Command="{Binding AddMedicationWithPrescriptionCommand}"
-            IsVisible="{Binding ShowWithPrescription}" 
-            FontSize="13"
-            HeightRequest="32"
-            WidthRequest="160"
-            CornerRadius="8"
-            BackgroundColor="#ece8fa"
-            TextColor="#34495E"/>
 
-            </StackLayout>-->
-            
             <!-- Medications Without Prescription -->
             <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="5"
- IsVisible="{Binding ShowWithoutPrescription}">
-               
+             IsVisible="{Binding ShowWithoutPrescription}">
                 <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222" IsVisible="{Binding ShowWithoutPrescription}"/>
                 <Button Text="+"
-  Command="{Binding AddMedicationWithoutPrescriptionCommand}"
-  IsVisible="{Binding ShowWithoutPrescription}"
-FontSize="16"
-HeightRequest="20"
-WidthRequest="20"
-MinimumHeightRequest="28"
-MinimumWidthRequest="28"
-CornerRadius="9"
-BackgroundColor="#ece8fa"
-TextColor="#34495E"
-Padding="0"
-VerticalOptions="Center" />
+            Command="{Binding AddMedicationWithoutPrescriptionCommand}"
+            IsVisible="{Binding ShowWithoutPrescription}"
+            FontSize="16"
+            HeightRequest="20"
+            WidthRequest="20"
+            MinimumHeightRequest="28"
+            MinimumWidthRequest="28"
+            CornerRadius="9"
+            BackgroundColor="#ece8fa"
+            TextColor="#34495E"
+            Padding="0"
+            VerticalOptions="Center" />
             </StackLayout>
-            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White">
+
+            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White" IsVisible="{Binding ShowWithoutPrescription}">
                 <VerticalStackLayout Spacing="6">
-                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White" IsVisible="{Binding ShowWithoutPrescription}">
+                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,110,110,110,110,210,60">
+                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60">
                                 <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="2" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="3" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="4" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="5" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="6" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="2" Text="CANTITATE TOTALĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="3" Text="ZILE TRATAM." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="4" Text="DIMINEAȚA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="5" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="6" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="7" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
+                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
                                 <Label Text=" " />
                             </Grid>
                         </CollectionView.Header>
+
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="36,*,110,110,110,110,210,60" Padding="2">
+                                <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2">
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                                        <Entry
-Text="{Binding Name}"
-Placeholder="Nume medicament"
-HorizontalOptions="FillAndExpand"/>
-                                        <Button
-        Text="🔍"
-        WidthRequest="36"
-        HeightRequest="36"
-        BackgroundColor="Transparent"
-        BorderColor="Transparent"
-        BorderWidth="0"
-        Padding="0"
-        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
-        CommandParameter="{Binding .}"/>
+                                        <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
+                                        <Button Text="🔍"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="Transparent"
+                                    BorderWidth="0"
+                                    Padding="0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
+                                    CommandParameter="{Binding .}"/>
                                     </StackLayout>
-                                    <Entry Grid.Column="2" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="3" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="4" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="5" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Picker
-            Grid.Column="6"
-            ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
-            ItemDisplayBinding="{Binding Name}"
-            SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
-                                    <StackLayout Grid.Column="7" Orientation="Horizontal" Spacing="4">
+
+                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
+                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
+
+                                    <Picker Grid.Column="8"
+                                TitleColor="LightGray"
+                                ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
+
+                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="4">
                                         <Button Text="✕"
-                                                TextColor="Red"
-                                                Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
-                                                CommandParameter="{Binding .}"
-                                                HeightRequest="28"
-                                                WidthRequest="28"
-                                                BackgroundColor="#faf6f6"
-                                                ToolTipProperties.Text="Șterge medicament"/>
+                                    TextColor="Red"
+                                    Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                    CommandParameter="{Binding .}"
+                                    HeightRequest="20"
+                                    WidthRequest="20"
+                                    BackgroundColor="#faf6f6"
+                                    ToolTipProperties.Text="Șterge medicament"/>
                                     </StackLayout>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                   
                 </VerticalStackLayout>
             </Frame>
-            <!--<Button Text="Adaugă medicament"
-         Command="{Binding AddMedicationWithoutPrescriptionCommand}"
-         IsVisible="{Binding ShowWithoutPrescription}"
-         Margin="0,2,0,0"
-         FontSize="13"
-         HeightRequest="32"
-         WidthRequest="160"
-         HorizontalOptions="Start"
-         CornerRadius="8"
-         BackgroundColor="#ece8fa"
-         TextColor="#34495E"/>-->
+
 
             <Editor Placeholder="Stimate coleg, cu privire la pacientul/pacienta care s-a prezentat în farmacie vă supun atenției următoarele:"
                     Text="{Binding NotesToDoctor}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />
@@ -340,40 +325,47 @@ HorizontalOptions="FillAndExpand"/>
             />
             </HorizontalStackLayout>
 
+            <Grid Padding="0,8,0,0" VerticalOptions="Center" ColumnDefinitions="Auto, *, Auto">
 
-            <HorizontalStackLayout Spacing="14" Padding="0,8,0,0">
+                <!-- Coloana 0: Entry + Trimite Mail -->
+                <HorizontalStackLayout Spacing="10" Grid.Column="0" VerticalOptions="Center">
+                    <Entry Placeholder="Email pacient"
+               Text="{Binding PatientEmail}"
+               FontSize="14"
+               WidthRequest="280"
+               VerticalOptions="Center"/>
+                    <Button Text="Trimite Mail"
+                Command="{Binding SendEmailCommand}"
+                FontSize="12"
+                HeightRequest="34"
+                CornerRadius="8"
+                BackgroundColor="#007bff"
+                TextColor="White"/>
+                </HorizontalStackLayout>
 
-                <Entry Placeholder="Email pacient"
-           Text="{Binding PatientEmail}"
-           FontSize="14"
-           WidthRequest="180"
-           VerticalOptions="Center"/>
+                <!-- Coloana 1: spacer gol ocupă tot restul spațiului -->
+                <BoxView Grid.Column="1" Color="Transparent"/>
 
-                <Button Text="Trimite Mail"
-            Command="{Binding SendEmailCommand}"
-            FontSize="12"
-            HeightRequest="34"
-            CornerRadius="8"
-            BackgroundColor="#007bff"
-            TextColor="White"/>
+                <!-- Coloana 2: Printează + Salvează -->
+                <HorizontalStackLayout Spacing="10" Grid.Column="2" VerticalOptions="Center" Margin="0,0,20,10">
+                    <Button Text="Printează"
+                Command="{Binding PrintCommand}"
+                FontSize="14"
+                HeightRequest="34"
+                CornerRadius="8"
+                BackgroundColor="#f4f4f6"
+                TextColor="#36317f"/>
+                    <Button Text="Salvează"
+                Command="{Binding SaveCommand}"
+                FontSize="14"
+                HeightRequest="34"
+                CornerRadius="8"
+                BackgroundColor="Green"
+                TextColor="White"/>
+                </HorizontalStackLayout>
 
-                <Button Text="Salvează"
-            Command="{Binding SaveCommand}"
-            FontSize="14"
-            HeightRequest="34"
-            CornerRadius="8"
-            BackgroundColor="Green"
-            TextColor="White"/>
+            </Grid>
 
-                <Button Text="Printează"
-            Command="{Binding PrintCommand}"
-            FontSize="14"
-            HeightRequest="34"
-            CornerRadius="8"
-            BackgroundColor="#f4f4f6"
-            TextColor="#36317f"/>
-
-            </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

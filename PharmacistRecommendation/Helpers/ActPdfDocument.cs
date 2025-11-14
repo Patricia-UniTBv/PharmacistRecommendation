@@ -85,7 +85,7 @@ namespace PharmacistRecommendation.Helpers
             string pageTitle = ModeCode switch
             {
                 "AC" => "Act consecutiv prescripției",
-                "AP" => "Act propriu",
+                "AP" => "Act farmaceutic",
                 "AM" => "Act mixt",
                 _ => "Document farmaceutic"
             };
