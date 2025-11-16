@@ -7,7 +7,6 @@ using System.Drawing.Printing;
 using System.Drawing;
 using System.Windows.Forms;
 using SD = System.Drawing;
-using System.Runtime.InteropServices;
 using Entities.Services;
 
 namespace PharmacistRecommendation.ViewModels
@@ -127,9 +126,6 @@ namespace PharmacistRecommendation.ViewModels
                 Birthdate = date;
             }
         }
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr LoadLibrary(string dllToLoad);
-
         [RelayCommand]
         private async Task GenerateCid()
         {
@@ -141,20 +137,12 @@ namespace PharmacistRecommendation.ViewModels
 
             try
             {
-                IntPtr handle = LoadLibrary(@"Platforms\Windows\CidGen64.dll");
-                if (handle == IntPtr.Zero)
-                {
-                    int error = Marshal.GetLastWin32Error();
-                    await Shell.Current.DisplayAlert("Eroare DLL", $"Nu se poate încărca DLL-ul! Cod eroare: {error}", "OK");
-                    return;
-                }
-
-                var cid = CidGen.GetCidHash(Cnp); 
+                var cid = CidGen.GetCidHash(Cnp); // call existing CidGen (same as before), removed manual LoadLibrary
 
                 if (!string.IsNullOrEmpty(cid))
                     Cid = cid;
                 else
-                    await Shell.Current.DisplayAlert("Eroare", "Nu s-a putut genera CID-ul.", "OK");
+                    await Shell.Current.DisplayAlert("Eroare", "Nu s-a putut genera CID-ul (fallback).", "OK");
             }
             catch (Exception ex)
             {

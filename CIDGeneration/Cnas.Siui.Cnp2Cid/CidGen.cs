@@ -25,74 +25,94 @@ namespace Cnas.Siui.Cnp2Cid
 {
     public static class CidGen
     {
-        // 1) Declare P/Invoke pentru 32-biți
+        // Native declarations (unchanged signature, just safer usage)
         [DllImport("CidGen32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetCid32(
             [MarshalAs(UnmanagedType.LPStr)] string pid,
             [MarshalAs(UnmanagedType.LPStr)] StringBuilder cid);
 
-        // 2) Declare P/Invoke pentru 64-biți
         [DllImport("CidGen64.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetCid64(
             [MarshalAs(UnmanagedType.LPStr)] string pid,
             [MarshalAs(UnmanagedType.LPStr)] StringBuilder cid);
 
-        // delegate comun
-        private delegate string CidGenDelegate(string pid);
+        private delegate string? CidGenDelegate(string pid);
         private static readonly CidGenDelegate CidGenFunc;
+
+        // Maximum expected CID length (increase from256 ->512 for safety)
+        private const int BufferSize =512;
 
         static CidGen()
         {
-            bool nativeOk = false;
-            bool is64 = IntPtr.Size == 8;
-
-            if (is64 && File.Exists("CidGen64.dll"))
+            try
             {
-                // înlocuim TestNative(GetCid64) cu un lambda
-                nativeOk = TestNative((pid, sb) => GetCid64(pid, sb));
-                if (nativeOk) CidGenFunc = GetCidHashWin64;
-            }
-            else if (!is64 && File.Exists("CidGen32.dll"))
-            {
-                nativeOk = TestNative((pid, sb) => GetCid32(pid, sb));
-                if (nativeOk) CidGenFunc = GetCidHashWin32;
-            }
+                bool is64 = IntPtr.Size ==8;
+                bool nativeOk = false;
 
-            if (!nativeOk)
+                if (is64 && File.Exists(Path.Combine(AppContext.BaseDirectory, "CidGen64.dll")))
+                {
+                    nativeOk = TestNative((pid, sb) => GetCid64(pid, sb));
+                    if (nativeOk) CidGenFunc = GetCidHashWin64;
+                }
+                else if (!is64 && File.Exists(Path.Combine(AppContext.BaseDirectory, "CidGen32.dll")))
+                {
+                    nativeOk = TestNative((pid, sb) => GetCid32(pid, sb));
+                    if (nativeOk) CidGenFunc = GetCidHashWin32;
+                }
+
+                if (!nativeOk)
+                {
+                    // Fallback to managed implementation
+                    CidGenFunc = GetCidHashNet;
+                }
+            }
+            catch
+            {
                 CidGenFunc = GetCidHashNet;
+            }
         }
 
+        public static string? GetCidHash(string pid) => SafeInvoke(pid);
 
-        public static string GetCidHash(string pid)
-            => CidGenFunc != null ? CidGenFunc(pid) : null;
+        // Unified safe wrapper (returns null if all strategies fail)
+        public static string? SafeInvoke(string pid)
+        {
+            if (string.IsNullOrWhiteSpace(pid)) return null;
+            try
+            {
+                return CidGenFunc(pid) ?? GetCidHashNet(pid);
+            }
+            catch
+            {
+                return GetCidHashNet(pid); // final fallback
+            }
+        }
 
-        // metoda managed din sursa CNAS
-        private static string GetCidHashNet(string pid)
+        private static string? GetCidHashNet(string pid)
             => CryptoHash.GetCidHash(pid);
 
-        // adaptor pentru Win32
-        private static string GetCidHashWin32(string pid)
+        private static string? GetCidHashWin32(string pid)
         {
-            var sb = new StringBuilder(256);
+            var sb = new StringBuilder(BufferSize);
             return GetCid32(pid, sb) ? sb.ToString() : null;
         }
 
-        // adaptor pentru Win64
-        private static string GetCidHashWin64(string pid)
+        private static string? GetCidHashWin64(string pid)
         {
-            var sb = new StringBuilder(256);
+            var sb = new StringBuilder(BufferSize);
             return GetCid64(pid, sb) ? sb.ToString() : null;
         }
 
-        // test rapid ca să nu arunce excepție ValveNotFound
+        // Previous implementation used a1 char buffer which could provoke native overwrite ⇒ potential heap corruption.
         private static bool TestNative(Func<string, StringBuilder, bool> fn)
         {
             try
             {
-                var sb = new StringBuilder(1);
-                return fn("", sb); // un apel simplu
+                var sb = new StringBuilder(BufferSize);
+                // Use a harmless test input with expected shape; native should fill buffer safely.
+                return fn("TEST", sb);
             }
             catch
             {
