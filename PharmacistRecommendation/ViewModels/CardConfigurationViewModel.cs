@@ -127,30 +127,6 @@ namespace PharmacistRecommendation.ViewModels
             }
         }
         [RelayCommand]
-        private async Task GenerateCid()
-        {
-            if (string.IsNullOrWhiteSpace(Cnp) || Cnp.Length != 13)
-            {
-                await Shell.Current.DisplayAlert("Eroare", "Introduceți un CNP valid (13 caractere).", "OK");
-                return;
-            }
-
-            try
-            {
-                var cid = CidGen.GetCidHash(Cnp); // call existing CidGen (same as before), removed manual LoadLibrary
-
-                if (!string.IsNullOrEmpty(cid))
-                    Cid = cid;
-                else
-                    await Shell.Current.DisplayAlert("Eroare", "Nu s-a putut genera CID-ul (fallback).", "OK");
-            }
-            catch (Exception ex)
-            {
-                await Shell.Current.DisplayAlert("Eroare neașteptată", ex.Message, "OK");
-            }
-        }
-
-        [RelayCommand]
         private async Task Save()
         {
             ValidationMessage = string.Empty;
