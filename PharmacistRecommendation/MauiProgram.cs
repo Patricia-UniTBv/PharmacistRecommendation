@@ -14,9 +14,6 @@ using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
 using WinRT.Interop;
 using QuestPDF.Infrastructure;
-using System.Text.Json;
-using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 
 #if WINDOWS
 using Microsoft.UI;
@@ -45,42 +42,39 @@ namespace PharmacistRecommendation
 
             builder.UseMauiCommunityToolkit();
 
-            // se creeaza automat fisierul de configurare in C:\ProgramData\PharmacistRecommendation\config.json
-            string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PharmacistRecommendation");
-            string configPath = Path.Combine(configFolder, "config.json");
-
-            if (!Directory.Exists(configFolder))
-                Directory.CreateDirectory(configFolder);
-
-            Dictionary<string, object> config;
-
-            if (!File.Exists(configPath))
+            // Load configuration from appsettings.json and user config
+            string connectionString;
+            try
             {
-                config = new Dictionary<string, object>
-            {
-                { "SqlServer", "localhost\\SQLEXPRESS" },
-                { "Database", "PharmacistRecommendationDB" },
-                { "TrustServerCertificate", true }
-            };
-
-                File.WriteAllText(configPath, JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
+                connectionString = ConfigurationManager.BuildConnectionString();
+                
+                // Log configuration mode for debugging
+                var config = ConfigurationManager.LoadConfiguration();
+                System.Diagnostics.Debug.WriteLine($"Deployment Mode: {config.DeploymentMode}");
+                
+                // Safely log connection string (mask password if it exists)
+                string safeConnectionString = connectionString;
+                if (!string.IsNullOrWhiteSpace(config.DatabaseSettings.Password))
+                {
+                    safeConnectionString = connectionString.Replace(config.DatabaseSettings.Password, "****");
+                }
+                System.Diagnostics.Debug.WriteLine($"Connection String: {safeConnectionString}");
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                var json = File.ReadAllText(configPath);
-                config = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                // If server is not configured in client mode, use a placeholder
+                // The app will show configuration dialog on startup
+                System.Diagnostics.Debug.WriteLine($"Configuration not complete: {ex.Message}");
+                connectionString = "Server=localhost;Database=PharmacistRecommendationDB;Integrated Security=true;TrustServerCertificate=true;";
             }
 
-            string server = config["SqlServer"].ToString();
-            string database = config["Database"].ToString();
-
-            string connectionString = $"Server={server};Database={database};Trusted_Connection=True;TrustServerCertificate=True;";
+            // Register DbContext with the connection string
             builder.Services.AddDbContext<PharmacistRecommendationDbContext>(options =>
                 options.UseSqlServer(connectionString),
                 contextLifetime: ServiceLifetime.Transient,
                 optionsLifetime: ServiceLifetime.Transient);
 
-
+            // Register Views
             builder.Services.AddTransient<MonitoringView>();
             builder.Services.AddTransient<UsersManagementView>();
             builder.Services.AddTransient<CardConfigurationView>();
@@ -90,15 +84,16 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<ImportConfigurationView>();
             builder.Services.AddTransient<AddPharmacyView>();
             builder.Services.AddTransient<EmailConfigurationView>();
+            builder.Services.AddTransient<ServerConfigurationView>();
             
             builder.Services.AddTransient<MedicationView>();
             builder.Services.AddTransient<AddEditMedicationView>();
             builder.Services.AddTransient<ConflictResolutionView>();
 
             builder.Services.AddTransient<ReportsView>();
-
             builder.Services.AddTransient<MainPageView>();
 
+            // Register ViewModels
             builder.Services.AddTransient<MonitoringViewModel>();
             builder.Services.AddTransient<PharmacistConfigurationViewModel>();
             builder.Services.AddTransient<UsersManagementViewModel>();
@@ -109,15 +104,16 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<ImportConfigurationViewModel>();
             builder.Services.AddTransient<AddPharmacyViewModel>();
             builder.Services.AddTransient<EmailConfigurationViewModel>();
+            builder.Services.AddTransient<ServerConfigurationViewModel>();
 
             builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<AddEditMedicationViewModel>();
             builder.Services.AddTransient<ConflictResolutionViewModel>();
             
             builder.Services.AddTransient<ReportsViewModel>();
-            
             builder.Services.AddTransient<MainPageViewModel>();
 
+            // Register Services
             builder.Services.AddScoped<IMonitoringService, MonitoringService>();
             builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
 
@@ -155,7 +151,6 @@ namespace PharmacistRecommendation
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
 
             builder.Services.AddScoped<ISecureStorageService, MauiSecureStorageService>();
-
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddTransient<LoginView>();

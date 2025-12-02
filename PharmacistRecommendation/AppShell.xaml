@@ -38,6 +38,7 @@
             <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
             <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
             <MenuFlyoutItem Text="Document GDPR" Clicked="OnGdprConfigClicked"/>
+            <MenuFlyoutItem Text="Configurare conexiune server" Clicked="OnServerConfigClicked"/>
             <!--<MenuFlyoutItem Text="Adugare farmacie" Clicked="OnAddPharmacyClicked"/>-->
         </MenuBarItem>
      

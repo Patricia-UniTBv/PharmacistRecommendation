@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
 using DTO;
 using Entities.Services.Interfaces;
-using Entities.Models; // Add this using directive for Prescription
+using Entities.Models;
 using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
@@ -33,7 +33,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("reports", typeof(ReportsView));
             Routing.RegisterRoute("email_configuration", typeof(EmailConfigurationView));
             Routing.RegisterRoute("add_pharmacy", typeof(AddPharmacyView));
-            Routing.RegisterRoute("test_main", typeof(MainPageView)); 
+            Routing.RegisterRoute("server_configuration", typeof(ServerConfigurationView));
 
             Routing.RegisterRoute(nameof(AddPharmacyView), typeof(AddPharmacyView));
             Routing.RegisterRoute(nameof(LoginAddUserView), typeof(LoginAddUserView));
@@ -153,6 +153,10 @@ namespace PharmacistRecommendation
             await GoToAsync("add_pharmacy");
         }
 
+        private async void OnServerConfigClicked(object sender, EventArgs e)
+        {
+            await GoToAsync("server_configuration");
+        }
 
         private async Task<bool> CheckAuthenticationOrPrompt()
         {

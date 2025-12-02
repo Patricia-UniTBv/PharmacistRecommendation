@@ -71,6 +71,16 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<!-- Configuration Files - Include but don't copy to output by default -->
+	<ItemGroup>
+		<None Include="appsettings.Server.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.Client.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 	<ItemGroup>
 	  <MauiFont Remove="Resources\Fonts\OpenSans-Regular2.ttf" />
 	</ItemGroup>
@@ -188,6 +198,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Models\" />
 	  <Folder Include="Platforms\Windows\Assets\" />
 	</ItemGroup>
 
