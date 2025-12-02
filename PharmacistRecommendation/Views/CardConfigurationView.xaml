@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage  
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -10,7 +10,7 @@
 
         <StackLayout Grid.Row="0" Spacing="4">
             <Label 
-                Text="Adăugare card pacient"
+                Text="Adugare card pacient"
                 FontSize="24"
                 FontAttributes="None"
                 FontFamily="SegoeUI"
@@ -42,7 +42,7 @@
                       ColumnSpacing="28">
 
                     <StackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
-                        <Label Text="Număr card" 
+                        <Label Text="Numr card" 
                                FontSize="14" 
                                FontAttributes="None"
                                TextColor="#424242"
@@ -51,7 +51,7 @@
                                 StrokeThickness="1"
                                 StrokeShape="RoundRectangle 8"
                                 BackgroundColor="#FAFBFC">
-                            <Entry Placeholder="Introduceți nr. card" 
+                            <Entry Placeholder="Introducei nr. card" 
                                    Text="{Binding CardNumber}"
                                    FontSize="15"
                                    TextColor="#1F2937"
@@ -123,7 +123,7 @@
                     </StackLayout>
 
                     <StackLayout Grid.Row="2" Grid.Column="0" Spacing="6">
-                        <Label Text="CID (opțional)" 
+                        <Label Text="CID (opional)" 
                                FontSize="14" 
                                FontAttributes="None"
                                TextColor="#424242"
@@ -132,7 +132,7 @@
                                 StrokeThickness="1"
                                 StrokeShape="RoundRectangle 8"
                                 BackgroundColor="#FAFBFC">
-                            <Entry Placeholder="Card identifier (opțional)" 
+                            <Entry Placeholder="Card identifier (opional)" 
                                    Text="{Binding Cid}" 
                                    IsReadOnly="False"
                                    FontSize="15"
@@ -153,7 +153,7 @@
                                 StrokeThickness="1"
                                 StrokeShape="RoundRectangle 8"
                                 BackgroundColor="#FAFBFC">
-                            <Entry Placeholder="Număr de telefon" 
+                            <Entry Placeholder="Numr de telefon" 
                                    Text="{Binding Phone}" 
                                    Keyboard="Telephone"
                                    FontSize="15"
@@ -174,7 +174,7 @@
                                 StrokeThickness="1"
                                 StrokeShape="RoundRectangle 8"
                                 BackgroundColor="#FAFBFC">
-                            <Entry Placeholder="Adresă de email" 
+                            <Entry Placeholder="Adres de email" 
                                    Text="{Binding Email}" 
                                    Keyboard="Email"
                                    FontSize="15"
@@ -186,7 +186,7 @@
                     </StackLayout>
 
                     <StackLayout Grid.Row="3" Grid.Column="1" Spacing="6">
-                        <Label Text="Data nașterii" 
+                        <Label Text="Data naterii" 
            FontSize="14" 
            TextColor="#424242"
            Margin="2,0,0,0"/>
@@ -237,7 +237,7 @@
             HorizontalOptions="Center"
             Margin="0,8,0,0">
 
-            <Button Text="Resetează"
+            <Button Text="Reseteaz"
             FontSize="15"
             FontAttributes="None"
             Command="{Binding NewCardCommand}"
@@ -247,7 +247,7 @@
             WidthRequest="120"
             HeightRequest="48"/>
             
-            <Button Text="Printează"
+            <Button Text="Printeaz"
                     FontSize="15"
                     FontAttributes="None"
                     BackgroundColor="#1565C0"
@@ -261,7 +261,7 @@
                         Default='0,2,8,0,#301565C0',
                         iOS='0,1,4,0,#351565C0'}"/>
 
-            <Button Text="Salvează"
+            <Button Text="Salveaz"
                     FontSize="15"
                     FontAttributes="None"
                     Command="{Binding SaveCommand}"

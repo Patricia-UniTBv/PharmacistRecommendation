@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="PharmacistRecommendation.Views.MedicationView"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -108,7 +108,7 @@
 
                 <Entry Grid.Column="1" 
                        Text="{Binding SearchText}" 
-                       Placeholder="Caută medicament..." 
+                       Placeholder="Caut medicament..." 
                        Style="{StaticResource SimpleEntry}"/>
 
                 <Label Grid.Column="2" 
@@ -120,7 +120,7 @@
 
                 <Entry Grid.Column="3" 
                        Text="{Binding SearchCode}" 
-                       Placeholder="Caută cod..." 
+                       Placeholder="Caut cod..." 
                        Style="{StaticResource SimpleEntry}"/>
 
                 <!-- Filter moved to the left of Cauta button -->
@@ -143,7 +143,7 @@
                 </Picker>
 
                 <Button Grid.Column="5" 
-                        Text="Caută" 
+                        Text="Caut" 
                         Command="{Binding SearchCommand}"
                         Style="{StaticResource SimpleButton}"
                         Margin="4,2,0,2"/>
@@ -205,7 +205,7 @@
                            HorizontalOptions="Center"/>
 
                     <Label Grid.Column="5" 
-                           Text="Acțiuni" 
+                           Text="Aciuni" 
                            FontSize="12" 
                            FontAttributes="Bold"
                            TextColor="{StaticResource TextGray}"
@@ -281,7 +281,7 @@
                                              Orientation="Horizontal" 
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center">
-                                    <Button Text="Editează" 
+                                    <Button Text="Editeaz" 
                                             FontSize="10"
                                             BackgroundColor="{StaticResource ButtonGray}"
                                             TextColor="{StaticResource TextGray}"
@@ -291,7 +291,7 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MedicationViewModel}}, Path=EditMedicationCommand}"
                                             CommandParameter="{Binding .}"
                                             Margin="2,0"/>
-                                    <Button Text="Șterge" 
+                                    <Button Text="terge" 
                                             FontSize="10"
                                             BackgroundColor="{StaticResource ButtonGray}"
                                             TextColor="{StaticResource TextGray}"
@@ -319,7 +319,7 @@
                                    Color="{StaticResource TextGray}"
                                    WidthRequest="40" 
                                    HeightRequest="40"/>
-                <Label Text="Se încarcă..." 
+                <Label Text="Se ncarc..." 
                        TextColor="{StaticResource TextGray}"
                        FontSize="12"
                        HorizontalOptions="Center"

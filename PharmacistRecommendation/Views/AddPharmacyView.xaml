@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PharmacistRecommendation.Views.AddPharmacyView">
     <ScrollView>
     <VerticalStackLayout Padding="30" Spacing="10">
-        <Label Text="Adăugare farmacie" FontAttributes="Bold" FontSize="20" Margin="0,0,0,10"/>
+        <Label Text="Adugare farmacie" FontAttributes="Bold" FontSize="20" Margin="0,0,0,10"/>
         <Label Text="Denumire farmacie"/>
         <Entry Placeholder="Denumire" Text="{Binding Name}" />
         <Label Text="Adresa"/>
@@ -16,12 +16,12 @@
         <Label Text="Telefon"/>
         <Entry Placeholder="Telefon" Text="{Binding Phone}" Keyboard="Telephone" />
 
-        <Label Text="Siglă Farmacie"/>
+        <Label Text="Sigl Farmacie"/>
         <Image Source="{Binding Logo}" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Start"/>
-        <Button Text="Selectează siglă" Command="{Binding SelectLogoCommand}"  BackgroundColor="#f4f4f6"
+        <Button Text="Selecteaz sigl" Command="{Binding SelectLogoCommand}"  BackgroundColor="#f4f4f6"
  TextColor="#36317f" WidthRequest="150" HorizontalOptions="Start"/>
 
-        <Button Text="Salvează" Command="{Binding SavePharmacyCommand}" 
+        <Button Text="Salveaz" Command="{Binding SavePharmacyCommand}" 
             BackgroundColor="#28a745" TextColor="White" WidthRequest="150" HorizontalOptions="Start"/>
     </VerticalStackLayout>
     </ScrollView>

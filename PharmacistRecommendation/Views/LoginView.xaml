@@ -35,7 +35,7 @@
                            FontAttributes="Bold"
                            TextColor="#2C3E50"
                            HorizontalOptions="Center" />
-                    <Label Text="Sistemul de recomandări pentru farmacii"
+                    <Label Text="Sistemul de recomandri pentru farmacii"
                            FontSize="13"
                            TextColor="#7F8C8D"
                            HorizontalOptions="Center" />
@@ -65,7 +65,7 @@
                                    Padding="12,0" 
                                    HeightRequest="40">
                                 <Entry Text="{Binding Username}"
-                                       Placeholder="Introduceți numele de utilizator"
+                                       Placeholder="Introducei numele de utilizator"
                                        FontSize="14"
                                        BackgroundColor="Transparent"
                                        TextColor="#2C3E50"
@@ -77,7 +77,7 @@
 
                         <!-- Password Entry -->
                         <StackLayout Spacing="4">
-                            <Label Text="Parolă" 
+                            <Label Text="Parol" 
                                    FontSize="13" 
                                    TextColor="#7F8C8D" />
                             <Border StrokeThickness="1" 
@@ -87,7 +87,7 @@
                                    Padding="12,0" 
                                    HeightRequest="40">
                                 <Entry Text="{Binding Password}"
-                                       Placeholder="Introduceți parola"
+                                       Placeholder="Introducei parola"
                                        FontSize="14"
                                        BackgroundColor="Transparent"
                                        TextColor="#2C3E50"
@@ -126,7 +126,7 @@
                                            HorizontalOptions="Center" />
 
                         <!-- Forgot Password -->
-                        <Button Text="Ați uitat parola?"
+                        <Button Text="Ai uitat parola?"
                                 Command="{Binding ForgotPasswordCommand}"
                                 BackgroundColor="Transparent"
                                 TextColor="#95A5A6"
@@ -141,7 +141,7 @@
                 <StackLayout Grid.Row="2" 
                              VerticalOptions="End"
                              Margin="0,5">
-                    <Label Text="© 2025 PharmacistRecommendation"
+                    <Label Text=" 2025 PharmacistRecommendation"
                            TextColor="#95A5A6"
                            FontSize="10"
                            HorizontalOptions="Center" />

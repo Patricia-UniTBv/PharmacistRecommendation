@@ -21,7 +21,7 @@
                     
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                         <StackLayout Grid.Column="0">
-                            <Label Text="Data început:"/>
+                            <Label Text="Data nceput:"/>
                             <DatePicker Date="{Binding StartDate}" Format="dd.MM.yyyy"/>
                         </StackLayout>
                         
@@ -32,7 +32,7 @@
                     </Grid>
                     
                     <StackLayout>
-                        <Label Text="Filtru pacient (opțional):"/>
+                        <Label Text="Filtru pacient (opional):"/>
                         <Entry Text="{Binding PatientFilter}" 
                                Placeholder="Nume pacient sau CNP"/>
                     </StackLayout>
@@ -45,7 +45,7 @@
                                 TextColor="White"/>
                         
                         <Button Grid.Column="1"
-                                Text="Actualizează Date" 
+                                Text="Actualizeaz Date" 
                                 Command="{Binding RefreshDataCommand}"
                                 BackgroundColor="#2ECC71"
                                 TextColor="White"/>
@@ -83,7 +83,7 @@
                                     </StackLayout>
                                     
                                     <Button Grid.Column="2" 
-                                            Text="Încarcă Date"
+                                            Text="ncarc Date"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ReportsViewModel}}, Path=SelectReportTypeCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#3498db"
@@ -101,7 +101,7 @@
                               IsRunning="{Binding IsLoadingData}"
                               Color="#3498db"/>
             
-            <Label Text="Se încarcă datele..." 
+            <Label Text="Se ncarc datele..." 
                    IsVisible="{Binding IsLoadingData}"
                    HorizontalOptions="Center"
                    FontAttributes="Italic"/>
@@ -119,7 +119,7 @@
                                VerticalOptions="Center"
                                HorizontalOptions="StartAndExpand"/>
                         
-                        <Button Text="Salvează PDF"
+                        <Button Text="Salveaz PDF"
                                 Command="{Binding SaveAsPdfCommand}"
                                 BackgroundColor="#E74C3C"
                                 TextColor="White"
@@ -136,7 +136,7 @@
                            BackgroundColor="#F8F9FA"
                            Padding="10">
                         <StackLayout>
-                            <Label Text="Date găsite:" FontAttributes="Bold" Margin="0,0,0,10"/>
+                            <Label Text="Date gsite:" FontAttributes="Bold" Margin="0,0,0,10"/>
                             
                             <CollectionView ItemsSource="{Binding PrescriptionsData}"
                                            HeightRequest="400">
@@ -245,7 +245,7 @@
                     </Frame>
                     
                     <Label IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"
-                           Text="Nu au fost găsite date pentru criteriile selectate."
+                           Text="Nu au fost gsite date pentru criteriile selectate."
                            FontSize="16"
                            TextColor="Gray"
                            HorizontalTextAlignment="Center"
@@ -257,7 +257,7 @@
                               IsRunning="{Binding IsGeneratingReport}"
                               Color="#E74C3C"/>
             
-            <Label Text="Se generează PDF-ul..." 
+            <Label Text="Se genereaz PDF-ul..." 
                    IsVisible="{Binding IsGeneratingReport}"
                    HorizontalOptions="Center"
                    FontAttributes="Italic"

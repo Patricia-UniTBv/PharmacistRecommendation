@@ -85,7 +85,7 @@
     <ScrollView BackgroundColor="White" Padding="12">
         <StackLayout>
             <!-- Basic Information Section -->
-            <Label Text="Informații de Bază" Style="{StaticResource SectionHeader}"/>
+            <Label Text="Informaii de Baz" Style="{StaticResource SectionHeader}"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -116,7 +116,7 @@
                 </StackLayout>
             </Grid>
 
-            <Label Text="Denumire Comercială *" Style="{StaticResource RequiredFieldLabel}"/>
+            <Label Text="Denumire Comercial *" Style="{StaticResource RequiredFieldLabel}"/>
             <Entry Text="{Binding Denumire}" 
                    Placeholder="Aspirin 100mg"
                    Style="{StaticResource SimpleEntry}"/>
@@ -129,31 +129,31 @@
                    Placeholder="Acetylsalicylic acid" 
                    Style="{StaticResource SimpleEntry}"/>
 
-            <Label Text="Acțiune Terapeutică" Style="{StaticResource FieldLabel}"/>
+            <Label Text="Aciune Terapeutic" Style="{StaticResource FieldLabel}"/>
             <Entry Text="{Binding ActiuneTerapeutica}" 
                    Placeholder="Antiinflamator, analgezic" 
                    Style="{StaticResource SimpleEntry}"/>
 
-            <Label Text="Prescripție" Style="{StaticResource FieldLabel}"/>
+            <Label Text="Prescripie" Style="{StaticResource FieldLabel}"/>
             <Entry Text="{Binding Prescriptie}" 
-                   Placeholder="Cu prescripție medicală" 
+                   Placeholder="Cu prescripie medical" 
                    Style="{StaticResource SimpleEntry}"/>
 
             <!-- Company Information Section -->
-            <Label Text="Informații Producător" Style="{StaticResource SectionHeader}"/>
+            <Label Text="Informaii Productor" Style="{StaticResource SectionHeader}"/>
 
-            <Label Text="Firma Producătoare" Style="{StaticResource FieldLabel}"/>
+            <Label Text="Firma Productoare" Style="{StaticResource FieldLabel}"/>
             <Entry Text="{Binding FirmaProducatoare}" 
                    Placeholder="Bayer AG" 
                    Style="{StaticResource SimpleEntry}"/>
 
-            <Label Text="Firma Deținătoare" Style="{StaticResource FieldLabel}"/>
+            <Label Text="Firma Deintoare" Style="{StaticResource FieldLabel}"/>
             <Entry Text="{Binding FirmaDetinatoare}" 
                    Placeholder="Bayer Romania" 
                    Style="{StaticResource SimpleEntry}"/>
 
             <!-- Packaging Information Section -->
-            <Label Text="Informații Ambalaj" Style="{StaticResource SectionHeader}"/>
+            <Label Text="Informaii Ambalaj" Style="{StaticResource SectionHeader}"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -253,7 +253,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0" 
-                        Text="Anulează" 
+                        Text="Anuleaz" 
                         Command="{Binding CancelCommand}" 
                         Style="{StaticResource SimpleButton}"
                         Margin="0,0,4,0"/>

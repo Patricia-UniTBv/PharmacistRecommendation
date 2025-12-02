@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="PharmacistRecommendation.Views.MainPageView"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              BackgroundColor="#F8FAFB">
 
     <ContentPage.Resources>
-        <!-- CULORI BAZĂ (neutre + un accent foarte discret) -->
+        <!-- CULORI BAZ (neutre + un accent foarte discret) -->
         <Color x:Key="BgPage">#F8FAFB</Color>
         <Color x:Key="BgCard">#FFFFFF</Color>
         <Color x:Key="StrokeCard">#E5E7EB</Color>
@@ -14,7 +14,7 @@
         <Color x:Key="AccentSoft">#22C55E</Color>
         <!-- folosit doar pe pressed/focus -->
 
-        <!-- STIL CARD SECȚIUNE -->
+        <!-- STIL CARD SECIUNE -->
         <Style TargetType="Border" x:Key="SectionCard">
             <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="StrokeShape" Value="RoundRectangle 12" />
@@ -41,7 +41,7 @@
             <Setter Property="HorizontalOptions" Value="Center" />
         </Style>
 
-        <!-- STIL BUTON MONOCROM (alb cu bordură) -->
+        <!-- STIL BUTON MONOCROM (alb cu bordur) -->
         <Style TargetType="Button" x:Key="CardButton">
             <Setter Property="FontSize" Value="14.5" />
             <Setter Property="FontAttributes" Value="Bold" />
@@ -86,7 +86,7 @@
                     <Image Source="logo.png" WidthRequest="60" HeightRequest="60" VerticalOptions="Center"/>
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                         <Label Text="Recomandarea farmacistului" Style="{StaticResource HeaderTitle}" HorizontalOptions="Center"/>
-                        <Label Text="Selectați modulul dorit din opțiunile de mai jos" Style="{StaticResource HeaderSubtitle}" HorizontalOptions="Center"/>
+                        <Label Text="Selectai modulul dorit din opiunile de mai jos" Style="{StaticResource HeaderSubtitle}" HorizontalOptions="Center"/>
                     </VerticalStackLayout>
 
                     <!-- Logo -->
@@ -96,7 +96,7 @@
 
             <Border Style="{StaticResource SectionCard}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Funcții principale" Style="{StaticResource SectionTitle}" />
+                    <Label Text="Funcii principale" Style="{StaticResource SectionTitle}" />
 
                     <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
@@ -107,14 +107,14 @@
 
                         <Button Grid.Column="0"
                     Style="{StaticResource CardButton}"
-                    Text="📊 Monitorizare"
+                    Text=" Monitorizare"
                     BackgroundColor="#9488BB"  
                             TextColor="White"
                     Command="{Binding NavigateToMonitoringCommand}" />
 
                         <Button Grid.Column="1"
                     Style="{StaticResource CardButton}"
-                    Text="👤 Card Nou"
+                    Text=" Card Nou"
                     BackgroundColor="#50C878"  
                                 TextColor="White"
                     Command="{Binding NavigateToNewCardCommand}" />
@@ -137,7 +137,7 @@
 
                         <Button Grid.Column="0"
                     Style="{StaticResource CardButton}"
-                    Text="📝 Act cu Prescripție"
+                    Text=" Act cu Prescripie"
                     FontSize="14"
                     BackgroundColor="#9AB1C2" 
                                 TextColor="White"
@@ -145,7 +145,7 @@
 
                         <Button Grid.Column="1"
                     Style="{StaticResource CardButton}"
-                    Text="✍️ Act Farmaceutic"
+                    Text=" Act Farmaceutic"
                     BackgroundColor="#7BA7D9" 
                                     TextColor="White"
                     Command="{Binding NavigateToWithoutPrescriptionCommand}" />
