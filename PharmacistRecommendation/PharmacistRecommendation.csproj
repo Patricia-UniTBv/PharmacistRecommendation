@@ -4,11 +4,16 @@
 		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<UseMaui>true</UseMaui>
+		
+		
+		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+		<PlatformTarget>x64</PlatformTarget>
+		
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
-		<ApplicationTitle>PharmacistRecommendation</ApplicationTitle>
+		<ApplicationTitle>Recomandarea Farmacistului</ApplicationTitle>
 		<ApplicationId>com.companyname.pharmacistrecommendation</ApplicationId>
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
@@ -44,9 +49,6 @@
 		<AppInstallerUri>C:\Users\Patricia\Desktop\APP</AppInstallerUri>
 		<HoursBetweenUpdateChecks>1680</HoursBetweenUpdateChecks>
 	</PropertyGroup>
-	<PropertyGroup>
-    <ApplicationTitle>Recomandarea Farmacistului</ApplicationTitle>
-    </PropertyGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
