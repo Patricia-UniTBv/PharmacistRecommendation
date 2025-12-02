@@ -85,6 +85,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<AddPharmacyView>();
             builder.Services.AddTransient<EmailConfigurationView>();
             builder.Services.AddTransient<ServerConfigurationView>();
+            builder.Services.AddTransient<ServerSetupWizard>();
             
             builder.Services.AddTransient<MedicationView>();
             builder.Services.AddTransient<AddEditMedicationView>();
@@ -105,6 +106,7 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<AddPharmacyViewModel>();
             builder.Services.AddTransient<EmailConfigurationViewModel>();
             builder.Services.AddTransient<ServerConfigurationViewModel>();
+            builder.Services.AddTransient<ServerSetupWizardViewModel>();
 
             builder.Services.AddTransient<MedicationViewModel>();
             builder.Services.AddTransient<AddEditMedicationViewModel>();
