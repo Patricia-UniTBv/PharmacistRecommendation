@@ -73,6 +73,9 @@
 
 	<!-- Configuration Files - Include but don't copy to output by default -->
 	<ItemGroup>
+		<None Include="appsettings.json" Condition="'$(Configuration)' == 'Debug'">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Include="appsettings.Server.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
