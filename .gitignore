@@ -185,6 +185,11 @@ publish/
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
+
+# EXCEPT our Server/Client deployment profiles  
+!PharmacistRecommendation/Properties/PublishProfiles/Server.pubxml
+!PharmacistRecommendation/Properties/PublishProfiles/Client.pubxml
+
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
