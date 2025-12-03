@@ -45,13 +45,13 @@ IsCompleted = false;
             try
         {
       // Step 1: Verify .bacpac file exists
-     ProgressMessage = "Verificare fisier baza de date...";
+     ProgressMessage = "Verificare fi?ier baz? de date...";
      ProgressValue = 10;
         await Task.Delay(500);
 
    if (!File.Exists(BACPAC_FILE_PATH))
 {
-         throw new FileNotFoundException($"Fisierul bazei de date nu a fost gasit: {BACPAC_FILE_PATH}");
+         throw new FileNotFoundException($"Fi?ierul bazei de date nu a fost g?sit: {BACPAC_FILE_PATH}");
                 }
 
       // Step 2: Check if SQL Server is accessible
@@ -65,30 +65,30 @@ IsCompleted = false;
 
                 if (!await CheckSqlServerConnectionAsync(server))
    {
-                 throw new Exception($"Nu se poate conecta la SQL Server: {server}\nVa rugam sa verificati daca SQL Server este pornit.");
+                 throw new Exception($"Nu se poate conecta la SQL Server: {server}\nV? rug?m s? verifica?i dac? SQL Server este pornit.");
                 }
 
     // Step 3: Drop existing database if it exists
-        ProgressMessage = "Pregatire baza de date...";
+        ProgressMessage = "Preg?tire baz? de date...";
       ProgressValue = 30;
       await Task.Delay(500);
 
        await DropDatabaseIfExistsAsync(server, database);
 
      // Step 4: Restore database from .bacpac
-     ProgressMessage = "Se creaza baza de date... (acest proces poate dura cateva minute)";
+     ProgressMessage = "Se creeaz? baza de date... (acest proces poate dura câteva minute)";
        ProgressValue = 40;
 
        await RestoreDatabaseFromBacpacAsync(server, database);
 
           // Step 5: Verify database was created
-                ProgressMessage = "Verificare baza de date...";
+                ProgressMessage = "Verificare baz? de date...";
       ProgressValue = 90;
 await Task.Delay(500);
 
       if (!await VerifyDatabaseExistsAsync(server, database))
           {
-  throw new Exception("Baza de date a fost creata, dar nu poate fi gasita.");
+  throw new Exception("Baza de date a fost creat?, dar nu poate fi g?sit?.");
                 }
 
    // Step 6: Mark as configured
@@ -99,12 +99,12 @@ await Task.Delay(500);
   FirstRunHelper.MarkAsConfigured();
 
              IsCompleted = true;
-     StatusMessage = "Baza de date a fost creata cu succes!\n\nServerul dumneavoastra este gata de utilizare.";
+     StatusMessage = "Baza de date a fost creat? cu succes!\n\nServerul dumneavoastr? este gata de utilizare.";
             }
             catch (Exception ex)
   {
           HasError = true;
-     StatusMessage = $"A aparut o eroare:\n\n{ex.Message}\n\nVa rugam sa contactati asistenta tehnica.";
+     StatusMessage = $"A ap?rut o eroare:\n\n{ex.Message}\n\nV? rug?m s? contacta?i asisten?a tehnic?.";
          Debug.WriteLine($"Database creation error: {ex}");
  }
             finally
@@ -189,9 +189,9 @@ Debug.WriteLine($"Database {database} dropped successfully.");
        else
              {
                 throw new FileNotFoundException(
-       "SqlPackage.exe nu a fost gasit.\n\n" +
-             "Va rugam sa instalati SQL Server Data Tools (SSDT) sau\n" +
-      "SQL Server Management Studio (SSMS) pentru a continua.");
+  "SqlPackage.exe nu a fost g?sit.\n\n" +
+         "V? rug?m s? instala?i SQL Server Data Tools (SSDT) sau\n" +
+          "SQL Server Management Studio (SSMS) pentru a continua.");
     }
            }
     }
@@ -241,17 +241,17 @@ Debug.WriteLine($"Database {database} dropped successfully.");
       {
      MainThread.BeginInvokeOnMainThread(() =>
         {
-         ProgressValue = 50;
-                  ProgressMessage = "Se importa datele in baza de date...";
- });
-      }
-            else if (e.Data.Contains("Successfully imported"))
+        ProgressValue = 50;
+  ProgressMessage = "Se import? datele în baza de date...";
+  });
+   }
+        else if (e.Data.Contains("Successfully imported"))
       {
-       MainThread.BeginInvokeOnMainThread(() =>
-          {
-    ProgressValue = 80;
- ProgressMessage = "Import finalizat cu succes!";
-   });
+     MainThread.BeginInvokeOnMainThread(() =>
+        {
+        ProgressValue = 80;
+    ProgressMessage = "Import finalizat cu succes!";
+ });
   }
   }
    };
@@ -353,12 +353,12 @@ if (File.Exists(path))
         if (Application.Current?.MainPage != null)
       {
      await Application.Current.MainPage.DisplayAlert(
-  "Configurare Completa",
-      "Va rugam sa reponiti aplicatia pentru a continua.",
-  "OK");
-                }
+"Configurare Complet?",
+     "V? rug?m s? reporni?i aplica?ia pentru a continua.",
+   "OK");
+     }
     }
-    }
+        }
 
         [RelayCommand]
         private void Cancel()

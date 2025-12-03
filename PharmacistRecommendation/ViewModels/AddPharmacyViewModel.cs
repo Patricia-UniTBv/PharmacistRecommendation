@@ -63,7 +63,7 @@ namespace PharmacistRecommendation.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                await Shell.Current.DisplayAlert("Eroare", "Completează denumirea!", "OK");
+                await Shell.Current.DisplayAlert("Eroare", "Completați denumirea!", "OK");
                 return;
             }
 

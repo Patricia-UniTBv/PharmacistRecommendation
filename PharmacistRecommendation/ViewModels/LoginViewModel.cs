@@ -59,12 +59,12 @@ namespace PharmacistRecommendation.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = result.ErrorMessage ?? "Login failed";
+                    ErrorMessage = result.ErrorMessage ?? "Autentificare e?uat?";
                 }
             }
             catch (System.Exception ex)
             {
-                ErrorMessage = $"An error occurred: {ex.Message}";
+                ErrorMessage = $"A ap?rut o eroare: {ex.Message}";
             }
             finally
             {
@@ -86,7 +86,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 if (Application.Current?.MainPage != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Info", "Please contact your administrator to reset your password.", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Info", "V? rug?m s? contacta?i administratorul pentru a reseta parola.", "OK");
                 }
             }
             catch (Exception ex)

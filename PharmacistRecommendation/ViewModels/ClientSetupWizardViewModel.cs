@@ -36,76 +36,76 @@ namespace PharmacistRecommendation.ViewModels
       private async Task TestConnectionAsync()
         {
     // Validate inputs
-  if (string.IsNullOrWhiteSpace(ServerAddress))
-  {
-      HasError = true;
-    StatusMessage = "Va rugam sa introduceti adresa serverului.";
-    return;
-         }
+     if (string.IsNullOrWhiteSpace(ServerAddress))
+       {
+   HasError = true;
+        StatusMessage = "V? rug?m s? introduce?i adresa serverului.";
+   return;
+   }
 
          if (string.IsNullOrWhiteSpace(AppUserPassword))
-            {
-         HasError = true;
-    StatusMessage = "Va rugam sa introduceti parola pentru utilizatorul appuser.";
-                return;
+     {
+   HasError = true;
+StatusMessage = "V? rug?m s? introduce?i parola pentru utilizatorul appuser.";
+  return;
             }
 
-          IsTesting = true;
-      IsConnectionSuccessful = false;
-       HasError = false;
-            StatusMessage = string.Empty;
+        IsTesting = true;
+   IsConnectionSuccessful = false;
+ HasError = false;
+       StatusMessage = string.Empty;
 
-            try
- {
-          // Step 1: Save temporary configuration
-         ProgressMessage = "Salvare configurare temporara...";
-          await Task.Delay(300);
+     try
+       {
+    // Step 1: Save temporary configuration
+     ProgressMessage = "Salvare configurare temporar?...";
+       await Task.Delay(300);
 
-             var config = ConfigurationManager.LoadConfiguration();
-        config.DatabaseSettings.Server = ServerAddress.Trim();
-  config.DatabaseSettings.Password = AppUserPassword;
-             config.DatabaseSettings.Username = "appuser";
-     config.DatabaseSettings.UseSqlAuthentication = true;
-        config.DatabaseSettings.UseWindowsAuthentication = false;
+         var config = ConfigurationManager.LoadConfiguration();
+           config.DatabaseSettings.Server = ServerAddress.Trim();
+config.DatabaseSettings.Password = AppUserPassword;
+   config.DatabaseSettings.Username = "appuser";
+       config.DatabaseSettings.UseSqlAuthentication = true;
+ config.DatabaseSettings.UseWindowsAuthentication = false;
 
-        // Save to user config file
-    ConfigurationManager.SaveUserConfiguration(config.DatabaseSettings);
+    // Save to user config file
+ConfigurationManager.SaveUserConfiguration(config.DatabaseSettings);
 
-             // Step 2: Test connection
-        ProgressMessage = "Testare conexiune la server...";
-await Task.Delay(500);
+  // Step 2: Test connection
+ProgressMessage = "Testare conexiune la server...";
+            await Task.Delay(500);
 
-         bool connectionSuccess = await FirstRunHelper.TestDatabaseConnectionAsync();
+ bool connectionSuccess = await FirstRunHelper.TestDatabaseConnectionAsync();
 
          if (connectionSuccess)
-     {
-        IsConnectionSuccessful = true;
-        StatusMessage = "Conexiune reusita!\n\nServerul este accesibil si baza de date este configurata corect.";
-           Debug.WriteLine("Client connection test successful.");
- }
-      else
        {
-              HasError = true;
-         StatusMessage = "Conexiune esuata!\n\nVerificati:\n" +
-                  "- Adresa serverului este corecta\n" +
-      "- Parola pentru utilizatorul 'appuser' este corecta\n" +
-       "- Serverul SQL este accesibil din reteaua dumneavoastra\n" +
-         "- Baza de date PharmacistRecommendationDB exista pe server";
-     Debug.WriteLine("Client connection test failed.");
-   }
-         }
-    catch (Exception ex)
-{
-       HasError = true;
-      StatusMessage = $"A aparut o eroare:\n\n{ex.Message}\n\nVa rugam sa verificati configurarea.";
-      Debug.WriteLine($"Client connection test error: {ex}");
-}
-            finally
-     {
-                IsTesting = false;
-            ProgressMessage = string.Empty;
+       IsConnectionSuccessful = true;
+      StatusMessage = "Conexiune reu?it?!\n\nServerul este accesibil ?i baza de date este configurat? corect.";
+         Debug.WriteLine("Client connection test successful.");
+      }
+   else
+    {
+        HasError = true;
+     StatusMessage = "Conexiune e?uat?!\n\nVerifica?i:\n" +
+          "- Adresa serverului este corect?\n" +
+   "- Parola pentru utilizatorul 'appuser' este corect?\n" +
+        "- Serverul SQL este accesibil din re?eaua dumneavoastr?\n" +
+   "- Baza de date PharmacistRecommendationDB exist? pe server";
+   Debug.WriteLine("Client connection test failed.");
+      }
+ }
+        catch (Exception ex)
+  {
+ HasError = true;
+       StatusMessage = $"A ap?rut o eroare:\n\n{ex.Message}\n\nV? rug?m s? verifica?i configurarea.";
+  Debug.WriteLine($"Client connection test error: {ex}");
             }
+  finally
+{
+     IsTesting = false;
+           ProgressMessage = string.Empty;
         }
+    }
 
         [RelayCommand]
         private async Task FinishAsync()
@@ -114,8 +114,8 @@ await Task.Delay(500);
             {
    if (!IsConnectionSuccessful)
     {
-      await ShowAlert("Atentie", 
-    "Va rugam sa testati conexiunea inainte de a finaliza configurarea.", 
+      await ShowAlert("Aten?ie", 
+    "V? rug?m s? testa?i conexiunea înainte de a finaliza configurarea.", 
               "OK");
          return;
       }
@@ -132,8 +132,8 @@ await Task.Delay(500);
             {
     Debug.WriteLine($"Error finishing client setup: {ex.Message}");
                 await ShowAlert(
-    "Configurare Completa",
-      "Configurarea a fost salvata. Va rugam sa reponiti aplicatia pentru a continua.",
+       "Configurare Complet?",
+"Configurarea a fost salvat?. V? rug?m s? reporni?i aplica?ia pentru a continua.",
           "OK");
       }
         }

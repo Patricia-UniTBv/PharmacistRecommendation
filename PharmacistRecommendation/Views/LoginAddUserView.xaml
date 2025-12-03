@@ -35,15 +35,15 @@
            HeightRequest="130"
            Aspect="AspectFit"
            HorizontalOptions="Center"/>
-					<Label Text="Autentificare i nregistrare"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="#2C3E50"
-                           HorizontalOptions="Center" />
-					<Label Text="Sistemul de recomandri pentru farmacii"
-                           FontSize="12"
-                           TextColor="#7F8C8D"
-                           HorizontalOptions="Center" />
+					<Label Text="Autentificare și înregistrare"
+     FontSize="20"
+      FontAttributes="Bold"
+      TextColor="#2C3E50"
+   HorizontalOptions="Center" />
+					<Label Text="Sistemul de recomandări pentru farmacii"
+  FontSize="12"
+   TextColor="#7F8C8D"
+                   HorizontalOptions="Center" />
 				</StackLayout>
 
 				<!-- Main Content Form -->
@@ -78,7 +78,7 @@
 							</Button>
 
 							<Button Grid.Column="1"
-                                    Text="Adugare Utilizator"
+                                    Text="Adăugare Utilizator"
                                     BackgroundColor="#95A5A6"
                                     TextColor="White"
                                     FontSize="12"
@@ -102,41 +102,41 @@
 							<StackLayout Spacing="3">
 								<Label Text="Nume utilizator" FontSize="12" TextColor="#7F8C8D" />
 								<Border StrokeThickness="1"
-                                       Stroke="#BDC3C7"
-                                       BackgroundColor="#FAFAFA"
-                                       StrokeShape="RoundRectangle 6,6,6,6"
-                                       Padding="12,0"
-                                       HeightRequest="40">
+     Stroke="#BDC3C7"
+ BackgroundColor="#FAFAFA"
+       StrokeShape="RoundRectangle 6,6,6,6"
+    Padding="12,0"
+     HeightRequest="40">
 									<Entry Text="{Binding LoginUsername}"
-                                           Placeholder="Introducei numele de utilizator"
-                                           FontSize="13"
-                                           BackgroundColor="Transparent"
-                                           TextColor="#2C3E50"
-                                           PlaceholderColor="#7F8C8D"
-                                           VerticalOptions="Center"
-                                           ReturnType="Next" />
+   Placeholder="Introduceți numele de utilizator"
+      FontSize="13"
+BackgroundColor="Transparent"
+           TextColor="#2C3E50"
+    PlaceholderColor="#7F8C8D"
+       VerticalOptions="Center"
+         ReturnType="Next" />
 								</Border>
 							</StackLayout>
 
 							<!-- Password Entry -->
 							<StackLayout Spacing="3">
-								<Label Text="Parol" FontSize="12" TextColor="#7F8C8D" />
+								<Label Text="Parolă" FontSize="12" TextColor="#7F8C8D" />
 								<Border StrokeThickness="1"
-                                       Stroke="#BDC3C7"
-                                       BackgroundColor="#FAFAFA"
-                                       StrokeShape="RoundRectangle 6,6,6,6"
-                                       Padding="12,0"
-                                       HeightRequest="40">
+    Stroke="#BDC3C7"
+  BackgroundColor="#FAFAFA"
+          StrokeShape="RoundRectangle 6,6,6,6"
+          Padding="12,0"
+               HeightRequest="40">
 									<Entry Text="{Binding LoginPassword}"
-                                           Placeholder="Introducei parola"
-                                           FontSize="13"
-                                           BackgroundColor="Transparent"
-                                           TextColor="#2C3E50"
-                                           PlaceholderColor="#7F8C8D"
-                                           VerticalOptions="Center"
-                                           IsPassword="True"
-                                           ReturnType="Done"
-                                           ReturnCommand="{Binding LoginCommand}" />
+            Placeholder="Introduceți parola"
+        FontSize="13"
+     BackgroundColor="Transparent"
+             TextColor="#2C3E50"
+   PlaceholderColor="#7F8C8D"
+      VerticalOptions="Center"
+         IsPassword="True"
+      ReturnType="Done"
+          ReturnCommand="{Binding LoginCommand}" />
 								</Border>
 							</StackLayout>
 
@@ -184,21 +184,21 @@
 							</StackLayout.Triggers>
 
 							<VerticalStackLayout Spacing="5">
-								<Label Text="Nu este adugat nicio farmacie. Adugai mai nti o farmacie."
-                                       TextColor="#E74C3C"
-                                       FontSize="11"
-                                       IsVisible="{Binding HasNoPharmacy}" />
+								<Label Text="Nu este adăugată nicio farmacie. Adăugați mai întâi o farmacie."
+     TextColor="#E74C3C"
+   FontSize="11"
+   IsVisible="{Binding HasNoPharmacy}" />
 
-								<Button Text="Adugare/Editare farmacie"
-                                        Command="{Binding AddPharmacyCommand}"
-                                        BackgroundColor="#34495E"
-                                        TextColor="White"
-                                        FontSize="11"
-                                        FontAttributes="Bold"
-                                        CornerRadius="6"
-                                        HeightRequest="25"
-                                        WidthRequest="180"
-                                        HorizontalOptions="Start" />
+								<Button Text="Adăugare/Editare farmacie"
+     Command="{Binding AddPharmacyCommand}"
+BackgroundColor="#34495E"
+       TextColor="White"
+       FontSize="11"
+ FontAttributes="Bold"
+      CornerRadius="6"
+     HeightRequest="25"
+      WidthRequest="180"
+   HorizontalOptions="Start" />
 							</VerticalStackLayout>
 
 							<!-- Name Fields -->
@@ -303,50 +303,50 @@
 							<!-- Password Fields -->
 							<Grid ColumnDefinitions="*, *" ColumnSpacing="6">
 								<StackLayout Grid.Column="0" Spacing="3">
-									<Label Text="Parol" FontSize="11" TextColor="#7F8C8D" />
+									<Label Text="Parolă" FontSize="11" TextColor="#7F8C8D" />
 									<Border StrokeThickness="1" Stroke="#BDC3C7" BackgroundColor="#FAFAFA" StrokeShape="RoundRectangle 6,6,6,6" Padding="10,0" HeightRequest="36">
 										<Entry Text="{Binding Password}"
-                                               Placeholder="Parola"
-                                               FontSize="12"
-                                               BackgroundColor="Transparent"
-                                               TextColor="#2C3E50"
-                                               PlaceholderColor="#7F8C8D"
-                                               VerticalOptions="Center"
-                                               IsPassword="True" />
+     Placeholder="Parola"
+  FontSize="12"
+   BackgroundColor="Transparent"
+ TextColor="#2C3E50"
+      PlaceholderColor="#7F8C8D"
+     VerticalOptions="Center"
+       IsPassword="True" />
 									</Border>
 								</StackLayout>
 								<StackLayout Grid.Column="1" Spacing="3">
-									<Label Text="Confirm parola" FontSize="11" TextColor="#7F8C8D" />
+									<Label Text="Confirmă parola" FontSize="11" TextColor="#7F8C8D" />
 									<Border StrokeThickness="1" Stroke="#BDC3C7" BackgroundColor="#FAFAFA" StrokeShape="RoundRectangle 6,6,6,6" Padding="10,0" HeightRequest="36">
 										<Entry Text="{Binding ConfirmPassword}"
-                                               Placeholder="Confirm parola"
-                                               FontSize="12"
-                                               BackgroundColor="Transparent"
-                                               TextColor="#2C3E50"
-                                               PlaceholderColor="#7F8C8D"
-                                               VerticalOptions="Center"
-                                               IsPassword="True" />
+  Placeholder="Confirmă parola"
+  FontSize="12"
+     BackgroundColor="Transparent"
+    TextColor="#2C3E50"
+     PlaceholderColor="#7F8C8D"
+   VerticalOptions="Center"
+   IsPassword="True" />
 									</Border>
 								</StackLayout>
 							</Grid>
 
 							<!-- Add User Error Message -->
 							<Label Text="{Binding AddUserErrorMessage}"
-                                   TextColor="#E74C3C"
-                                   FontSize="11"
-                                   HorizontalOptions="Center"
-                                   IsVisible="{Binding HasAddUserError}" />
+     TextColor="#E74C3C"
+ FontSize="11"
+HorizontalOptions="Center"
+     IsVisible="{Binding HasAddUserError}" />
 
 							<!-- Add User Button -->
-							<Button Text="Adugare Utilizator"
-                                    Command="{Binding AddUserCommand}"
-                                    BackgroundColor="#2ECC71"
-                                    TextColor="White"
-                                    FontSize="13"
-                                    FontAttributes="Bold"
-                                    CornerRadius="6"
-                                    HeightRequest="35"
-                                    IsEnabled="{Binding IsNotAddUserLoading}" />
+							<Button Text="Adăugare Utilizator"
+     Command="{Binding AddUserCommand}"
+  BackgroundColor="#2ECC71"
+ TextColor="White"
+    FontSize="13"
+FontAttributes="Bold"
+ CornerRadius="6"
+    HeightRequest="35"
+  IsEnabled="{Binding IsNotAddUserLoading}" />
 
 							<!-- Add User Loading Indicator -->
 							<ActivityIndicator IsRunning="{Binding IsAddUserLoading}"

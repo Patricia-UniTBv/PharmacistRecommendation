@@ -48,7 +48,7 @@ namespace PharmacistRecommendation.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(AppPassword))
             {
-                await Shell.Current.DisplayAlert("Eroare", "Completează ambele câmpuri.", "OK");
+                await Shell.Current.DisplayAlert("Eroare", "Completați ambele câmpuri.", "OK");
                 return;
             }
 

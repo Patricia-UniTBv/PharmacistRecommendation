@@ -477,11 +477,11 @@ namespace PharmacistRecommendation.ViewModels
                          })
                  )
                  .ToList()
-            };
+   };
 
-            await _prescriptionService.AddPrescriptionAsync(prescription);
-            IsPrintButtonEnabled = true;
-            await ShowAlert("Rețeta a fost salvată cu succes!");
+  await _prescriptionService.AddPrescriptionAsync(prescription);
+         IsPrintButtonEnabled = true;
+      await ShowAlert("Rețeta a fost salvată cu succes!");
 
             var pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
             var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
@@ -741,7 +741,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 patientEmail = await Shell.Current.DisplayPromptAsync(
                     "Adresă e-mail",
-                    $"Pacientul {PatientName} nu are e-mail salvat.\nIntrodu adresa:",
+                    $"Pacientul {PatientName} nu are e-mail salvat.\nIntroduceți adresa:",
                     "OK", "Renunță", "ex: ion.popescu@mail.com");
 
                 if (string.IsNullOrWhiteSpace(patientEmail) || !patientEmail.Contains("@"))
@@ -937,7 +937,7 @@ namespace PharmacistRecommendation.ViewModels
             });
 
             if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
-                drug.Name = selected;
+              drug.Name = selected;
         }
 
        

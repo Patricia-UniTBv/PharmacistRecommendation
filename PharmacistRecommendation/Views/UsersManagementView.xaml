@@ -5,7 +5,7 @@
              x:Class="PharmacistRecommendation.Views.UsersManagementView">
     
     <VerticalStackLayout Padding="10" Spacing="10">
-        <Label Text="Vizualizare farmaciti/asisteni"
+        <Label Text="Vizualizare farmaciști/asistenți"
        FontSize="20"
        HorizontalTextAlignment="Center"
        TextColor="Black"
@@ -71,14 +71,14 @@
                                 </Image.GestureRecognizers>
                             </Image>
 
-                            <Button Text=""
+                            <Button Text="🗑️"
         TextColor="Red"
         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersManagementViewModel}}, Path=DeleteUserCommand}"
         CommandParameter="{Binding}" 
         HeightRequest="26"
         WidthRequest="26"
         BackgroundColor="#faf6f6"
-        ToolTipProperties.Text="terge medicament"/>
+        ToolTipProperties.Text="Șterge utilizator"/>
                         </HorizontalStackLayout>
                         
                     </Grid>

@@ -97,7 +97,7 @@ namespace PharmacistRecommendation.Helpers
             y += lineHeight;
             g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
-            g.DrawString($"ADRESA: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString($"ADRESĂ: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
             g.DrawString($"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
@@ -138,7 +138,7 @@ namespace PharmacistRecommendation.Helpers
             {
                 float offset = 250;
                 g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
-                g.DrawString($"SERIE/NUMĂR MEDIC: {Series}", fontText, Brushes.Black, textStartX + offset, y);
+                g.DrawString($"SERIE/NUMĂR REȚETĂ: {Series}", fontText, Brushes.Black, textStartX + offset, y);
                 y += lineHeight;
                 DrawParagraph("DIAGNOSTIC:", Diagnostic);
             }
@@ -189,70 +189,70 @@ namespace PharmacistRecommendation.Helpers
                                            bool noColor)
         {
             float[] colWidths = { 30, 200, 65, 65, 65, 70, 130 };
-            float totalWidth = colWidths.Sum();
-            float scale = 1f;
+ float totalWidth = colWidths.Sum();
+    float scale = 1f;
 
-            if (totalWidth > tableWidth)
-                scale = tableWidth / totalWidth;
+ if (totalWidth > tableWidth)
+          scale = tableWidth / totalWidth;
 
-            for (int i = 0; i < colWidths.Length; i++)
-                colWidths[i] *= scale;
+     for (int i = 0; i < colWidths.Length; i++)
+     colWidths[i] *= scale;
 
-            float x = left;
-            float headerHeight = headerFont.GetHeight(g) * 1.5f;
+float x = left;
+     float headerHeight = headerFont.GetHeight(g) * 1.5f;
             float rowHeight = font.GetHeight(g) * 2f;
-            string[] headers = { "NR CRT", "MEDICAMENT", "DIMIN.", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
+       string[] headers = { "NR CRT", "MEDICAMENT", "DIMINEAȚĂ", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
 
-            for (int i = 0; i < headers.Length; i++)
-            {
-                var headerRect = new RectangleF(x, y, colWidths[i], headerHeight);
-                g.DrawRectangle(Pens.Gray, Rectangle.Round(headerRect));
+  for (int i = 0; i < headers.Length; i++)
+         {
+        var headerRect = new RectangleF(x, y, colWidths[i], headerHeight);
+  g.DrawRectangle(Pens.Gray, Rectangle.Round(headerRect));
 
-                var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, headerHeight - 4);
-                using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-                g.DrawString(headers[i], headerFont, Brushes.Black, textRect, format);
+      var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, headerHeight - 4);
+   using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+  g.DrawString(headers[i], headerFont, Brushes.Black, textRect, format);
 
-                x += colWidths[i];
-            }
+              x += colWidths[i];
+    }
 
             y += headerHeight;
 
             for (int r = 0; r < medications.Count; r++)
-            {
-                x = left;
-                var med = medications[r];
-                string[] values = {
+   {
+   x = left;
+      var med = medications[r];
+   string[] values = {
             (r + 1).ToString(),
-            med.Name ?? "-",
+     med.Name ?? "-",
             med.Morning ?? "-",
-            med.Noon ?? "-",
-            med.Evening ?? "-",
-            med.Night ?? "-",
-            med.AdministrationMode ?? "-"
+   med.Noon ?? "-",
+         med.Evening ?? "-",
+       med.Night ?? "-",
+          med.AdministrationMode ?? "-"
         };
 
-                for (int i = 0; i < values.Length; i++)
-                {
-                    var cellRect = new RectangleF(x, y, colWidths[i], rowHeight);
-                    g.DrawRectangle(Pens.Gray, Rectangle.Round(cellRect));
+       for (int i = 0; i < values.Length; i++)
+     {
+    var cellRect = new RectangleF(x, y, colWidths[i], rowHeight);
+ g.DrawRectangle(Pens.Gray, Rectangle.Round(cellRect));
 
-                    var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
-                    using var format = new StringFormat
-                    {
-                        Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near,
-                        LineAlignment = StringAlignment.Center,
-                        Trimming = StringTrimming.EllipsisCharacter
-                    };
+       var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
+   using var format = new StringFormat
+      {
+        Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near,
+      LineAlignment = StringAlignment.Center,
+   Trimming = StringTrimming.EllipsisCharacter
+      };
 
-                    g.DrawString(values[i], font, Brushes.Black, textRect, format);
+    g.DrawString(values[i], font, Brushes.Black, textRect, format);
 
-                    x += colWidths[i];
-                }
+    x += colWidths[i];
+         }
 
-                y += rowHeight;
-            }
+            y += rowHeight;
+       }
 
-            return y;
+       return y;
         }
 
         private float DrawWrappedTextCustom(SD.Graphics g, string text, SD.Font font, float textStartX, float y, float contentWidth)

@@ -30,7 +30,7 @@
                             </Grid.ColumnDefinitions>
 
                             <VerticalStackLayout Spacing="2">
-                                <Label Text="Numr card" FontSize="11" FontAttributes="Bold"/>
+                                <Label Text="Număr card" FontSize="11" FontAttributes="Bold"/>
                                 <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding CardNumber}" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
@@ -74,7 +74,7 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                <Label Text="Vrst" FontSize="11" FontAttributes="Bold"/>
+                                <Label Text="Vârstă" FontSize="11" FontAttributes="Bold"/>
                                 <Border StrokeThickness="0.6" StrokeShape="RoundRectangle 3" Stroke="#AAAAAA" HeightRequest="34">
                                     <Entry Text="{Binding Age}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11"/>
                                 </Border>
@@ -107,7 +107,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Label Text="Parametri monitorizai" FontSize="14" FontAttributes="Bold"/>
+                            <Label Text="Parametri monitorizați" FontSize="14" FontAttributes="Bold"/>
 
                             
                         </Grid>
@@ -124,7 +124,7 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="nlime (cm)" FontSize="11" FontAttributes="Bold"/>
+                                <Label Text="Înălțime (cm)" FontSize="11" FontAttributes="Bold"/>
                                 <Entry Text="{Binding Height}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
                             </VerticalStackLayout>
                         </Grid>
@@ -172,7 +172,7 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                <Label Text="Temperatur (C)" FontSize="11" FontAttributes="Bold"/>
+                                <Label Text="Temperatură (°C)" FontSize="11" FontAttributes="Bold"/>
                                 <Entry Text="{Binding BodyTemperature}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
                             </VerticalStackLayout>
                         </Grid>
@@ -197,10 +197,10 @@
                                 <Label Text="De la:" FontSize="13" VerticalOptions="Center"/>
                                 <DatePicker Date="{Binding StartDate}" Format="dd/MM/yy" FontSize="12" Margin="0,5,0,0"/>
 
-                                <Label Text="Pn la:" FontSize="13" VerticalOptions="Center"/>
+                                <Label Text="Până la:" FontSize="13" VerticalOptions="Center"/>
                                 <DatePicker Date="{Binding EndDate}" Format="dd/MM/yy" FontSize="12" Margin="0,5,0,0"/>
 
-                                <Button Text="Caut" Command="{Binding LoadHistoryCommand}"
+                                <Button Text="Caută" Command="{Binding LoadHistoryCommand}"
                                         BackgroundColor="#007bff" TextColor="White"
                                         FontSize="11" Padding="6,3" WidthRequest="60" HeightRequest="10"/>
                             </HorizontalStackLayout>
@@ -223,11 +223,11 @@
                             <Label Text="TA Sistolic" Grid.Column="1" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                             <Label Text="TA Diastolic" Grid.Column="2" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                             <Label Text="Puls" Grid.Column="3" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
-                            <Label Text="SpO" Grid.Column="4" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
+                            <Label Text="SpO₂" Grid.Column="4" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                             <Label Text="Glicemie" Grid.Column="5" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                             <Label Text="Temp." Grid.Column="6" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                             <Label Text="Greutate" Grid.Column="7" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
-                            <Label Text="nlime" Grid.Column="8" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
+                            <Label Text="Înălțime" Grid.Column="8" FontAttributes="Bold" FontSize="11" HorizontalTextAlignment="Center"/>
                         </Grid>
 
                         <!-- Table Data -->
@@ -290,9 +290,9 @@
                     <Button Text="Generare PDF" Command="{Binding GeneratePdfCommand}"
                     BackgroundColor="#ece8fa" TextColor="#36317f" FontSize="12" Padding="8,4" WidthRequest="100"/>
                    
-                    <Button Text="Reseteaz" Command="{Binding ClearCommand}" 
+                    <Button Text="Resetează" Command="{Binding ClearCommand}" 
                     BackgroundColor="#007bff" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
-                    <Button Text="Salveaz" Command="{Binding SaveCommand}" 
+                    <Button Text="Salvează" Command="{Binding SaveCommand}" 
                     BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
                 </HorizontalStackLayout>
             </Grid>

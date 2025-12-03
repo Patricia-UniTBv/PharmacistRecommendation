@@ -103,7 +103,7 @@ namespace PharmacistRecommendation.Helpers
 
             g.DrawString($"FARMACIA: {PharmacyName}", fontText, XBrushes.Black, textStartX, y);
             y += lineHeight;
-            g.DrawString($"ADRESA: {PharmacyAddress}", fontText, XBrushes.Black, textStartX, y);
+            g.DrawString($"ADRESĂ: {PharmacyAddress}", fontText, XBrushes.Black, textStartX, y);
             y += lineHeight;
             g.DrawString($"TELEFON: {PharmacyPhone}", fontText, XBrushes.Black, textStartX, y);
             y += lineHeight;
@@ -132,7 +132,7 @@ namespace PharmacistRecommendation.Helpers
             {
                 double offset = 250;
                 g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, XBrushes.Black, textStartX, y);
-                g.DrawString($"SERIE/NUMĂR MEDIC: {Series}", fontText, XBrushes.Black, textStartX + offset, y);
+                g.DrawString($"SERIE/NUMĂR REȚETĂ: {Series}", fontText, XBrushes.Black, textStartX + offset, y);
                 y += Math.Max(1, fontText.GetHeight() * 1.1);
                 DrawWrappedText($"DIAGNOSTIC: {Diagnostic}");
             }
@@ -206,7 +206,7 @@ namespace PharmacistRecommendation.Helpers
             double scale = totalWidth > width ? width / totalWidth : 1.0;
             for (int i = 0; i < colWidths.Length; i++) colWidths[i] = Math.Max(30, colWidths[i] * scale);
 
-            string[] headers = { "NR CRT", "MEDICAMENT", "DIMIN.", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
+            string[] headers = { "NR CRT", "MEDICAMENT", "DIMINEAȚĂ", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
 
             var f = new XFont("OpenSans", 12, XFontStyleEx.Bold);
             // Desenează titlul

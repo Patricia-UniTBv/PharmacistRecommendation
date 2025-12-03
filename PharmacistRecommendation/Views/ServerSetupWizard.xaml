@@ -10,209 +10,209 @@
 
     <ScrollView>
         <Grid Padding="40,60,40,40"
-      RowDefinitions="Auto,*,Auto"
-           RowSpacing="32"
-    MaximumWidthRequest="700"
-        HorizontalOptions="Center">
+        RowDefinitions="Auto,*,Auto"
+       RowSpacing="32"
+              MaximumWidthRequest="700"
+              HorizontalOptions="Center">
 
-   <StackLayout Grid.Row="0" Spacing="16">
-       <Label 
-         Text="Bine ati venit!"
- FontSize="32"
- FontAttributes="Bold"
-         TextColor="#1A1A1A"
-    HorizontalOptions="Center" />
-      
-                <Label 
-        Text="Configurare Server Farmacie"
-                    FontSize="20"
-    TextColor="#424242"
-        HorizontalOptions="Center" />
-                
-<BoxView 
-  HeightRequest="3"
-         WidthRequest="100"
-   BackgroundColor="#1565C0"
-              HorizontalOptions="Center"
-CornerRadius="2"
-      Margin="0,8,0,0" />
-            </StackLayout>
-
-  <Border Grid.Row="1"
-          Stroke="#E8EAED"
-           StrokeThickness="1"
-      StrokeShape="RoundRectangle 20"
-     BackgroundColor="White"
-   Padding="40">
-     <Border.Shadow>
-            <Shadow Brush="Black" Opacity="0.1" Radius="12" Offset="0,4" />
-         </Border.Shadow>
-
-          <VerticalStackLayout Spacing="24">
-
-        <StackLayout Spacing="12">
-        <Label 
-           Text="Pregatim serverul dumneavoastra"
-        FontSize="18"
-        FontAttributes="Bold"
-      TextColor="#1565C0" />
-     
-             <Label 
-   FontSize="15"
-           TextColor="#424242"
-            LineHeight="1.5">
-  <Label.FormattedText>
-      <FormattedString>
-          <Span Text="Acest asistent va crea baza de date a farmaciei pe computerul dumneavoastra.&#x0a;&#x0a;" />
-             <Span Text="Locatia: " FontAttributes="Bold" />
-            <Span Text="localhost\SQLEXPRESS&#x0a;" />
-       <Span Text="Baza de date: " FontAttributes="Bold" />
-      <Span Text="PharmacistRecommendationDB&#x0a;&#x0a;" />
-    <Span Text="Procesul dureaza aproximativ 2-3 minute." FontAttributes="Italic" TextColor="#666666" />
-        </FormattedString>
-           </Label.FormattedText>
-   </Label>
-       </StackLayout>
-
-     <BoxView HeightRequest="1" BackgroundColor="#E8EAED" />
-
-  <Button 
-               Text="Creare Baza de Date"
-   FontSize="16"
-     FontAttributes="Bold"
-Command="{Binding CreateDatabaseCommand}"
-    BackgroundColor="#1565C0"
-   TextColor="White"
-  CornerRadius="12"
-     HeightRequest="56"
-   IsEnabled="{Binding IsCreating, Converter={StaticResource InvertedBoolConverter}}"
-       IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}">
-        <Button.Shadow>
-     <Shadow Brush="#1565C0" Opacity="0.3" Radius="12" Offset="0,4" />
-  </Button.Shadow>
-  <Button.Triggers>
-  <DataTrigger TargetType="Button"
-      Binding="{Binding IsCreating}"
-     Value="True">
-     <Setter Property="BackgroundColor" Value="#90CAF9" />
-    </DataTrigger>
-     </Button.Triggers>
-        </Button>
-
-            <StackLayout Spacing="16"
-         IsVisible="{Binding IsCreating}">
-     
-            <ActivityIndicator 
-             IsRunning="{Binding IsCreating}"
-            Color="#1565C0"
-     HeightRequest="40"
-        WidthRequest="40"
-                  HorizontalOptions="Center" />
+            <StackLayout Grid.Row="0" Spacing="16">
+         <Label 
+          Text="Bine ați venit!"
+           FontSize="32"
+    FontAttributes="Bold"
+  TextColor="#1A1A1A"
+      HorizontalOptions="Center" />
     
         <Label 
-          Text="{Binding ProgressMessage}"
- FontSize="14"
-    TextColor="#424242"
-           HorizontalTextAlignment="Center"
-             FontAttributes="Italic" />
-       
-           <ProgressBar 
-             Progress="{Binding ProgressValue}"
-                 ProgressColor="#1565C0"
-           HeightRequest="8"
-   Margin="0,8,0,0" />
-                   
-  <Label 
-           Text="Va rugam sa asteptati... Nu inchideti aplicatia."
-  FontSize="13"
-                  TextColor="#666666"
-      HorizontalTextAlignment="Center"
-      FontAttributes="Italic" />
-           </StackLayout>
+  Text="Configurare Server Farmacie"
+               FontSize="20"
+       TextColor="#424242"
+       HorizontalOptions="Center" />
+ 
+   <BoxView 
+           HeightRequest="3"
+              WidthRequest="100"
+          BackgroundColor="#1565C0"
+      HorizontalOptions="Center"
+          CornerRadius="2"
+       Margin="0,8,0,0" />
+     </StackLayout>
 
-  <Border 
-       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-         Padding="20"
-  StrokeShape="RoundRectangle 12"
-      Margin="0,8,0,0">
-                 
- <Border.Triggers>
-    <DataTrigger TargetType="Border"
-   Binding="{Binding HasError}"
-    Value="True">
-             <Setter Property="BackgroundColor" Value="#FFEBEE" />
-       <Setter Property="Stroke" Value="#EF5350" />
-          <Setter Property="StrokeThickness" Value="2" />
-           </DataTrigger>
-       <DataTrigger TargetType="Border"
-               Binding="{Binding IsCompleted}"
-    Value="True">
-              <Setter Property="BackgroundColor" Value="#E8F5E9" />
-          <Setter Property="Stroke" Value="#66BB6A" />
-    <Setter Property="StrokeThickness" Value="2" />
-    </DataTrigger>
-        </Border.Triggers>
+  <Border Grid.Row="1"
+     Stroke="#E8EAED"
+   StrokeThickness="1"
+           StrokeShape="RoundRectangle 20"
+   BackgroundColor="White"
+        Padding="40">
+         <Border.Shadow>
+                 <Shadow Brush="Black" Opacity="0.1" Radius="12" Offset="0,4" />
+                </Border.Shadow>
 
-              <Label 
-              Text="{Binding StatusMessage}"
-        FontSize="14"
-  LineHeight="1.6">
-         <Label.Triggers>
-          <DataTrigger TargetType="Label"
-      Binding="{Binding HasError}"
-      Value="True">
-   <Setter Property="TextColor" Value="#C62828" />
-       </DataTrigger>
-     <DataTrigger TargetType="Label"
-   Binding="{Binding IsCompleted}"
-          Value="True">
-          <Setter Property="TextColor" Value="#2E7D32" />
-            <Setter Property="FontAttributes" Value="Bold" />
-       </DataTrigger>
-   </Label.Triggers>
-        </Label>
-          </Border>
+      <VerticalStackLayout Spacing="24">
 
-      </VerticalStackLayout>
-            </Border>
+      <StackLayout Spacing="12">
+ <Label 
+         Text="Pregătim serverul dumneavoastră"
+ FontSize="18"
+    FontAttributes="Bold"
+    TextColor="#1565C0" />
+        
+        <Label 
+FontSize="15"
+  TextColor="#424242"
+       LineHeight="1.5">
+        <Label.FormattedText>
+     <FormattedString>
+      <Span Text="Acest asistent va crea baza de date a farmaciei pe computerul dumneavoastră.&#x0a;&#x0a;" />
+           <Span Text="Locația: " FontAttributes="Bold" />
+<Span Text="localhost\SQLEXPRESS&#x0a;" />
+     <Span Text="Bază de date: " FontAttributes="Bold" />
+        <Span Text="PharmacistRecommendationDB&#x0a;&#x0a;" />
+  <Span Text="Procesul durează aproximativ 2-3 minute." FontAttributes="Italic" TextColor="#666666" />
+         </FormattedString>
+          </Label.FormattedText>
+   </Label>
+     </StackLayout>
 
-  <HorizontalStackLayout 
-        Grid.Row="2"
-        Spacing="16"
-           HorizontalOptions="Center"
-          Margin="0,16,0,0">
-
-     <Button 
-      Text="Anulare"
-     FontSize="15"
-         Command="{Binding CancelCommand}"
-             BackgroundColor="#F5F5F5"
-           TextColor="#424242"
-CornerRadius="10"
-         WidthRequest="140"
-          HeightRequest="48"
-     IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}"
-       IsEnabled="{Binding IsCreating, Converter={StaticResource InvertedBoolConverter}}" />
+               <BoxView HeightRequest="1" BackgroundColor="#E8EAED" />
 
         <Button 
-    Text="Finalizare"
-        FontSize="15"
-        FontAttributes="Bold"
+       Text="Creare Bază de Date"
+        FontSize="16"
+            FontAttributes="Bold"
+    Command="{Binding CreateDatabaseCommand}"
+              BackgroundColor="#1565C0"
+         TextColor="White"
+  CornerRadius="12"
+        HeightRequest="56"
+            IsEnabled="{Binding IsCreating, Converter={StaticResource InvertedBoolConverter}}"
+        IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}">
+    <Button.Shadow>
+   <Shadow Brush="#1565C0" Opacity="0.3" Radius="12" Offset="0,4" />
+        </Button.Shadow>
+     <Button.Triggers>
+      <DataTrigger TargetType="Button"
+Binding="{Binding IsCreating}"
+     Value="True">
+   <Setter Property="BackgroundColor" Value="#90CAF9" />
+     </DataTrigger>
+            </Button.Triggers>
+         </Button>
+
+ <StackLayout Spacing="16"
+           IsVisible="{Binding IsCreating}">
+        
+     <ActivityIndicator 
+                  IsRunning="{Binding IsCreating}"
+                Color="#1565C0"
+ HeightRequest="40"
+       WidthRequest="40"
+         HorizontalOptions="Center" />
+      
+        <Label 
+      Text="{Binding ProgressMessage}"
+      FontSize="14"
+     TextColor="#424242"
+        HorizontalTextAlignment="Center"
+       FontAttributes="Italic" />
+      
+  <ProgressBar 
+                    Progress="{Binding ProgressValue}"
+ ProgressColor="#1565C0"
+            HeightRequest="8"
+      Margin="0,8,0,0" />
+         
+ <Label 
+          Text="Vă rugăm să așteptați... Nu închideți aplicația."
+       FontSize="13"
+       TextColor="#666666"
+        HorizontalTextAlignment="Center"
+        FontAttributes="Italic" />
+                </StackLayout>
+
+      <Border 
+          IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+  Padding="20"
+              StrokeShape="RoundRectangle 12"
+     Margin="0,8,0,0">
+              
+         <Border.Triggers>
+           <DataTrigger TargetType="Border"
+               Binding="{Binding HasError}"
+            Value="True">
+      <Setter Property="BackgroundColor" Value="#FFEBEE" />
+     <Setter Property="Stroke" Value="#EF5350" />
+             <Setter Property="StrokeThickness" Value="2" />
+        </DataTrigger>
+    <DataTrigger TargetType="Border"
+   Binding="{Binding IsCompleted}"
+           Value="True">
+             <Setter Property="BackgroundColor" Value="#E8F5E9" />
+             <Setter Property="Stroke" Value="#66BB6A" />
+             <Setter Property="StrokeThickness" Value="2" />
+   </DataTrigger>
+            </Border.Triggers>
+
+      <Label 
+            Text="{Binding StatusMessage}"
+        FontSize="14"
+   LineHeight="1.6">
+        <Label.Triggers>
+<DataTrigger TargetType="Label"
+       Binding="{Binding HasError}"
+         Value="True">
+     <Setter Property="TextColor" Value="#C62828" />
+                  </DataTrigger>
+           <DataTrigger TargetType="Label"
+                  Binding="{Binding IsCompleted}"
+        Value="True">
+           <Setter Property="TextColor" Value="#2E7D32" />
+     <Setter Property="FontAttributes" Value="Bold" />
+         </DataTrigger>
+             </Label.Triggers>
+      </Label>
+            </Border>
+
+           </VerticalStackLayout>
+            </Border>
+
+         <HorizontalStackLayout 
+          Grid.Row="2"
+   Spacing="16"
+         HorizontalOptions="Center"
+ Margin="0,16,0,0">
+
+       <Button 
+             Text="Anulare"
+          FontSize="15"
+         Command="{Binding CancelCommand}"
+     BackgroundColor="#F5F5F5"
+        TextColor="#424242"
+     CornerRadius="10"
+    WidthRequest="140"
+       HeightRequest="48"
+    IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}"
+     IsEnabled="{Binding IsCreating, Converter={StaticResource InvertedBoolConverter}}" />
+
+   <Button 
+          Text="Finalizare"
+             FontSize="15"
+               FontAttributes="Bold"
      Command="{Binding FinishCommand}"
-    BackgroundColor="#2E7D32"
-TextColor="White"
-         CornerRadius="10"
-        WidthRequest="140"
-      HeightRequest="48"
-       IsVisible="{Binding IsCompleted}">
-        <Button.Shadow>
-    <Shadow Brush="#2E7D32" Opacity="0.3" Radius="12" Offset="0,4" />
-         </Button.Shadow>
- </Button>
+              BackgroundColor="#2E7D32"
+    TextColor="White"
+               CornerRadius="10"
+    WidthRequest="140"
+             HeightRequest="48"
+              IsVisible="{Binding IsCompleted}">
+         <Button.Shadow>
+        <Shadow Brush="#2E7D32" Opacity="0.3" Radius="12" Offset="0,4" />
+       </Button.Shadow>
+        </Button>
 
-            </HorizontalStackLayout>
+</HorizontalStackLayout>
 
-        </Grid>
+ </Grid>
     </ScrollView>
 
 </ContentPage>

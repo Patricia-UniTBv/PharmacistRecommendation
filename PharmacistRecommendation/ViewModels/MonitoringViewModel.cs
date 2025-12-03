@@ -169,7 +169,7 @@ public partial class MonitoringViewModel : ObservableObject
 
         await _monitoringService.AddMonitoringAsync(dto, loggedInUserId); 
 
-        await Shell.Current.DisplayAlert("Success", "Datele au fost salvate!", "OK");
+        await Shell.Current.DisplayAlert("Succes", "Datele au fost salvate!", "OK");
 
         await LoadHistoryAsync();
     }
@@ -247,7 +247,7 @@ public partial class MonitoringViewModel : ObservableObject
         {
             patientEmail = await Shell.Current.DisplayPromptAsync(
                 title: "Adresă e-mail",
-                message: $"Pacientul {patient.LastName} {patient.FirstName} nu are e-mail salvat.\nIntrodu adresa:",
+                message: $"Pacientul {patient.LastName} {patient.FirstName} nu are e-mail salvat.\nIntroduceți adresa:",
                 accept: "OK",
                 cancel: "Renunță",
                 placeholder: "ex: ion.popescu@mail.com");
@@ -262,7 +262,7 @@ public partial class MonitoringViewModel : ObservableObject
         var config = await _emailConfigurationService.GetByPharmacyIdAsync(_pharmacyId);
         if (config == null || string.IsNullOrWhiteSpace(config.Username) || string.IsNullOrWhiteSpace(config.Password))
         {
-            await Shell.Current.DisplayAlert("Eroare", "Configurarea email nu este completă. Verifică pagina de configurare.", "OK");
+            await Shell.Current.DisplayAlert("Eroare", "Configurarea email nu este completă. Verificați pagina de configurare.", "OK");
             return;
         }
 

@@ -132,95 +132,95 @@ namespace PharmacistRecommendation.ViewModels
             ValidationMessage = string.Empty;
 
             if (string.IsNullOrWhiteSpace(FirstName))
-            {
-                ValidationMessage = "Introduceți numele și prenumele.";
-                return;
+         {
+      ValidationMessage = "Introduceți numele și prenumele.";
+          return;
             }
 
             if (string.IsNullOrWhiteSpace(LastName))
-            {
+       {
                 ValidationMessage = "Introduceți numele și prenumele.";
-                return;
+         return;
             }
 
-            if (string.IsNullOrWhiteSpace(CardNumber))
+        if (string.IsNullOrWhiteSpace(CardNumber))
             {
-                ValidationMessage = "Introduceți numărul cardului.";
-                return;
+    ValidationMessage = "Introduceți numărul cardului.";
+        return;
             }
 
-            try
+      try
             {
-                var card = await _pharmacyCardService.CreateCardAsync(
-                    code: cardNumber,
-                    pharmacyId: pharmacyId, 
-                    firstName: FirstName,
-                    lastName: LastName,
-                    cnp: Cnp,
-                    cid: Cid,
-                    email: Email,
-                    phone: Phone, 
-                    gender: Gender,
-                    birthdate: birthdate == default(DateTime)
-                         ? new DateTime(1900, 1, 1)
-                         : birthdate
-                );
+var card = await _pharmacyCardService.CreateCardAsync(
+             code: cardNumber,
+    pharmacyId: pharmacyId, 
+        firstName: FirstName,
+        lastName: LastName,
+    cnp: Cnp,
+    cid: Cid,
+email: Email,
+ phone: Phone, 
+         gender: Gender,
+   birthdate: birthdate == default(DateTime)
+ ? new DateTime(1900, 1, 1)
+             : birthdate
+ );
 
-                IsPrintButtonEnabled = true;
-                await Shell.Current.DisplayAlert("Succes", "Cardul pacientului a fost salvat!", "OK");
-            }
-            catch (Exception ex)
+        IsPrintButtonEnabled = true;
+      await Shell.Current.DisplayAlert("Succes", "Cardul pacientului a fost salvat!", "OK");
+ }
+    catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Eroare", $"A apărut o eroare la salvare: {ex.Message}", "OK");
-            }
+        await Shell.Current.DisplayAlert("Eroare", $"A apărut o eroare la salvare: {ex.Message}", "OK");
+          }
         }
 
         [RelayCommand]
         private async Task Print()
         {
-            var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
-            string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
+   var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+         string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
 
-            _consentDecl = _pharmacy!.ConsentTemplate!
-                .Replace("{PharmacyName}", Safe(_pharmacy.Name))
-                .Replace("{PharmacyAddress}", Safe(_pharmacy.Address!))
-                .Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI!));
+         _consentDecl = _pharmacy!.ConsentTemplate!
+     .Replace("{PharmacyName}", Safe(_pharmacy.Name))
+        .Replace("{PharmacyAddress}", Safe(_pharmacy.Address!))
+.Replace("{PharmacyFiscalCode}", Safe(_pharmacy.CUI!));
 
             using var pd = new PrintDocument();
-            pd.DefaultPageSettings.Landscape = false;
+  pd.DefaultPageSettings.Landscape = false;
 
-            pd.PrintPage += Pd_PrintPage;
+   pd.PrintPage += Pd_PrintPage;
 
-            var result = await Shell.Current.DisplayActionSheet("Alege tipărire sau PDF", "Anulează", null, "Tipărire", "Salvează ca PDF");
+       var result = await Shell.Current.DisplayActionSheet("Alege tipărire sau PDF", "Anulează", null, "Tipărire", "Salvează ca PDF");
 
-            if (result == "Tipărire")
+if (result == "Tipărire")
             {
-                using var dlg = new PrintDialog { Document = pd };
-                if (dlg.ShowDialog() == DialogResult.OK)
-                    pd.Print();
-            }
-            else if (result == "Salvează ca PDF")
-            {
-                string safeName = string.IsNullOrWhiteSpace(firstName + lastName) ? "Pacient" : $"{firstName}_{lastName}";
-                string safeCard = string.IsNullOrWhiteSpace(cardNumber) ? "0000" : cardNumber;
-                string defaultFileName = $"{safeName}_{safeCard}.pdf";
+       using var dlg = new PrintDialog { Document = pd };
+          if (dlg.ShowDialog() == DialogResult.OK)
+  pd.Print();
+         }
+   else if (result == "Salvează ca PDF")
+    {
+      string safeName = string.IsNullOrWhiteSpace(firstName + lastName) ? "Pacient" : $"{firstName}_{lastName}";
+    string safeCard = string.IsNullOrWhiteSpace(cardNumber) ? "0000" : cardNumber;
+       string defaultFileName = $"{safeName}_{safeCard}.pdf";
 
-                using var sfd = new SaveFileDialog
-                {
-                    Filter = "PDF files (*.pdf)|*.pdf",
-                    FileName = defaultFileName,
-                    Title = "Salvează PDF-ul"
-                };
+      using var sfd = new SaveFileDialog
+    {
+    Filter = "PDF files (*.pdf)|*.pdf",
+            FileName = defaultFileName,
+            Title = "Salvează PDF-ul"
+     };
 
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    pd.PrinterSettings.PrinterName = "Microsoft Print to PDF";
-                    pd.PrinterSettings.PrintToFile = true;
-                    pd.PrinterSettings.PrintFileName = sfd.FileName;
-                    pd.Print();
-                    await Shell.Current.DisplayAlert("Succes", $"Fișier PDF salvat: {sfd.FileName}", "OK");
-                }
-            }
+    if (sfd.ShowDialog() == DialogResult.OK)
+  {
+     pd.PrinterSettings.PrinterName = "Microsoft Print to PDF";
+   pd.PrinterSettings.PrintToFile = true;
+    pd.PrinterSettings.PrintFileName = sfd.FileName;
+       pd.Print();
+         await Shell.Current.DisplayAlert("Succes", $"Fișier PDF salvat: {sfd.FileName}", "OK");
+ }
+    }
         }
 
         private async void Pd_PrintPage(object sender, PrintPageEventArgs e)
@@ -253,20 +253,20 @@ namespace PharmacistRecommendation.ViewModels
             float y = top;
 
             g.DrawString($"Număr card: {Safe(cardNumber)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"Nume pacient: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"CNP: {Safe(Cnp)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"CID: {Safe(Cid)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"Telefon: {Safe(phone)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"E-mail: {Safe(email)}", fontText, SD.Brushes.Black, left, y); y += lineHeight * 1.5f;
+       g.DrawString($"Nume pacient: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+        g.DrawString($"CNP: {Safe(Cnp)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+    g.DrawString($"CID: {Safe(Cid)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+   g.DrawString($"Telefon: {Safe(phone)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+          g.DrawString($"E-mail: {Safe(email)}", fontText, SD.Brushes.Black, left, y); y += lineHeight * 1.5f;
 
             float boxSize = 12;
-            float xCheckbox = left;
+    float xCheckbox = left;
             g.DrawRectangle(Pens.Black, xCheckbox, y, boxSize, boxSize);
 
-            float padding = 5;
-            float xText = xCheckbox + boxSize + padding;
-            g.DrawString("Declar că datele furnizate mai sus sunt corecte.", fontText, Brushes.Black, xText, y);
-            y += 100;
+        float padding = 5;
+ float xText = xCheckbox + boxSize + padding;
+  g.DrawString("Declar că datele furnizate mai sus sunt corecte.", fontText, Brushes.Black, xText, y);
+          y += 100;
 
             var rect = new RectangleF(left, y, right - left, bottom - y - 70);
             g.DrawString(_consentDecl, fontText, Brushes.Black, rect);
@@ -274,42 +274,42 @@ namespace PharmacistRecommendation.ViewModels
             float footerSpacing = 10;
             float footerY = bottom - 3 * lineHeight - footerSpacing;
 
-            float indent = 20; // distanța față de marginea stângă
+      float indent = 20; // distanța față de marginea stângă
 
-            // Data generării
-            g.DrawString(
-                $"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
+ // Data generării
+      g.DrawString(
+    $"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
                 fontText,
-                SD.Brushes.Black,
-                new SD.PointF(left + indent, footerY)
-            );
+     SD.Brushes.Black,
+     new SD.PointF(left + indent, footerY)
+  );
 
-            // Numele farmacistului + NCM
-            string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
+      // Numele farmacistului + NCM
+    string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
+    g.DrawString(
+    $"Farmacist: {Safe(pharmacistName.Trim())}",
+           fontText,
+        SD.Brushes.Black,
+new SD.PointF(left + indent, footerY + lineHeight)
+          );
+
+      // Semnătura
+ g.DrawString(
+           "Semnătura: ______________________",
+             fontText,
+         SD.Brushes.Black,
+       new SD.PointF(left + indent, footerY + 2 * lineHeight)
+   );
+
+   // Textul fix
             g.DrawString(
-                $"Farmacist: {Safe(pharmacistName.Trim())}",
-                fontText,
-                SD.Brushes.Black,
-                new SD.PointF(left + indent, footerY + lineHeight)
-            );
+        "Document generat cu Recomandarea Farmacistului",
+         fontText,
+          SD.Brushes.Gray,
+        new SD.PointF(left + indent, footerY + 3 * lineHeight)
+        );
 
-            // Semnătura
-            g.DrawString(
-                "Semnătura: ______________________",
-                fontText,
-                SD.Brushes.Black,
-                new SD.PointF(left + indent, footerY + 2 * lineHeight)
-            );
-
-            // Textul fix
-            g.DrawString(
-                "Document generat cu Recomandarea Farmacistului",
-                fontText,
-                SD.Brushes.Gray,
-                new SD.PointF(left + indent, footerY + 3 * lineHeight)
-            );
-
-        }
+    }
 
         [RelayCommand]
         private void NewCard()
