@@ -9,7 +9,7 @@ namespace PharmacistRecommendation.ViewModels
  public partial class ServerSetupWizardViewModel : ObservableObject
     {
         private static string BACPAC_FILE_PATH => Path.Combine(AppContext.BaseDirectory, "Database", "PharmacistRecommendationDB.bacpac");
-        private const string SQLPACKAGE_PATH = @"C:\Program Files\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe";
+        private static string SQLPACKAGE_PATH => Path.Combine(AppContext.BaseDirectory, "SqlPackage", "SqlPackage.exe");
 
         [ObservableProperty]
 private bool isCreating;
@@ -202,93 +202,96 @@ Debug.WriteLine($"Database {database} dropped successfully.");
          }
     }
 
-        private async Task RestoreUsingSqlPackageAsync(string server, string database, string sqlPackagePath = SQLPACKAGE_PATH)
+        private async Task RestoreUsingSqlPackageAsync(string server, string database, string? sqlPackagePath = null)
         {
-            try
-        {
-      // Build SqlPackage command
-           string arguments = $"/Action:Import " +
-        $"/SourceFile:\"{BACPAC_FILE_PATH}\" " +
-      $"/TargetServerName:\"{server}\" " +
-             $"/TargetDatabaseName:\"{database}\" " +
- $"/TargetTrustServerCertificate:True " +
-        $"/p:CommandTimeout=300";
+            // Use the bundled SqlPackage if no path provided
+            sqlPackagePath ??= SQLPACKAGE_PATH;
 
-      var processStartInfo = new ProcessStartInfo
-     {
-   FileName = sqlPackagePath,
-   Arguments = arguments,
-          UseShellExecute = false,
-          RedirectStandardOutput = true,
- RedirectStandardError = true,
-          CreateNoWindow = true
+            try
+            {
+                // Build SqlPackage command
+                string arguments = $"/Action:Import " +
+                    $"/SourceFile:\"{BACPAC_FILE_PATH}\" " +
+                    $"/TargetServerName:\"{server}\" " +
+                    $"/TargetDatabaseName:\"{database}\" " +
+                    $"/TargetTrustServerCertificate:True " +
+                    $"/p:CommandTimeout=300";
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = sqlPackagePath,
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
                 };
 
-         using var process = new Process { StartInfo = processStartInfo };
+                using var process = new Process { StartInfo = processStartInfo };
 
- var outputBuilder = new System.Text.StringBuilder();
-          var errorBuilder = new System.Text.StringBuilder();
+                var outputBuilder = new System.Text.StringBuilder();
+                var errorBuilder = new System.Text.StringBuilder();
 
-      process.OutputDataReceived += (sender, e) =>
-         {
-      if (!string.IsNullOrEmpty(e.Data))
-          {
-          outputBuilder.AppendLine(e.Data);
-     Debug.WriteLine($"SqlPackage: {e.Data}");
+                process.OutputDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        outputBuilder.AppendLine(e.Data);
+                        Debug.WriteLine($"SqlPackage: {e.Data}");
 
-           // Update progress message with key milestones
-           if (e.Data.Contains("Importing"))
-      {
-     MainThread.BeginInvokeOnMainThread(() =>
-        {
-        ProgressValue = 50;
-  ProgressMessage = "Se importa datele în baza de date...";
-  });
-   }
-        else if (e.Data.Contains("Successfully imported"))
-      {
-     MainThread.BeginInvokeOnMainThread(() =>
-        {
-        ProgressValue = 80;
-    ProgressMessage = "Import finalizat cu succes!";
- });
-  }
-  }
-   };
+                        // Update progress message with key milestones
+                        if (e.Data.Contains("Importing"))
+                        {
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                ProgressValue = 50;
+                                ProgressMessage = "Se importa datele în baza de date...";
+                            });
+                        }
+                        else if (e.Data.Contains("Successfully imported"))
+                        {
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                ProgressValue = 80;
+                                ProgressMessage = "Import finalizat cu succes!";
+                            });
+                        }
+                    }
+                };
 
-              process.ErrorDataReceived += (sender, e) =>
-     {
-         if (!string.IsNullOrEmpty(e.Data))
-        {
-           errorBuilder.AppendLine(e.Data);
-  Debug.WriteLine($"SqlPackage Error: {e.Data}");
-   }
-         };
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        errorBuilder.AppendLine(e.Data);
+                        Debug.WriteLine($"SqlPackage Error: {e.Data}");
+                    }
+                };
 
                 process.Start();
-      process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
 
                 await process.WaitForExitAsync();
 
-           if (process.ExitCode != 0)
-       {
-            string errorMessage = errorBuilder.ToString();
+                if (process.ExitCode != 0)
+                {
+                    string errorMessage = errorBuilder.ToString();
                     if (string.IsNullOrWhiteSpace(errorMessage))
-     {
-            errorMessage = outputBuilder.ToString();
-               }
+                    {
+                        errorMessage = outputBuilder.ToString();
+                    }
 
-            throw new Exception($"SqlPackage a esuat cu codul {process.ExitCode}:\n{errorMessage}");
-             }
+                    throw new Exception($"SqlPackage a esuat cu codul {process.ExitCode}:\n{errorMessage}");
+                }
 
-    Debug.WriteLine("Database restored successfully using SqlPackage.");
-     }
+                Debug.WriteLine("Database restored successfully using SqlPackage.");
+            }
             catch (Exception ex)
             {
-      Debug.WriteLine($"Error in RestoreUsingSqlPackageAsync: {ex}");
- throw new Exception($"Eroare la importul bazei de date: {ex.Message}", ex);
-          }
+                Debug.WriteLine($"Error in RestoreUsingSqlPackageAsync: {ex}");
+                throw new Exception($"Eroare la importul bazei de date: {ex.Message}", ex);
+            }
         }
 
         private string FindSqlPackageExe()
@@ -296,12 +299,26 @@ Debug.WriteLine($"Database {database} dropped successfully.");
             // Common installation paths for SqlPackage.exe
         string[] searchPaths = new[]
   {
-             @"C:\Program Files\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe",
-             @"C:\Program Files\Microsoft SQL Server\150\DAC\bin\SqlPackage.exe",
+            @"C:\Program Files\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe",
+        @"C:\Program Files (x86)\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe",
+        
+        // SQL Server 2019 (150)
+        @"C:\Program Files\Microsoft SQL Server\150\DAC\bin\SqlPackage.exe",
+        @"C:\Program Files (x86)\Microsoft SQL Server\150\DAC\bin\SqlPackage.exe",
+        
+        // SQL Server 2017 (140)
         @"C:\Program Files\Microsoft SQL Server\140\DAC\bin\SqlPackage.exe",
-      @"C:\Program Files (x86)\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe",
-@"C:\Program Files (x86)\Microsoft SQL Server\150\DAC\bin\SqlPackage.exe",
-             @"C:\Program Files (x86)\Microsoft SQL Server\140\DAC\bin\SqlPackage.exe",
+        @"C:\Program Files (x86)\Microsoft SQL Server\140\DAC\bin\SqlPackage.exe",
+        
+        // Visual Studio 2022 paths
+        @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
+        @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
+        @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
+        
+        // Visual Studio 2019 paths
+        @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
+        @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
+        @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\SqlPackage.exe",
             };
 
           foreach (var path in searchPaths)
