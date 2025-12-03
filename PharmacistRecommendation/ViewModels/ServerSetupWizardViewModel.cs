@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Data.SqlClient;
 using PharmacistRecommendation.Helpers;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -32,6 +34,43 @@ private bool isCreating;
         public ServerSetupWizardViewModel()
         {
  }
+
+        private async Task<string> GetServerIPAddressAsync()
+        {
+            try
+ {
+                await Task.Run(() => { }); // Make it async
+
+           string hostName = Dns.GetHostName();
+          IPAddress[] addresses = Dns.GetHostAddresses(hostName);
+
+   // Find first valid IPv4 address
+       foreach (var address in addresses)
+     {
+ // Check if it's IPv4
+         if (address.AddressFamily == AddressFamily.InterNetwork)
+    {
+           string ipString = address.ToString();
+
+              // Exclude loopback addresses (127.x.x.x)
+     if (ipString.StartsWith("127."))
+     continue;
+
+ // Exclude link-local addresses (169.254.x.x)
+      if (ipString.StartsWith("169.254."))
+    continue;
+
+    return ipString + "\\SQLEXPRESS";
+           }
+      }
+            }
+    catch (Exception ex)
+            {
+    Debug.WriteLine($"Error getting IP address: {ex.Message}");
+        }
+
+  return "localhost\\SQLEXPRESS";
+    }
 
         [RelayCommand]
         private async Task CreateDatabaseAsync()
@@ -76,7 +115,7 @@ IsCompleted = false;
        await DropDatabaseIfExistsAsync(server, database);
 
      // Step 4: Restore database from .bacpac
-     ProgressMessage = "Se creeaza baza de date... (acest proces poate dura câteva minute)";
+     ProgressMessage = "Se creeaza baza de date... (acest proces poate dura cateva minute)";
        ProgressValue = 40;
 
        await RestoreDatabaseFromBacpacAsync(server, database);
@@ -98,10 +137,22 @@ await Task.Delay(500);
 
   FirstRunHelper.MarkAsConfigured();
 
-             IsCompleted = true;
-     StatusMessage = "Baza de date a fost creata cu succes!\n\nServerul dumneavoastra este gata de utilizare.";
-            }
-            catch (Exception ex)
+   // Get server IP address for client connections
+       string serverIP = await GetServerIPAddressAsync();
+
+          IsCompleted = true;
+   StatusMessage = "Baza de date a fost creata cu succes!\n\n" +
+   "Serverul dumneavoastra este gata de utilizare.\n\n" +
+          "========================================\n\n" +
+          "INFORMATII PENTRU CALCULATOARELE CLIENT:\n\n" +
+      $"Adresa IP Server: {serverIP}\n" +
+   "Parola: Farmacie2025\n\n" +
+      "Va rugam sa salvati aceste informatii!\n" +
+"Acestea vor fi necesare pentru conectarea\n" +
+         "calculatoarelor client la acest server.\n\n" +
+    "========================================";
+ }
+        catch (Exception ex)
   {
           HasError = true;
      StatusMessage = $"A ap?rut o eroare:\n\n{ex.Message}\n\nVa rugam sa contactati asistenta tehnica.";
