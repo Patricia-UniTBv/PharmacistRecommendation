@@ -14,7 +14,7 @@ namespace PharmacistRecommendation.ViewModels
         private string databaseName = "PharmacistRecommendationDB";
 
         [ObservableProperty]
-        private string instanceName = "SQLEXPRESS";
+        private string instanceName = "PHARMACYREC";
 
         [ObservableProperty]
         private string username = "appuser";

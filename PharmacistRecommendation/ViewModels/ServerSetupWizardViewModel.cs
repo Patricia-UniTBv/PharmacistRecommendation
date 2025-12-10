@@ -60,7 +60,7 @@ private bool isCreating;
       if (ipString.StartsWith("169.254."))
     continue;
 
-    return ipString + "\\SQLEXPRESS";
+    return ipString + "\\PHARMACYREC";
            }
       }
             }
@@ -69,7 +69,7 @@ private bool isCreating;
     Debug.WriteLine($"Error getting IP address: {ex.Message}");
         }
 
-  return "localhost\\SQLEXPRESS";
+  return "localhost\\PHARMACYREC";
     }
 
         [RelayCommand]

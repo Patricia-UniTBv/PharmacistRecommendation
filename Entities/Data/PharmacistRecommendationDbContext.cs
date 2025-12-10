@@ -53,7 +53,7 @@ public partial class PharmacistRecommendationDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             // Change this to match your MauiProgram.cs
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;");
+            optionsBuilder.UseSqlServer("Server=localhost\\PHARMACYREC;Database=PharmacistRecommendationDB;Trusted_Connection=true;TrustServerCertificate=true;");
         }
     }
 

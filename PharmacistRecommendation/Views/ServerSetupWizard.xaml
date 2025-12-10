@@ -65,7 +65,7 @@ FontSize="15"
      <FormattedString>
       <Span Text="Acest asistent va crea baza de date a farmaciei pe computerul dumneavoastră.&#x0a;&#x0a;" />
            <Span Text="Locația: " FontAttributes="Bold" />
-<Span Text="localhost\SQLEXPRESS&#x0a;" />
+<Span Text="localhost\PHARMACYREC&#x0a;" />
      <Span Text="Bază de date: " FontAttributes="Bold" />
         <Span Text="PharmacistRecommendationDB&#x0a;&#x0a;" />
   <Span Text="Procesul durează aproximativ 2-3 minute." FontAttributes="Italic" TextColor="#666666" />
