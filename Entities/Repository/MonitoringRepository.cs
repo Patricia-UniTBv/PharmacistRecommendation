@@ -11,6 +11,23 @@ namespace Entities.Repository
 
         public MonitoringRepository(PharmacistRecommendationDbContext context) => _context = context;
 
+        public async Task<List<Monitoring>> GetAllMonitoringsAsync()
+        {
+            return await _context.Monitorings
+                .AsNoTracking()
+                .Include(m => m.Patient)
+                .OrderByDescending(m => m.MonitoringDate)
+                .ToListAsync();
+        }
+
+        public async Task<Monitoring?> GetByIdAsync(int id)
+        {
+            return await _context.Monitorings
+                .Include(m => m.Patient)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
+
         public async Task<int> AddAsync(Monitoring entity)
         {
             _context.Monitorings.Add(entity);

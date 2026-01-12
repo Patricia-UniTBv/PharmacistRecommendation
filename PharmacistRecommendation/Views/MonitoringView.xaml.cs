@@ -1,4 +1,5 @@
-﻿using PharmacistRecommendation.ViewModels;
+﻿using Entities.Models;
+using PharmacistRecommendation.ViewModels;
 using System.Diagnostics;
 namespace PharmacistRecommendation.Views;
 

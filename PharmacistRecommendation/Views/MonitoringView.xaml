@@ -290,9 +290,10 @@
                     <Button Text="Generare PDF" Command="{Binding GeneratePdfCommand}"
                     BackgroundColor="#ece8fa" TextColor="#36317f" FontSize="12" Padding="8,4" WidthRequest="100"/>
                    
-                    <Button Text="Resetează" Command="{Binding ClearCommand}" 
+                
+                    <Button Text="Resetează" Command="{Binding ClearCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
                     BackgroundColor="#007bff" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
-                    <Button Text="Salvează" Command="{Binding SaveCommand}" 
+                    <Button Text="Salvează" Command="{Binding SaveCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
                     BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
                 </HorizontalStackLayout>
             </Grid>

@@ -37,6 +37,8 @@ namespace PharmacistRecommendation
 
             Routing.RegisterRoute(nameof(AddPharmacyView), typeof(AddPharmacyView));
             Routing.RegisterRoute(nameof(LoginAddUserView), typeof(LoginAddUserView));
+            Routing.RegisterRoute(nameof(MixedActIssuanceView),typeof(MixedActIssuanceView));
+            Routing.RegisterRoute(nameof(MonitoringView), typeof(MonitoringView));
 
             // Subscribe to authentication changes
             _authService.AuthenticationStateChanged += OnAuthenticationStateChanged;

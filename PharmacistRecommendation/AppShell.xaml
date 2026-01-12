@@ -23,7 +23,7 @@
         </MenuBarItem>
 
         <MenuBarItem Text="Rapoarte">
-            <MenuFlyoutItem Text="Raport Acte Mixte" Clicked="OnMixedActsReportClicked" />
+            <!--<MenuFlyoutItem Text="Raport Acte Mixte" Clicked="OnMixedActsReportClicked" />-->
             <MenuFlyoutItem Text="Raport Acte Proprii" Clicked="OnOwnActsReportClicked" />
             <MenuFlyoutItem Text="Raport Acte Consecutive" Clicked="OnConsecutiveActsReportClicked" />
             <MenuFlyoutItem Text="Listă Monitorizări" Clicked="OnMonitoringListReportClicked" />

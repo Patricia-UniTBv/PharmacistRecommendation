@@ -206,13 +206,14 @@
                                 ItemDisplayBinding="{Binding Name}"
                                 SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
 
-                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="4">
-                                        <Button Text="🗑️"
+                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="3">
+                                        <Button Text="🗑"
                                     TextColor="Red"
                                     Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
                                     CommandParameter="{Binding .}"
                                     HeightRequest="20"
-                                    WidthRequest="20"
+                                    WidthRequest="22"
+                                    FontSize="13"
                                     BackgroundColor="#faf6f6"
                                     ToolTipProperties.Text="Șterge medicament"/>
                                     </StackLayout>
@@ -299,6 +300,7 @@
     CommandParameter="{Binding .}"
     HeightRequest="20"
     WidthRequest="20"
+    FontSize="13"
     BackgroundColor="#faf6f6"
     ToolTipProperties.Text="Șterge medicament"/>
                                     </StackLayout>
@@ -361,7 +363,8 @@
                 HeightRequest="34"
                 CornerRadius="8"
                 BackgroundColor="Green"
-                TextColor="White"/>
+                TextColor="White"
+                IsVisible="{Binding IsSaveButtonVisible}" />
                 </HorizontalStackLayout>
 
             </Grid>

@@ -5,6 +5,8 @@ namespace Entities.Services.Interfaces
 {
     public interface IMonitoringService
     {
+        Task<List<Monitoring>> GetAllMonitoringsAsync();
+        Task<Monitoring?> GetMonitoringByIdAsync(int id);
         Task<int> AddMonitoringAsync(MonitoringDTO dto, int loggedInUserId);
 
         Task DeleteHistoryRowAsync(int id);

@@ -21,6 +21,16 @@ namespace Entities.Services
     {
         private readonly IMonitoringRepository _repo;
         public MonitoringService(IMonitoringRepository repo) => _repo = repo;
+
+        public async Task<List<Monitoring>> GetAllMonitoringsAsync()
+        {
+            return await _repo.GetAllMonitoringsAsync();
+        }
+
+        public async Task<Monitoring?> GetMonitoringByIdAsync(int id)
+        {
+            return await _repo.GetByIdAsync(id);
+        }
         public async Task<int> AddMonitoringAsync(MonitoringDTO dto, int loggedInUserId)
         {
             var entity = new Monitoring

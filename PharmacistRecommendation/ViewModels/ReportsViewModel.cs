@@ -4,6 +4,7 @@ using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
 using Entities.Services.Interfaces;
 using Entities.Models;
+using PharmacistRecommendation.Views;
 
 namespace PharmacistRecommendation.ViewModels;
 
@@ -60,7 +61,99 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
     private ObservableCollection<Prescription> prescriptionsData = new();
 
     [ObservableProperty]
-    private ObservableCollection<object> monitoringData = new();
+    private ObservableCollection<Monitoring> monitoringData = new();
+
+    [ObservableProperty]
+    private Prescription? selectedPrescription;
+
+    public bool IsMonitoringReport =>
+    SelectedReportType?.ReportType == ReportTypeEnum.MonitoringList;
+
+    public bool IsPrescriptionReport =>
+        SelectedReportType != null &&
+        SelectedReportType.ReportType != ReportTypeEnum.MonitoringList;
+
+    private Monitoring _selectedMonitoring;
+    public Monitoring SelectedMonitoring
+    {
+        get => _selectedMonitoring;
+        set
+        {
+            if (SetProperty(ref _selectedMonitoring, value) && value != null)
+            {
+                OpenMonitoringCommand.Execute(value);
+            }
+        }
+    }
+
+    public ReportTypeEnum CurrentReportType { get; set; }
+
+    partial void OnSelectedReportTypeChanged(ReportTypeModel? value)
+    {
+        if (value != null)
+        {
+            CurrentReportType = value.ReportType;
+            OnPropertyChanged(nameof(IsMonitoringReport));
+            OnPropertyChanged(nameof(IsPrescriptionReport));
+        }
+    }
+
+    partial void OnSelectedPrescriptionChanged(Prescription? value)
+    {
+        if (value != null && CurrentReportType != default)
+        {
+            string mode = CurrentReportType switch
+            {
+                ReportTypeEnum.MixedActs => "withprescription",
+                ReportTypeEnum.OwnActs => "withoutprescription",
+                ReportTypeEnum.ConsecutivePrescriptionActs => "withprescription",
+                ReportTypeEnum.MonitoringList => "withoutprescription",
+                _ => "withoutprescription"
+            };
+
+            _ = Shell.Current.GoToAsync(
+                $"{nameof(MixedActIssuanceView)}?PrescriptionId={value.Id}&mode={mode}&IsReportViewMode=true");
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenPrescription(Prescription prescription)
+    {
+        if (prescription == null || CurrentReportType == default)
+            return;
+
+        string mode = CurrentReportType switch
+        {
+            ReportTypeEnum.MixedActs => "withprescription",
+            ReportTypeEnum.OwnActs => "withoutprescription",
+            ReportTypeEnum.ConsecutivePrescriptionActs => "withprescription",
+            ReportTypeEnum.MonitoringList => "withoutprescription",
+            _ => "withoutprescription"
+        };
+
+        await Shell.Current.GoToAsync(
+            $"{nameof(MixedActIssuanceView)}?PrescriptionId={prescription.Id}&mode={mode}&IsReportViewMode=true"
+        );
+    }
+
+    [RelayCommand]
+    private async Task OpenMonitoring(Monitoring monitoring)
+    {
+        if (monitoring == null)
+            return;
+
+        await Shell.Current.GoToAsync(
+            nameof(MonitoringView),
+            new Dictionary<string, object>
+            {
+                ["MonitoringId"] = monitoring.Id,
+                ["IsReportViewMode"] = true
+            });
+
+        SelectedMonitoring = null;
+    }
+
+
 
     public void Dispose()
     {
@@ -114,13 +207,6 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<ReportTypeModel> ReportTypes { get; } = new()
     {
-        new ReportTypeModel
-        {
-            Title = "Raport Acte Mixte",
-            Description = "Rapoarte pentru recomandări farmaceutice mixte",
-            Icon = "",
-            ReportType = ReportTypeEnum.MixedActs
-        },
         new ReportTypeModel
         {
             Title = "Raport Acte Proprii",
@@ -207,9 +293,6 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
 
             switch (SelectedReportType.ReportType)
             {
-                case ReportTypeEnum.MixedActs:
-                    await LoadMixedActsData();
-                    break;
                 case ReportTypeEnum.OwnActs:
                     await LoadOwnActsData();
                     break;
@@ -239,33 +322,6 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             IsLoadingData = false;
             System.Diagnostics.Debug.WriteLine($"Data loading completed. HasData: {HasData}, DataCount: {DataCount}");
         }
-    }
-
-    private async Task LoadMixedActsData()
-    {
-        System.Diagnostics.Debug.WriteLine("Loading Mixed Acts data...");
-        var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-        System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
-        
-        var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
-            .Where(p => string.IsNullOrEmpty(PatientFilter) || 
-                       (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                       (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
-            .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true) && 
-                       p.PrescriptionMedications.Any(m => m.IsWithPrescription == false))
-            .OrderBy(p => p.IssueDate)
-            .ToList();
-
-        System.Diagnostics.Debug.WriteLine($"Filtered Mixed Acts: {filteredPrescriptions.Count}");
-
-        foreach (var prescription in filteredPrescriptions)
-        {
-            PrescriptionsData.Add(prescription);
-        }
-
-        HasData = PrescriptionsData.Any();
-        DataCount = $"Total acte mixte: {PrescriptionsData.Count}";
     }
 
     private async Task LoadOwnActsData()
@@ -322,13 +378,38 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
 
     private async Task LoadMonitoringData()
     {
-        System.Diagnostics.Debug.WriteLine("Loading Monitoring data...");
-        DataCount = "Monitorizări vor fi implementate în versiunea viitoare";
-        HasData = false;
-        
-        await Shell.Current.DisplayAlert("Info", 
-            "Monitorizările sunt încă în dezvoltare.\nAceastă funcționalitate va fi disponibilă în curând.", 
-            "OK");
+        var monitorings = await _monitoringService.GetAllMonitoringsAsync();
+
+        var filtered = monitorings
+            .Where(m => m.MonitoringDate >= StartDate &&
+                        m.MonitoringDate <= EndDate.Date.AddDays(1).AddTicks(-1))
+            .Where(m => string.IsNullOrEmpty(PatientFilter) ||
+                        m.Patient.Cnp.Contains(PatientFilter) ||
+                        $"{m.Patient.FirstName} {m.Patient.LastName}"
+                            .Contains(PatientFilter, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(m => m.MonitoringDate)
+            .ToList();
+
+        MonitoringData.Clear();
+        foreach (var m in filtered)
+            MonitoringData.Add(m);
+
+        HasData = MonitoringData.Any();
+        DataCount = $"Total monitorizări: {MonitoringData.Count}";
+    }
+
+
+
+    private string GetReportTypeStr(ReportTypeEnum reportType)
+    {
+        return reportType switch
+        {
+            ReportTypeEnum.MixedActs => "withprescription",
+            ReportTypeEnum.OwnActs => "withoutprescription",
+            ReportTypeEnum.ConsecutivePrescriptionActs => "withprescription",
+            ReportTypeEnum.MonitoringList => "withoutprescription",
+            _ => "withoutprescription"
+        };
     }
 
     [RelayCommand]

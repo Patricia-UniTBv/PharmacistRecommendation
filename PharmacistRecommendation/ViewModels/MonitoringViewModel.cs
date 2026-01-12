@@ -6,10 +6,13 @@ using Entities.Services;
 using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 
 namespace PharmacistRecommendation.ViewModels;
 
+[QueryProperty(nameof(MonitoringId), "MonitoringId")]
+[QueryProperty(nameof(IsReportViewMode), "IsReportViewMode")]
 public partial class MonitoringViewModel : ObservableObject
 {
     private readonly IMonitoringService _monitoringService;
@@ -71,6 +74,28 @@ public partial class MonitoringViewModel : ObservableObject
     [ObservableProperty] private string? _validationMessage;
 
     private int loggedInUserId { get; set; }
+
+    private int _monitoringId;
+    public int MonitoringId
+    {
+        get => _monitoringId;
+        set
+        {
+            _monitoringId = value;
+            LoadMonitoringAsync(value);
+        }
+    }
+
+    [ObservableProperty]
+    bool isReportViewMode = false;
+
+    public bool IsSaveButtonVisible => !IsReportViewMode;
+
+    partial void OnIsReportViewModeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsSaveButtonVisible));
+    }
+
 
     partial void OnCardNumberChanged(string oldValue, string newValue)
     {
@@ -314,4 +339,63 @@ public partial class MonitoringViewModel : ObservableObject
         PatientEmail = string.Empty;
         HistoryList = null;
     }
+
+    //Reports methods
+    private async Task LoadMonitoringAsync(int id)
+    {
+        var monitoring = await _monitoringService.GetMonitoringByIdAsync(id);
+        if (monitoring == null)
+            return;
+
+        EndDate = monitoring.MonitoringDate;
+        StartDate = EndDate.AddMonths(-1);
+
+        Height = monitoring.Height;
+        Weight = monitoring.Weight;
+
+        FirstName = monitoring.Patient.FirstName;
+        LastName = monitoring.Patient.LastName;
+        Cnp = monitoring.Patient.Cnp;
+        Cid = monitoring.Patient.Cid;
+
+        PatientId = monitoring.PatientId;
+
+        if (!string.IsNullOrWhiteSpace(monitoring.ParametersJson))
+        {
+            var p = JsonSerializer.Deserialize<MonitoringParameters>(monitoring.ParametersJson);
+
+            MaxBloodPressure = p?.MaxBloodPressure;
+            MinBloodPressure = p?.MinBloodPressure;
+            HeartRate = p?.HeartRate;
+            PulseOximetry = p?.PulseOximetry;
+            BloodGlucose = p?.BloodGlucose;
+            BodyTemperature = p?.BodyTemperature;
+        }
+
+        await LoadHistoryForPatientAsync(PatientId);
+    }
+
+    private async Task LoadHistoryForPatientAsync(int patientId)
+    {
+        if (patientId <= 0)
+            return;
+
+        if (HistoryList != null)
+            HistoryList.Clear();
+        else
+            HistoryList = new ObservableCollection<object>();
+
+        ValidationMessage = string.Empty;
+
+        var rows = await _monitoringService.GetHistoryByPatientIdsAsync(
+            new List<int> { patientId },
+            StartDate.Date,
+            EndDate.Date.AddDays(1).AddTicks(-1)
+        );
+
+        foreach (var row in rows)
+            HistoryList.Add(row);
+    }
+
+
 }

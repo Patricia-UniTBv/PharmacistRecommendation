@@ -26,6 +26,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace PharmacistRecommendation.ViewModels
 {
     [QueryProperty(nameof(Mode), "mode")]
+    [QueryProperty(nameof(PrescriptionId), "PrescriptionId")]
+    [QueryProperty(nameof(IsReportViewMode), "IsReportViewMode")]
     public partial class MixedActIssuanceViewModel : ObservableObject
     {
         private string PrescriptionsPath { get; set; }
@@ -160,6 +162,28 @@ namespace PharmacistRecommendation.ViewModels
             Task.Run(async () => await LoadAdministrationModes());
 
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        }
+
+        [ObservableProperty]
+        bool isReportViewMode = false;
+
+        [ObservableProperty]
+        private int prescriptionId;
+
+        [ObservableProperty]
+        private Prescription prescription;
+
+        public bool IsSaveButtonVisible => !IsReportViewMode;
+
+        partial void OnIsReportViewModeChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsSaveButtonVisible));
+        }
+
+
+        partial void OnPrescriptionIdChanged(int value)
+        {
+            _ = LoadPrescriptionAsync(value);
         }
 
         partial void OnCardNumberChanged(string value)
@@ -435,6 +459,7 @@ namespace PharmacistRecommendation.ViewModels
 
             var prescription = new Prescription
             {
+                //PatientId = int.TryParse(this.CardNumber, out int id) ? id : 0,
                 PatientName = this.PatientName,
                 PatientCnp = this.PatientCnp,
                 CaregiverName = this.CaregiverName,
@@ -997,5 +1022,66 @@ namespace PharmacistRecommendation.ViewModels
             var activeModes = modes.Where(c => (bool)c.IsActive).ToList();
             AdministrationModes = new ObservableCollection<AdministrationMode>(activeModes);
         }
+
+        //Reports methods:
+
+        private async Task LoadPrescriptionAsync(int id)
+        {
+            var presc = await _prescriptionService.GetPrescriptionByIdAsync(id);
+            if (presc != null)
+            {
+                Prescription = presc;
+
+                MedicationsWithPrescription = new ObservableCollection<PrescriptionDrugModel>(
+                    presc.PrescriptionMedications
+                        .Where(m => m.IsWithPrescription == true)
+                        .Select((m, index) => new PrescriptionDrugModel
+                        {
+                            Index = index + 1,
+                            Name = m.Name,
+                            Morning = m.Morning,
+                            Noon = m.Noon,
+                            Evening = m.Evening,
+                            Night = m.Night,
+                            AdministrationModeId = m.AdministrationModeId,
+                        }));
+
+                MedicationsWithoutPrescription = new ObservableCollection<ReceiptDrugModel>(
+                    presc.PrescriptionMedications
+                        .Where(m => m.IsWithPrescription == false)
+                        .Select((m, index) => new ReceiptDrugModel
+                        {
+                            Index = index + 1,
+                            Name = m.Name,
+                            Morning = m.Morning,
+                            Noon = m.Noon,
+                            Evening = m.Evening,
+                            Night = m.Night,
+                        }));
+                PatientName = presc.PatientName;
+                PatientCnp = presc.PatientCnp;
+                CaregiverName = presc.CaregiverName;
+                CaregiverCnp = presc.CaregiverCnp;
+                PrescriptionNumber = presc.Number;
+                PrescriptionSeries = presc.Series;
+                PrescriptionDiagnosis = presc.Diagnostic;
+                PatientDiagnosis = presc.DiagnosisMentionedByPatient;
+                UsedMedications = presc.MedicamentsMentionedByPacient;
+                SearchText = presc.MedicamentsMentionedByPacient;
+                Symptoms = presc.Symptoms;
+                Suspicion = presc.Suspicion;
+                PharmacistObservations = presc.PharmacistObservations;
+                NotesToDoctor = presc.NotesToDoctor;
+                PharmacistRecommendation = presc.PharmacistRecommendation;
+                SelectedPharmaceuticalService = presc.PharmaceuticalService;
+                DoctorStamp = presc.DoctorStamp;
+
+                IsReadOnly = true;
+            }
+        }
+
+        [ObservableProperty]
+        private bool isReadOnly;
+
     }
 }

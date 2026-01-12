@@ -94,13 +94,12 @@
                 </HorizontalStackLayout>
             </Border>
 
-            <Border Style="{StaticResource SectionCard}">
+            <Border Style="{StaticResource SectionCard}" Margin="180,0,180,0">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="Funcii principale" Style="{StaticResource SectionTitle}" />
 
                     <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -124,13 +123,12 @@
             </Border>
 
             <!-- Emitere documente -->
-            <Border Style="{StaticResource SectionCard}">
+            <Border Style="{StaticResource SectionCard}" Margin="180,0,180,0">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="Emitere documente" Style="{StaticResource SectionTitle}" />
 
                     <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
