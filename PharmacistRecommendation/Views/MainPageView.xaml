@@ -86,7 +86,7 @@
                     <Image Source="logo.png" WidthRequest="60" HeightRequest="60" VerticalOptions="Center"/>
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                         <Label Text="Recomandarea farmacistului" Style="{StaticResource HeaderTitle}" HorizontalOptions="Center"/>
-                        <Label Text="Selectai modulul dorit din opiunile de mai jos" Style="{StaticResource HeaderSubtitle}" HorizontalOptions="Center"/>
+                        <Label Text="Selectati modulul dorit din optiunile de mai jos" Style="{StaticResource HeaderSubtitle}" HorizontalOptions="Center"/>
                     </VerticalStackLayout>
 
                     <!-- Logo -->

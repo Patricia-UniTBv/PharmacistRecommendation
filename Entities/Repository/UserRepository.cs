@@ -23,6 +23,17 @@ namespace Entities.Repository
             return await _context.Users.FindAsync(id);
         }
 
+        public async Task<User?> GetFirstUserByRoleAsync(string role)
+        {
+            if (string.IsNullOrWhiteSpace(role))
+                return null;
+
+            return await _context.Users
+                                 .Where(u => u.Role.ToLower() == role.ToLower())
+                                 .OrderBy(u => u.Id)
+                                 .FirstOrDefaultAsync();
+        }
+
         public async Task<int> AddAsync(User entity)
         {
             _context.Users.Add(entity);

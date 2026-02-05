@@ -1,4 +1,6 @@
 ﻿
+using System.Drawing.Printing;
+
 namespace PharmacistRecommendation.Helpers
 {
     public interface IPdfReportService
@@ -12,6 +14,7 @@ namespace PharmacistRecommendation.Helpers
         Task<string> CreateConsecutivePrescriptionActsReportAsync(DateTime startDate, DateTime endDate, string patientFilter);
         Task<string> CreateMonitoringListReportAsync(DateTime startDate, DateTime endDate, string patientFilter);
 
-        Task<string> CreateMonitoringPatientReportAsync(int patientId, DateTime from, DateTime to);
+        Task<PrintDocument> CreateMonitoringPatientReportAsync(int patientId, DateTime from, DateTime to);
+        Task<string> CreateMonitoringPatientReportEmailAsync(int patientId, DateTime from, DateTime to);
     }
 }

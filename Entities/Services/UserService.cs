@@ -1,5 +1,6 @@
 ﻿using DTO;
 using Entities.Models;
+using Entities.Repository;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
 
@@ -83,6 +84,26 @@ namespace Entities.Services
 
             await _repo.UpdateAsync(existing);
         }
+
+        public async Task<UserDTO?> GetEffectivePharmacistAsync(UserDTO? currentUser)
+        {
+            if (currentUser?.Role?.ToLower() == "pharmacist")
+                return currentUser;
+
+            var pharmacist = await _repo.GetFirstUserByRoleAsync("pharmacist");
+            if (pharmacist == null)
+                return null;
+
+            return new UserDTO
+            {
+                Id = pharmacist.Id,
+                FirstName = pharmacist.FirstName,
+                LastName = pharmacist.LastName,
+                Ncm = pharmacist.Ncm,
+                Role = pharmacist.Role
+            };
+        }
+
 
         public async Task DeleteUserAsync(int id)
         {

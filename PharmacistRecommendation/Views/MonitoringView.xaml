@@ -284,16 +284,16 @@
                 <Entry Text="{Binding PatientEmail}" Grid.Column="1" 
                Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12" HeightRequest="35"/>
 
-                <HorizontalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                <HorizontalStackLayout Grid.Column="2" Spacing="7" VerticalOptions="Center">
                     <Button Text="Trimite Mail" Command="{Binding SendEmailCommand}"
-  BackgroundColor="#ece8fa" TextColor="#36317f"  FontSize="12" Padding="8,4" WidthRequest="100"/>
-                    <Button Text="Generare PDF" Command="{Binding GeneratePdfCommand}"
-                    BackgroundColor="#ece8fa" TextColor="#36317f" FontSize="12" Padding="8,4" WidthRequest="100"/>
+  BackgroundColor="#ece8fa" TextColor="#36317f"  FontSize="12" Padding="8,4" WidthRequest="90"/>
+                    <Button Text="Printeaza" Command="{Binding GeneratePdfCommand}"
+                    BackgroundColor="#ece8fa" TextColor="#36317f" FontSize="12" Padding="8,4" WidthRequest="70"/>
                    
                 
-                    <Button Text="Resetează" Command="{Binding ClearCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
+                    <Button Text="Reseteaza" Command="{Binding ClearCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
                     BackgroundColor="#007bff" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
-                    <Button Text="Salvează" Command="{Binding SaveCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
+                    <Button Text="Salveaza" Command="{Binding SaveCommand}"  IsVisible="{Binding IsSaveButtonVisible}"
                     BackgroundColor="#28a745" TextColor="White" FontSize="12" Padding="4,2" WidthRequest="70"/>
                 </HorizontalStackLayout>
             </Grid>

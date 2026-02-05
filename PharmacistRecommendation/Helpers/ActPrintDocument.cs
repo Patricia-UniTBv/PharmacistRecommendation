@@ -36,6 +36,10 @@ namespace PharmacistRecommendation.Helpers
         public List<MedicationLine> MedicationsWithPrescription { get; set; } = new();
         public List<MedicationLine> MedicationsWithoutPrescription { get; set; } = new();
 
+        public string PharmacistNameEffective { get; set; } = "-";
+        public string? AssistantName { get; set; }
+
+
         public class MedicationLine
         {
             public string? Name { get; set; }
@@ -86,14 +90,15 @@ namespace PharmacistRecommendation.Helpers
                 _ => "Document farmaceutic"
             };
             g.DrawString(pageTitle, fontTitle, Brushes.Black, textStartX, y);
-            y += lineHeight * 2.5f; 
+            y += lineHeight * 2.5f;
 
-            string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{new Random().Next(1000, 9999):D4}";
+            string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{GetNextSequentialNumber(ModeCode)}";
+
             g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
             g.DrawString(code, fontText, Brushes.Black, right - 180, y);
             y += lineHeight;
 
-            g.DrawString($"FARMACIST: {SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}", fontText, Brushes.Black, textStartX, y);
+            g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
             g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
@@ -118,7 +123,7 @@ namespace PharmacistRecommendation.Helpers
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     g.DrawString(text, fontText, Brushes.Black, textStartX, y);
-                    y += lineHeight; 
+                    y += lineHeight;
                 }
                 else
                 {
@@ -164,11 +169,39 @@ namespace PharmacistRecommendation.Helpers
             DrawParagraph("Serviciu farmaceutic:", PharmaceuticalService);
 
             float footerY = bottom - 100;
-            string pharmacistName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName} {SessionManager.CurrentUser?.Ncm}";
-            g.DrawString(pharmacistName.ToUpper(), fontText, Brushes.Black, left, footerY);
-            g.DrawString(PatientName?.ToUpper(), fontText, Brushes.Black, right - 220, footerY);
-            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 35);
+
+            g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, left, footerY);
+
+            if (!string.IsNullOrEmpty(AssistantName))
+            {
+                g.DrawString($"ASISTENT: {AssistantName}", fontText, Brushes.Black, left, footerY + 20);
+            }
+
+            g.DrawString(PatientName, fontText, Brushes.Black, right - 220, footerY);
+
+            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 50);
+
         }
+
+        private string GetNextSequentialNumber(string modeCode)
+        {
+            string filePath = $"{modeCode}_counter.txt";
+            int lastNumber = 0;
+
+            if (File.Exists(filePath))
+            {
+                string content = File.ReadAllText(filePath);
+                int.TryParse(content, out lastNumber);
+            }
+
+            int nextNumber = lastNumber + 1;
+
+            File.WriteAllText(filePath, nextNumber.ToString());
+
+            return nextNumber.ToString("D4");
+        }
+
+
 
         private float DrawMedicationSection(SD.Graphics g, float left, float y, float contentWidth, string title,
                                     List<MedicationLine> medications, SD.Font sectionFont, SD.Font textFont, SD.Font headerFont,
@@ -189,39 +222,39 @@ namespace PharmacistRecommendation.Helpers
                                            bool noColor)
         {
             float[] colWidths = { 30, 200, 65, 65, 65, 70, 130 };
- float totalWidth = colWidths.Sum();
-    float scale = 1f;
+            float totalWidth = colWidths.Sum();
+            float scale = 1f;
 
- if (totalWidth > tableWidth)
-          scale = tableWidth / totalWidth;
+            if (totalWidth > tableWidth)
+                scale = tableWidth / totalWidth;
 
-     for (int i = 0; i < colWidths.Length; i++)
-     colWidths[i] *= scale;
+            for (int i = 0; i < colWidths.Length; i++)
+                colWidths[i] *= scale;
 
-float x = left;
-     float headerHeight = headerFont.GetHeight(g) * 1.5f;
+            float x = left;
+            float headerHeight = headerFont.GetHeight(g) * 1.5f;
             float rowHeight = font.GetHeight(g) * 2f;
-       string[] headers = { "NR CRT", "MEDICAMENT", "DIMINEAȚĂ", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN" };
+            string[] headers = { "NR CRT", "MEDICAMENT", "DIMIN.", "PRÂNZ", "SEARA", "NOAPTEA", "MOD ADMIN." };
 
-  for (int i = 0; i < headers.Length; i++)
-         {
-        var headerRect = new RectangleF(x, y, colWidths[i], headerHeight);
-  g.DrawRectangle(Pens.Gray, Rectangle.Round(headerRect));
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var headerRect = new RectangleF(x, y, colWidths[i], headerHeight);
+                g.DrawRectangle(Pens.Gray, Rectangle.Round(headerRect));
 
-      var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, headerHeight - 4);
-   using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-  g.DrawString(headers[i], headerFont, Brushes.Black, textRect, format);
+                var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, headerHeight - 4);
+                using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                g.DrawString(headers[i], headerFont, Brushes.Black, textRect, format);
 
-              x += colWidths[i];
-    }
+                x += colWidths[i];
+            }
 
             y += headerHeight;
 
             for (int r = 0; r < medications.Count; r++)
-   {
-   x = left;
-      var med = medications[r];
-   string[] values = {
+            {
+                x = left;
+                var med = medications[r];
+                string[] values = {
             (r + 1).ToString(),
      med.Name ?? "-",
             med.Morning ?? "-",
@@ -231,28 +264,28 @@ float x = left;
           med.AdministrationMode ?? "-"
         };
 
-       for (int i = 0; i < values.Length; i++)
-     {
-    var cellRect = new RectangleF(x, y, colWidths[i], rowHeight);
- g.DrawRectangle(Pens.Gray, Rectangle.Round(cellRect));
+                for (int i = 0; i < values.Length; i++)
+                {
+                    var cellRect = new RectangleF(x, y, colWidths[i], rowHeight);
+                    g.DrawRectangle(Pens.Gray, Rectangle.Round(cellRect));
 
-       var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
-   using var format = new StringFormat
-      {
-        Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near,
-      LineAlignment = StringAlignment.Center,
-   Trimming = StringTrimming.EllipsisCharacter
-      };
+                    var textRect = new RectangleF(x + 2, y + 2, colWidths[i] - 4, rowHeight - 4);
+                    using var format = new StringFormat
+                    {
+                        Alignment = i == 0 ? StringAlignment.Center : StringAlignment.Near,
+                        LineAlignment = StringAlignment.Center,
+                        Trimming = StringTrimming.EllipsisCharacter
+                    };
 
-    g.DrawString(values[i], font, Brushes.Black, textRect, format);
+                    g.DrawString(values[i], font, Brushes.Black, textRect, format);
 
-    x += colWidths[i];
-         }
+                    x += colWidths[i];
+                }
 
-            y += rowHeight;
-       }
+                y += rowHeight;
+            }
 
-       return y;
+            return y;
         }
 
         private float DrawWrappedTextCustom(SD.Graphics g, string text, SD.Font font, float textStartX, float y, float contentWidth)
@@ -260,7 +293,7 @@ float x = left;
             if (string.IsNullOrWhiteSpace(text))
                 return y;
 
-            var rect = new RectangleF(textStartX, y, contentWidth, 10000); 
+            var rect = new RectangleF(textStartX, y, contentWidth, 10000);
             using var format = new StringFormat
             {
                 Alignment = StringAlignment.Near,
@@ -271,7 +304,7 @@ float x = left;
             g.DrawString(text, font, Brushes.Black, rect, format);
 
             var size = g.MeasureString(text, font, (int)contentWidth);
-            return y + size.Height + font.GetHeight(g) * 0.3f; 
+            return y + size.Height + font.GetHeight(g) * 0.3f;
         }
     }
 }

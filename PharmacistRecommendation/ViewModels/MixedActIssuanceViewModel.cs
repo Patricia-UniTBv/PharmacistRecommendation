@@ -40,6 +40,7 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IMedicationService _medicationService;
         private readonly IEmailConfigurationService _emailConfigurationService;
         private readonly IPatientService _patientService;
+        private readonly IUserService _userService;
 
         [ObservableProperty]
         string mode;
@@ -146,7 +147,7 @@ namespace PharmacistRecommendation.ViewModels
 
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService,
-            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService, IPatientService patientService)
+            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService, IPatientService patientService, IUserService userService)
         {
             _prescriptionService = prescriptionService ?? throw new ArgumentNullException(nameof(prescriptionService));
             _administrationModeService = administrationModeService ?? throw new ArgumentNullException(nameof(administrationModeService));
@@ -155,6 +156,7 @@ namespace PharmacistRecommendation.ViewModels
             _medicationService = medicationService ?? throw new ArgumentNullException(nameof(medicationService));
             _patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
             _emailConfigurationService = emailConfigurationService;
+            _userService = userService;
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
@@ -369,7 +371,6 @@ namespace PharmacistRecommendation.ViewModels
 
                 if (ShowWithPrescription)
                 {
-                    // 1. Import date pacient din XML
                     string prescriptionFile = PrescriptionImportService.GetLastPrescriptionFile(PrescriptionsPath);
                     if (prescriptionFile == null)
                     {
@@ -384,16 +385,13 @@ namespace PharmacistRecommendation.ViewModels
                     DoctorStamp = patientInfo.DoctorStamp;
                     PrescriptionDiagnosis = patientInfo.Diagnosis;
 
-                    // 2. Ia doar medicamentele compensate din ultimul bon
                     ImportDrugsFromLastCompensatedReceipt(logFile, medicationsWithPrescription);
                 }
                 else if (ShowWithoutPrescription)
                 {
-                    // Ia medicamentele din ultimele două bonuri necompensate (dacă ambele sunt necompensate, ia doar ultimul)
                     ImportDrugsFromLastTwoNonCompensatedReceipts(logFile, medicationsWithoutPrescription);
                 }
 
-                // 3. Populez listele vizuale
                 MedicationsWithPrescription.Clear();
                 foreach (var drug in medicationsWithPrescription)
                     MedicationsWithPrescription.Add(drug);
@@ -683,6 +681,22 @@ namespace PharmacistRecommendation.ViewModels
                 MedicationsWithPrescription = medsWithPrescription,
                 MedicationsWithoutPrescription = medsWithoutPrescription
             };
+
+            var pharmacistUser = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
+
+            if (SessionManager.CurrentUser?.Role?.ToLower() == "pharmacist")
+            {
+                // current user e farmacist => afișăm doar el
+                printDoc.PharmacistNameEffective = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+                printDoc.AssistantName = null;
+            }
+            else
+            {
+                // current user e asistent => afișăm primul farmacist + asistent
+                printDoc.PharmacistNameEffective = $"{pharmacistUser?.FirstName ?? "-"} {pharmacistUser?.LastName ?? "-"}";
+                printDoc.AssistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+            }
+
 
             var pd = new System.Windows.Forms.PrintDialog();
             pd.Document = printDoc;
@@ -986,11 +1000,9 @@ namespace PharmacistRecommendation.ViewModels
 
             if (!receipts.Any()) return;
 
-            // Ultimele bonuri necompensate
             var nonCompensatedReceipts = receipts.Where(r => !r.Any(l => l.Contains("Compensat:"))).ToList();
             if (!nonCompensatedReceipts.Any()) return;
 
-            // Dacă sunt două, luam doar ultimul
             var receiptToImport = nonCompensatedReceipts.Count >= 2
                 ? nonCompensatedReceipts.Last()
                 : nonCompensatedReceipts.Last();

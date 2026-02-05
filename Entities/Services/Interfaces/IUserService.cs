@@ -6,6 +6,7 @@ namespace Entities.Services.Interfaces
     {
         Task<int> AddUserAsync(UserDTO dto);
         Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task<UserDTO?> GetEffectivePharmacistAsync(UserDTO? currentUser);
         Task DeleteUserAsync(int userId);
         Task UpdateUserAsync(UserDTO dto);
     }

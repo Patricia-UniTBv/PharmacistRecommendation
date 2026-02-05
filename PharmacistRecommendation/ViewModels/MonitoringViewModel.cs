@@ -150,6 +150,7 @@ public partial class MonitoringViewModel : ObservableObject
         Age = PatientHelper.CalculateAge(patient.Birthdate);
         Gender = patient.Gender!;
         PatientId = patient.Id;
+        PatientEmail = patient.Email;
 
         LoadHistoryAsync();
     }
@@ -250,10 +251,18 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task GeneratePdfAsync()
     {
-        var path = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId,StartDate, EndDate);
+        var printDoc = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId, StartDate, EndDate);
 
-        await Launcher.Default.OpenAsync(new OpenFileRequest("Raport", new ReadOnlyFile(path)));
+        var pd = new System.Windows.Forms.PrintDialog();
+        pd.Document = printDoc;
+
+        if (pd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            printDoc.Print();
+        }
     }
+
+
 
     [RelayCommand]
     private async Task SendEmailAsync()
@@ -291,7 +300,7 @@ public partial class MonitoringViewModel : ObservableObject
             return;
         }
 
-        var pdfPath = await _pdfReportService.CreateMonitoringPatientReportAsync(PatientId, StartDate, EndDate);
+        var pdfPath = await _pdfReportService.CreateMonitoringPatientReportEmailAsync(PatientId, StartDate, EndDate);
         string subject = $"Raport monitorizare - {patient.LastName} {patient.FirstName}";
         string body =
       $"Bună ziua,\n\n" +
