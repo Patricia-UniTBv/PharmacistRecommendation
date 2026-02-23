@@ -139,7 +139,7 @@
 
                             <CollectionView x:Name="PrescriptionCollectionView"
                         ItemsSource="{Binding PrescriptionsData}"
-                        SelectedItem="{Binding SelectedPrescription}"
+                       
                         SelectionMode="Single"
                         HeightRequest="400"
                         ItemSizingStrategy="MeasureFirstItem">

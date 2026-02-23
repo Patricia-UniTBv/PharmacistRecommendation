@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Windows.Forms;
 using SD = System.Drawing;
 
 namespace PharmacistRecommendation.Helpers
@@ -52,6 +54,22 @@ namespace PharmacistRecommendation.Helpers
 
         protected override void OnPrintPage(PrintPageEventArgs e)
         {
+            try
+            {
+                SafePrint(e);
+            }
+            catch (Exception ex)
+            {
+                // log the error somewhere (optional)
+                Debug.WriteLine("Print failed: " + ex);
+                // optionally, show a friendly message:
+                MessageBox.Show("An error occurred while printing. Please try again.",
+                                "Printing Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void SafePrint(PrintPageEventArgs e)
+        {
             var g = e.Graphics;
             float margin = 50;
             float left = margin;
@@ -61,25 +79,16 @@ namespace PharmacistRecommendation.Helpers
             float y = top;
             float contentWidth = right - left;
 
-            using var fontTitle = new SD.Font("Arial", 16f, FontStyle.Bold);
-            using var fontText = new SD.Font("Arial", 10f, FontStyle.Regular);
-            using var fontSmall = new SD.Font("Arial", 7f, FontStyle.Regular);
-            using var fontSection = new SD.Font("Arial", 12f, FontStyle.Bold);
+            using var fontTitle = SafeCreateFont("Arial", 16f, FontStyle.Bold);
+            using var fontText = SafeCreateFont("Arial", 10f, FontStyle.Regular);
+            using var fontSmall = SafeCreateFont("Arial", 7f, FontStyle.Regular);
+            using var fontSection = SafeCreateFont("Arial", 12f, FontStyle.Bold);
 
-            float lineHeight = fontText.GetHeight(g) * 1.5f; // uniform spacing for all rows
+            float lineHeight = fontText.GetHeight(g) * 1.5f;
 
-            try
-            {
-                using var logo = SD.Image.FromFile("Resources/Images/farma.png");
-                float logoWidth = 80;
-                float logoHeight = 80;
-                float logoX = right - logoWidth;
-                g.DrawImage(logo, logoX, y, logoWidth, logoHeight);
-            }
-            catch { }
+            SafeDrawLogo(g, right, ref y);
 
             float textStartX = left;
-            float titleWidth = contentWidth - 80;
             var format = new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
             string pageTitle = ModeCode switch
@@ -89,117 +98,324 @@ namespace PharmacistRecommendation.Helpers
                 "AM" => "Act mixt",
                 _ => "Document farmaceutic"
             };
-            g.DrawString(pageTitle, fontTitle, Brushes.Black, textStartX, y);
+
+            SafeDrawString(g, pageTitle, fontTitle, Brushes.Black, textStartX, y);
             y += lineHeight * 2.5f;
 
-            string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{GetNextSequentialNumber(ModeCode)}";
-
-            g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
-            g.DrawString(code, fontText, Brushes.Black, right - 180, y);
+            string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{SafeGetNextSequentialNumber(ModeCode)}";
+            SafeDrawString(g, $"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
+            SafeDrawString(g, code, fontText, Brushes.Black, right - 180, y);
             y += lineHeight;
 
-            g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, textStartX, y);
+            SafeDrawString(g, $"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
-            g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
+
+            SafeDrawString(g, $"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
-            g.DrawString($"ADRESĂ: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
+
+            SafeDrawString(g, $"ADRESĂ: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
-            g.DrawString($"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
+
+            SafeDrawString(g, $"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
             y += lineHeight;
 
             float cnpOffset = 350;
-            g.DrawString($"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
-            g.DrawString($"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+            SafeDrawString(g, $"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
+            SafeDrawString(g, $"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
 
-            g.DrawString($"APARȚINĂTOR: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
-            g.DrawString($"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+            SafeDrawString(g, $"APARȚINĂTOR: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
+            SafeDrawString(g, $"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
             y += lineHeight;
 
-            void DrawParagraph(string label, string value)
+            void SafeDrawParagraph(string label, string? value)
             {
-                string text = $"{label} {value}";
-
-                if (string.IsNullOrWhiteSpace(value))
+                try
                 {
-                    g.DrawString(text, fontText, Brushes.Black, textStartX, y);
-                    y += lineHeight;
+                    string text = $"{label} {value}";
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        g.DrawString(text, fontText, Brushes.Black, textStartX, y);
+                        y += lineHeight;
+                    }
+                    else
+                    {
+                        var rect = new RectangleF(textStartX, y, contentWidth, bottom - y - 150);
+                        var textSize = g.MeasureString(text, fontText, (int)contentWidth);
+                        g.DrawString(text, fontText, Brushes.Black, rect, format);
+                        int lineCount = (int)Math.Ceiling(textSize.Height / fontText.GetHeight(g));
+                        y += lineCount * lineHeight * 0.75f;
+                    }
                 }
-                else
-                {
-                    var rect = new RectangleF(textStartX, y, contentWidth, bottom - y - 150);
-                    var textSize = g.MeasureString(text, fontText, (int)contentWidth);
-
-                    g.DrawString(text, fontText, Brushes.Black, rect, format);
-                    int lineCount = (int)Math.Ceiling(textSize.Height / fontText.GetHeight(g));
-                    y += lineCount * lineHeight * 0.75f;
-                }
+                catch { /* ignore drawing errors */ }
             }
 
-            DrawParagraph("DIAGNOSTIC MENȚIONAT DE PACIENT:", DiagnosisMentioned);
-            DrawParagraph("MEDICAMENTE UTILIZATE DE PACIENT:", MedicationsMentioned);
+            SafeDrawParagraph("DIAGNOSTIC MENȚIONAT DE PACIENT:", DiagnosisMentioned);
+            SafeDrawParagraph("MEDICAMENTE UTILIZATE DE PACIENT:", MedicationsMentioned);
 
             if (ModeCode == "AC" || ModeCode == "AM")
             {
                 float offset = 250;
-                g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
-                g.DrawString($"SERIE/NUMĂR REȚETĂ: {Series}", fontText, Brushes.Black, textStartX + offset, y);
+                SafeDrawString(g, $"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
+                SafeDrawString(g, $"SERIE/NUMĂR REȚETĂ: {Series}", fontText, Brushes.Black, textStartX + offset, y);
                 y += lineHeight;
-                DrawParagraph("DIAGNOSTIC:", Diagnostic);
+                SafeDrawParagraph("DIAGNOSTIC:", Diagnostic);
             }
 
-            DrawParagraph("SIMPTOMATOLOGIE:", Symptoms);
-            DrawParagraph("SUSPICIUNE:", Suspicion);
-            DrawParagraph("CONSTATĂRILE FARMACISTULUI:", PharmacistObservations);
+            SafeDrawParagraph("SIMPTOMATOLOGIE:", Symptoms);
+            SafeDrawParagraph("SUSPICIUNE:", Suspicion);
+            SafeDrawParagraph("CONSTATĂRILE FARMACISTULUI:", PharmacistObservations);
 
-            if (MedicationsWithPrescription?.Count > 0)
+            try
             {
-                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
-                                          MedicationsWithPrescription, fontSection, fontText, fontText, false);
-            }
+                if (MedicationsWithPrescription?.Count > 0)
+                {
+                    y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
+                                              MedicationsWithPrescription, fontSection, fontText, fontText, false);
+                }
 
-            if (MedicationsWithoutPrescription?.Count > 0)
+                if (MedicationsWithoutPrescription?.Count > 0)
+                {
+                    y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
+                                              MedicationsWithoutPrescription, fontSection, fontText, fontText, false);
+                }
+            }
+            catch { /* ignore errors drawing tables */ }
+
+            SafeDrawParagraph("NOTE CĂTRE MEDIC:", NotesToDoctor);
+            SafeDrawParagraph("RECOMANDAREA FARMACISTULUI:", PharmacistRecommendation);
+            SafeDrawParagraph("Serviciu farmaceutic:", PharmaceuticalService);
+
+            try
             {
-                y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
-                                          MedicationsWithoutPrescription, fontSection, fontText, fontText, false);
+                float footerY = bottom - 100;
+                SafeDrawString(g, $"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, left, footerY);
+
+                if (!string.IsNullOrEmpty(AssistantName))
+                    SafeDrawString(g, $"ASISTENT: {AssistantName}", fontText, Brushes.Black, left, footerY + 20);
+
+                SafeDrawString(g, PatientName, fontText, Brushes.Black, right - 220, footerY);
+                SafeDrawString(g, "Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 50);
             }
-
-            DrawParagraph("NOTE CĂTRE MEDIC:", NotesToDoctor);
-            DrawParagraph("RECOMANDAREA FARMACISTULUI:", PharmacistRecommendation);
-            DrawParagraph("Serviciu farmaceutic:", PharmaceuticalService);
-
-            float footerY = bottom - 100;
-
-            g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, left, footerY);
-
-            if (!string.IsNullOrEmpty(AssistantName))
-            {
-                g.DrawString($"ASISTENT: {AssistantName}", fontText, Brushes.Black, left, footerY + 20);
-            }
-
-            g.DrawString(PatientName, fontText, Brushes.Black, right - 220, footerY);
-
-            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 50);
-
+            catch { }
         }
 
-        private string GetNextSequentialNumber(string modeCode)
+        private SD.Font SafeCreateFont(string name, float size, FontStyle style)
         {
-            string filePath = $"{modeCode}_counter.txt";
-            int lastNumber = 0;
-
-            if (File.Exists(filePath))
+            try
             {
-                string content = File.ReadAllText(filePath);
-                int.TryParse(content, out lastNumber);
+                return new SD.Font(name, size, style);
             }
-
-            int nextNumber = lastNumber + 1;
-
-            File.WriteAllText(filePath, nextNumber.ToString());
-
-            return nextNumber.ToString("D4");
+            catch
+            {
+                return new SD.Font("Arial", size, style); // fallback
+            }
         }
+
+        private void SafeDrawLogo(SD.Graphics g, float right, ref float y)
+        {
+            try
+            {
+                using var logo = SD.Image.FromFile("Resources/Images/farma.png");
+                g.DrawImage(logo, right - 80, y, 80, 80);
+            }
+            catch { }
+        }
+
+        private void SafeDrawString(SD.Graphics g, string? text, SD.Font font, SD.Brush brush, float x, float y)
+        {
+            try
+            {
+                g.DrawString(text ?? "-", font, brush, x, y);
+            }
+            catch { }
+        }
+
+        private string SafeGetNextSequentialNumber(string modeCode)
+        {
+            try
+            {
+                string folder = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "RecomandareaFarmacistului");
+
+                Directory.CreateDirectory(folder);
+
+                string filePath = Path.Combine(folder, $"{modeCode}_counter.txt");
+                int lastNumber = 0;
+
+                if (File.Exists(filePath))
+                {
+                    string content = File.ReadAllText(filePath);
+                    int.TryParse(content, out lastNumber);
+                }
+
+                int nextNumber = lastNumber + 1;
+                File.WriteAllText(filePath, nextNumber.ToString());
+                return nextNumber.ToString("D4");
+            }
+            catch
+            {
+                return "0001"; // fallback if file can't be read/written
+            }
+        }
+
+        //    protected override void OnPrintPage(PrintPageEventArgs e)
+        //    {
+        //        var g = e.Graphics;
+        //        float margin = 50;
+        //        float left = margin;
+        //        float top = margin;
+        //        float right = e.PageBounds.Width - margin;
+        //        float bottom = e.PageBounds.Height - margin;
+        //        float y = top;
+        //        float contentWidth = right - left;
+
+        //        using var fontTitle = new SD.Font("Arial", 16f, FontStyle.Bold);
+        //        using var fontText = new SD.Font("Arial", 10f, FontStyle.Regular);
+        //        using var fontSmall = new SD.Font("Arial", 7f, FontStyle.Regular);
+        //        using var fontSection = new SD.Font("Arial", 12f, FontStyle.Bold);
+
+        //        float lineHeight = fontText.GetHeight(g) * 1.5f; // uniform spacing for all rows
+
+        //        try
+        //        {
+        //            using var logo = SD.Image.FromFile("Resources/Images/farma.png");
+        //            float logoWidth = 80;
+        //            float logoHeight = 80;
+        //            float logoX = right - logoWidth;
+        //            g.DrawImage(logo, logoX, y, logoWidth, logoHeight);
+        //        }
+        //        catch { }
+
+        //        float textStartX = left;
+        //        float titleWidth = contentWidth - 80;
+        //        var format = new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
+
+        //        string pageTitle = ModeCode switch
+        //        {
+        //            "AC" => "Act consecutiv prescripției",
+        //            "AP" => "Act farmaceutic",
+        //            "AM" => "Act mixt",
+        //            _ => "Document farmaceutic"
+        //        };
+        //        g.DrawString(pageTitle, fontTitle, Brushes.Black, textStartX, y);
+        //        y += lineHeight * 2.5f;
+
+        //        string code = $"{ModeCode}-{SessionManager.CurrentUser?.Ncm ?? "0000"}-{GetNextSequentialNumber(ModeCode)}";
+
+        //        g.DrawString($"Data: {IssueDate:dd.MM.yyyy HH:mm}", fontText, Brushes.Black, textStartX, y);
+        //        g.DrawString(code, fontText, Brushes.Black, right - 180, y);
+        //        y += lineHeight;
+
+        //        g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, textStartX, y);
+        //        y += lineHeight;
+        //        g.DrawString($"FARMACIA: {PharmacyName}", fontText, Brushes.Black, textStartX, y);
+        //        y += lineHeight;
+        //        g.DrawString($"ADRESĂ: {PharmacyAddress}", fontText, Brushes.Black, textStartX, y);
+        //        y += lineHeight;
+        //        g.DrawString($"TELEFON: {PharmacyPhone}", fontText, Brushes.Black, textStartX, y);
+        //        y += lineHeight;
+
+        //        float cnpOffset = 350;
+        //        g.DrawString($"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
+        //        g.DrawString($"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+        //        y += lineHeight;
+
+        //        g.DrawString($"APARȚINĂTOR: {CaregiverName}", fontText, Brushes.Black, textStartX, y);
+        //        g.DrawString($"CNP: {CaregiverCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+        //        y += lineHeight;
+
+        //        void DrawParagraph(string label, string value)
+        //        {
+        //            string text = $"{label} {value}";
+
+        //            if (string.IsNullOrWhiteSpace(value))
+        //            {
+        //                g.DrawString(text, fontText, Brushes.Black, textStartX, y);
+        //                y += lineHeight;
+        //            }
+        //            else
+        //            {
+        //                var rect = new RectangleF(textStartX, y, contentWidth, bottom - y - 150);
+        //                var textSize = g.MeasureString(text, fontText, (int)contentWidth);
+
+        //                g.DrawString(text, fontText, Brushes.Black, rect, format);
+        //                int lineCount = (int)Math.Ceiling(textSize.Height / fontText.GetHeight(g));
+        //                y += lineCount * lineHeight * 0.75f;
+        //            }
+        //        }
+
+        //        DrawParagraph("DIAGNOSTIC MENȚIONAT DE PACIENT:", DiagnosisMentioned);
+        //        DrawParagraph("MEDICAMENTE UTILIZATE DE PACIENT:", MedicationsMentioned);
+
+        //        if (ModeCode == "AC" || ModeCode == "AM")
+        //        {
+        //            float offset = 250;
+        //            g.DrawString($"PARAFĂ MEDIC: {DoctorStamp}", fontText, Brushes.Black, textStartX, y);
+        //            g.DrawString($"SERIE/NUMĂR REȚETĂ: {Series}", fontText, Brushes.Black, textStartX + offset, y);
+        //            y += lineHeight;
+        //            DrawParagraph("DIAGNOSTIC:", Diagnostic);
+        //        }
+
+        //        DrawParagraph("SIMPTOMATOLOGIE:", Symptoms);
+        //        DrawParagraph("SUSPICIUNE:", Suspicion);
+        //        DrawParagraph("CONSTATĂRILE FARMACISTULUI:", PharmacistObservations);
+
+        //        if (MedicationsWithPrescription?.Count > 0)
+        //        {
+        //            y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE CU REȚETĂ",
+        //                                      MedicationsWithPrescription, fontSection, fontText, fontText, false);
+        //        }
+
+        //        if (MedicationsWithoutPrescription?.Count > 0)
+        //        {
+        //            y = DrawMedicationSection(g, textStartX, y, contentWidth, "MEDICAMENTE ELIBERATE FĂRĂ REȚETĂ",
+        //                                      MedicationsWithoutPrescription, fontSection, fontText, fontText, false);
+        //        }
+
+        //        DrawParagraph("NOTE CĂTRE MEDIC:", NotesToDoctor);
+        //        DrawParagraph("RECOMANDAREA FARMACISTULUI:", PharmacistRecommendation);
+        //        DrawParagraph("Serviciu farmaceutic:", PharmaceuticalService);
+
+        //        float footerY = bottom - 100;
+
+        //        g.DrawString($"FARMACIST: {PharmacistNameEffective}", fontText, Brushes.Black, left, footerY);
+
+        //        if (!string.IsNullOrEmpty(AssistantName))
+        //        {
+        //            g.DrawString($"ASISTENT: {AssistantName}", fontText, Brushes.Black, left, footerY + 20);
+        //        }
+
+        //        g.DrawString(PatientName, fontText, Brushes.Black, right - 220, footerY);
+
+        //        g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 50);
+
+        //    }
+
+        //    private string GetNextSequentialNumber(string modeCode)
+        //    {
+        //        string folder = Path.Combine(
+        //Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        //"RecomandareaFarmacistului");
+
+        //        Directory.CreateDirectory(folder); 
+
+        //        string filePath = Path.Combine(folder, $"{modeCode}_counter.txt");
+
+        //        int lastNumber = 0;
+        //        if (File.Exists(filePath))
+        //        {
+        //            string content = File.ReadAllText(filePath);
+        //            int.TryParse(content, out lastNumber);
+        //        }
+
+        //        int nextNumber = lastNumber + 1;
+
+        //        File.WriteAllText(filePath, nextNumber.ToString());
+
+        //        return nextNumber.ToString("D4");
+        //    }
 
 
 

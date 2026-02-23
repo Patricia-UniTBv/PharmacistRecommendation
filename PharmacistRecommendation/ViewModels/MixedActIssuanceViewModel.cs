@@ -162,9 +162,9 @@ namespace PharmacistRecommendation.ViewModels
 
             Task.Run(async () => await LoadMedicationsAsync());
             Task.Run(async () => await LoadAdministrationModes());
-
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
         }
+
 
         [ObservableProperty]
         bool isReportViewMode = false;
@@ -185,6 +185,11 @@ namespace PharmacistRecommendation.ViewModels
 
         partial void OnPrescriptionIdChanged(int value)
         {
+            if (value == 0) return;
+
+            if (string.IsNullOrWhiteSpace(Mode))
+                return;
+
             _ = LoadPrescriptionAsync(value);
         }
 
@@ -766,8 +771,8 @@ namespace PharmacistRecommendation.ViewModels
 
             byte[] pdfBytes = pdfDoc.GeneratePdf();
 
-            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Prescription.pdf");
-            await File.WriteAllBytesAsync(filePath, pdfBytes);
+            //string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Prescription.pdf");
+            //await File.WriteAllBytesAsync(filePath, pdfBytes);
 
             return pdfBytes;
         }
@@ -1030,16 +1035,35 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task LoadAdministrationModes()
         {
-            var modes = await _administrationModeService.GetAllAsync();
-            var activeModes = modes.Where(c => (bool)c.IsActive).ToList();
-            AdministrationModes = new ObservableCollection<AdministrationMode>(activeModes);
+            try
+            {
+                var modes = await _administrationModeService.GetAllAsync();
+                var activeModes = modes?.Where(c => c?.IsActive == true).ToList() ?? new List<AdministrationMode>();
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    AdministrationModes = new ObservableCollection<AdministrationMode>(activeModes);
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Eroare la încărcarea modurilor: {ex}");
+            }
         }
 
         //Reports methods:
 
         private async Task LoadPrescriptionAsync(int id)
         {
-            var presc = await _prescriptionService.GetPrescriptionByIdAsync(id);
+            try
+            {
+                var presc = await _prescriptionService.GetPrescriptionByIdAsync(id);
+
+            if (presc == null)
+            {
+                await Shell.Current.DisplayAlert("Debug", $"No prescription found for id={id}", "OK");
+                return;
+            }
             if (presc != null)
             {
                 Prescription = presc;
@@ -1089,6 +1113,12 @@ namespace PharmacistRecommendation.ViewModels
                 DoctorStamp = presc.DoctorStamp;
 
                 IsReadOnly = true;
+            }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadPrescriptionAsync FAILED: {ex}");
+                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 

@@ -316,142 +316,154 @@ public class PdfReportService : IPdfReportService
 
     public async Task<PrintDocument> CreateMonitoringPatientReportAsync(int patientId, DateTime from, DateTime to)
     {
-        var p = await _patientService.GetByIdAsync(patientId);
-        string patientName = $"{p?.FirstName ?? ""} {p?.LastName ?? ""}".Trim();
-        if (string.IsNullOrWhiteSpace(patientName)) patientName = "-";
-        string safePatientName = string.Join("_", patientName.Split(Path.GetInvalidFileNameChars()));
-        string patientCnp = string.IsNullOrWhiteSpace(p?.Cnp) ? "—" : p.Cnp!;
-        string patientCid = string.IsNullOrWhiteSpace(p?.Cid) ? "—" : p.Cid!;
-
-        var rows = (await _monitoringService.GetHistoryAsync(patientId, from, to))
-                   .OrderBy(r => r.Date)
-                   .ToList();
-
-        var charts = new Dictionary<string, byte[]>();
-        void AddChart(string key, byte[]? bytes) { if (bytes is { Length: > 0 }) charts[key] = bytes; }
-
-        AddChart("hta", PlotDualLine(rows, r => r.MaxBloodPressure, r => r.MinBloodPressure, "Tensiune arterială (mmHg)", "Sist.", "Diast."));
-        AddChart("puls", PlotLine(rows, r => r.HeartRate, "Puls bpm"));
-        AddChart("spo2", PlotLine(rows, r => r.PulseOximetry, "SpO₂ %"));
-        AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
-        AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
-
-        var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
-        Directory.CreateDirectory(folder);
-        var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
-
-        UserDTO? effectivePharmacist = null;
-        string? assistantName = null;
-
-        if (SessionManager.CurrentUser?.Role?.ToLower() == "pharmacist")
+        try
         {
-            effectivePharmacist = SessionManager.CurrentUser;
-        }
-        else
-        {
-            effectivePharmacist = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
-            assistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
-        }
+            var p = await _patientService.GetByIdAsync(patientId);
+            string patientName = $"{p?.FirstName ?? ""} {p?.LastName ?? ""}".Trim();
+            if (string.IsNullOrWhiteSpace(patientName)) patientName = "-";
+            string safePatientName = string.Join("_", patientName.Split(Path.GetInvalidFileNameChars()));
+            string patientCnp = string.IsNullOrWhiteSpace(p?.Cnp) ? "—" : p.Cnp!;
+            string patientCid = string.IsNullOrWhiteSpace(p?.Cid) ? "—" : p.Cid!;
 
-        string footerPharmacist = $"{effectivePharmacist?.FirstName ?? "-"} {effectivePharmacist?.LastName ?? "-"}";
-        string footerAssistant = assistantName ?? "";
+            var rows = (await _monitoringService.GetHistoryAsync(patientId, from, to))
+                       .OrderBy(r => r.Date)
+                       .ToList();
 
-        using var printDoc = new PrintDocument();
+            var charts = new Dictionary<string, byte[]>();
+            void AddChart(string key, byte[]? bytes) { if (bytes is { Length: > 0 }) charts[key] = bytes; }
 
-        printDoc.PrintPage += (sender, e) =>
-        {
-            var g = e.Graphics;
-            float margin = 50;
-            float left = margin, top = margin;
-            float lineHeight = 18;
+            AddChart("hta", PlotDualLine(rows, r => r.MaxBloodPressure, r => r.MinBloodPressure, "Tensiune arterială (mmHg)", "Sist.", "Diast."));
+            AddChart("puls", PlotLine(rows, r => r.HeartRate, "Puls bpm"));
+            AddChart("spo2", PlotLine(rows, r => r.PulseOximetry, "SpO₂ %"));
+            AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
+            AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-            using var fontTitle = new SD.Font("Arial", 16, FontStyle.Bold);
-            using var headerFont = new SD.Font("Arial", 9, FontStyle.Bold);
-            using var fontText = new SD.Font("Arial", 10);
-            using var fontSmall = new SD.Font("Arial", 7);
-            using var fontSection = new SD.Font("Arial", 12, FontStyle.Bold);
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
+            Directory.CreateDirectory(folder);
+            var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
-            // Titlu document
-            g.DrawString("Raport monitorizare", fontTitle, Brushes.Black, left, top);
-            top += lineHeight * 2;
+            UserDTO? effectivePharmacist = null;
+            string? assistantName = null;
 
-            // Info pacient
-            g.DrawString($"Perioada: {from:dd.MM.yyyy} – {to:dd.MM.yyyy}", fontText, Brushes.Black, left, top);
-            top += lineHeight;
-            g.DrawString($"Pacient: {patientName}", fontText, Brushes.Black, left, top);
-            g.DrawString($"CNP: {patientCnp}", fontText, Brushes.Black, left + 300, top);
-            g.DrawString($"CID: {patientCid}", fontText, Brushes.Black, left + 450, top);
-            top += lineHeight * 2;
-
-            // Tabel date (simplificat aici)
-            float col1 = left, col2 = left + 60, col3 = left + 120, col4 = left + 180, col5 = left + 240,
-                  col6 = left + 300, col7 = left + 360, col8 = left + 420, col9 = left + 480;
-
-            g.DrawString("Data", headerFont, Brushes.Black, col1, top);
-            g.DrawString("TA↑", headerFont, Brushes.Black, col2, top);
-            g.DrawString("TA↓", headerFont, Brushes.Black, col3, top);
-            g.DrawString("Puls", headerFont, Brushes.Black, col4, top);
-            g.DrawString("SpO₂", headerFont, Brushes.Black, col5, top);
-            g.DrawString("Glic.", headerFont, Brushes.Black, col6, top);
-            g.DrawString("Temp.", headerFont, Brushes.Black, col7, top);
-            g.DrawString("Kg", headerFont, Brushes.Black, col8, top);
-            g.DrawString("Cm", headerFont, Brushes.Black, col9, top);
-            top += lineHeight;
-
-            foreach (var r in rows)
+            if (SessionManager.CurrentUser?.Role?.ToLower() == "pharmacist")
             {
-                g.DrawString(r.Date.ToString("dd.MM"), fontText, Brushes.Black, col1, top);
-                g.DrawString(r.MaxBloodPressure?.ToString() ?? "—", fontText, Brushes.Black, col2, top);
-                g.DrawString(r.MinBloodPressure?.ToString() ?? "—", fontText, Brushes.Black, col3, top);
-                g.DrawString(r.HeartRate?.ToString() ?? "—", fontText, Brushes.Black, col4, top);
-                g.DrawString(r.PulseOximetry?.ToString() ?? "—", fontText, Brushes.Black, col5, top);
-                g.DrawString(r.BloodGlucose?.ToString() ?? "—", fontText, Brushes.Black, col6, top);
-                g.DrawString(r.BodyTemperature?.ToString() ?? "—", fontText, Brushes.Black, col7, top);
-                g.DrawString(r.Weight?.ToString() ?? "—", fontText, Brushes.Black, col8, top);
-                g.DrawString(r.Height?.ToString() ?? "—", fontText, Brushes.Black, col9, top);
-                top += lineHeight;
+                effectivePharmacist = SessionManager.CurrentUser;
+            }
+            else
+            {
+                effectivePharmacist = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
+                assistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
             }
 
-            // Grafice (simplificat)
-            float chartTop = top + 20;
-            float chartWidth = 350;
-            float chartHeight = 200;
-            float chartLeft = left;
+            string footerPharmacist = $"{effectivePharmacist?.FirstName ?? "-"} {effectivePharmacist?.LastName ?? "-"}";
+            string footerAssistant = assistantName ?? "";
 
-            foreach (var key in new[] { "hta", "puls", "spo2", "gly", "temp" })
+            using var printDoc = new PrintDocument();
+
+            printDoc.PrintPage += (sender, e) =>
             {
-                if (charts.TryGetValue(key, out var bytes))
-                {
-                    using var ms = new MemoryStream(bytes);
-                    using var img = SD.Image.FromStream(ms);
-                    g.DrawImage(img, chartLeft, chartTop, chartWidth, chartHeight);
+                var g = e.Graphics;
+                float margin = 50;
+                float left = margin, top = margin;
+                float lineHeight = 18;
 
-                    chartLeft += chartWidth + 10;
-                    if (chartLeft + chartWidth > e.PageBounds.Width - margin)
+                using var fontTitle = new SD.Font("Arial", 16, FontStyle.Bold);
+                using var headerFont = new SD.Font("Arial", 9, FontStyle.Bold);
+                using var fontText = new SD.Font("Arial", 10);
+                using var fontSmall = new SD.Font("Arial", 7);
+                using var fontSection = new SD.Font("Arial", 12, FontStyle.Bold);
+
+                // Titlu document
+                g.DrawString("Raport monitorizare", fontTitle, Brushes.Black, left, top);
+                top += lineHeight * 2;
+
+                // Info pacient
+                g.DrawString($"Perioada: {from:dd.MM.yyyy} – {to:dd.MM.yyyy}", fontText, Brushes.Black, left, top);
+                top += lineHeight;
+                g.DrawString($"Pacient: {patientName}", fontText, Brushes.Black, left, top);
+                g.DrawString($"CNP: {patientCnp}", fontText, Brushes.Black, left + 300, top);
+                g.DrawString($"CID: {patientCid}", fontText, Brushes.Black, left + 450, top);
+                top += lineHeight * 2;
+
+                // Tabel date (simplificat aici)
+                float col1 = left, col2 = left + 60, col3 = left + 120, col4 = left + 180, col5 = left + 240,
+                      col6 = left + 300, col7 = left + 360, col8 = left + 420, col9 = left + 480;
+
+                g.DrawString("Data", headerFont, Brushes.Black, col1, top);
+                g.DrawString("TA↑", headerFont, Brushes.Black, col2, top);
+                g.DrawString("TA↓", headerFont, Brushes.Black, col3, top);
+                g.DrawString("Puls", headerFont, Brushes.Black, col4, top);
+                g.DrawString("SpO₂", headerFont, Brushes.Black, col5, top);
+                g.DrawString("Glic.", headerFont, Brushes.Black, col6, top);
+                g.DrawString("Temp.", headerFont, Brushes.Black, col7, top);
+                g.DrawString("Kg", headerFont, Brushes.Black, col8, top);
+                g.DrawString("Cm", headerFont, Brushes.Black, col9, top);
+                top += lineHeight;
+
+                foreach (var r in rows)
+                {
+                    g.DrawString(r.Date.ToString("dd.MM"), fontText, Brushes.Black, col1, top);
+                    g.DrawString(r.MaxBloodPressure?.ToString() ?? "—", fontText, Brushes.Black, col2, top);
+                    g.DrawString(r.MinBloodPressure?.ToString() ?? "—", fontText, Brushes.Black, col3, top);
+                    g.DrawString(r.HeartRate?.ToString() ?? "—", fontText, Brushes.Black, col4, top);
+                    g.DrawString(r.PulseOximetry?.ToString() ?? "—", fontText, Brushes.Black, col5, top);
+                    g.DrawString(r.BloodGlucose?.ToString() ?? "—", fontText, Brushes.Black, col6, top);
+                    g.DrawString(r.BodyTemperature?.ToString() ?? "—", fontText, Brushes.Black, col7, top);
+                    g.DrawString(r.Weight?.ToString() ?? "—", fontText, Brushes.Black, col8, top);
+                    g.DrawString(r.Height?.ToString() ?? "—", fontText, Brushes.Black, col9, top);
+                    top += lineHeight;
+                }
+
+                // Grafice (simplificat)
+                float chartTop = top + 20;
+                float chartWidth = 350;
+                float chartHeight = 200;
+                float chartLeft = left;
+
+                foreach (var key in new[] { "hta", "puls", "spo2", "gly", "temp" })
+                {
+                    if (charts.TryGetValue(key, out var bytes))
                     {
-                        chartLeft = left;
-                        chartTop += chartHeight + 20;
+                        using var ms = new MemoryStream(bytes);
+                        using var img = SD.Image.FromStream(ms);
+                        g.DrawImage(img, chartLeft, chartTop, chartWidth, chartHeight);
+
+                        chartLeft += chartWidth + 10;
+                        if (chartLeft + chartWidth > e.PageBounds.Width - margin)
+                        {
+                            chartLeft = left;
+                            chartTop += chartHeight + 20;
+                        }
                     }
                 }
-            }
 
-            // --- FOOTER ---
-            float footerY = e.PageBounds.Height - margin - 50;
+                // --- FOOTER ---
+                float footerY = e.PageBounds.Height - margin - 50;
 
-            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontSmall, Brushes.Black, left, footerY);
+                g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontSmall, Brushes.Black, left, footerY);
 
-            g.DrawString($"Farmacist: {footerPharmacist}", fontSmall, Brushes.Black, left, footerY + 15);
+                g.DrawString($"Farmacist: {footerPharmacist}", fontSmall, Brushes.Black, left, footerY + 15);
 
-            if (!string.IsNullOrEmpty(footerAssistant))
-                g.DrawString($"Asistent: {footerAssistant}", fontSmall, Brushes.Black, left, footerY + 30);
+                if (!string.IsNullOrEmpty(footerAssistant))
+                    g.DrawString($"Asistent: {footerAssistant}", fontSmall, Brushes.Black, left, footerY + 30);
 
-            g.DrawString("Semnătură: ______________________", fontSmall, Brushes.Black, left, footerY + 45);
+                g.DrawString("Semnătură: ______________________", fontSmall, Brushes.Black, left, footerY + 45);
 
-            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 60);
+                g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, Brushes.Gray, left, footerY + 60);
 
-        };
+            };
 
-        return printDoc;
+            return printDoc;
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Eroare",
+                $"Raportul nu a putut fi generat: {ex.Message}",
+                "OK");
+
+            return new PrintDocument(); 
+        }
     }
 
     public async Task<string> CreateMonitoringPatientReportEmailAsync(int patientId, DateTime from, DateTime to)
@@ -632,9 +644,9 @@ public class PdfReportService : IPdfReportService
         var plt = new ScottPlot.Plot(600, 400);
 
         var scatter = plt.AddScatter(xs, ys);
-        scatter.MarkerShape = ScottPlot.MarkerShape.filledCircle; 
-        scatter.MarkerSize = 8; 
-        scatter.LineWidth = 2; 
+        scatter.MarkerShape = ScottPlot.MarkerShape.filledCircle;
+        scatter.MarkerSize = 8;
+        scatter.LineWidth = 2;
 
         plt.XAxis.DateTimeFormat(true);
         plt.Title(yLabel);

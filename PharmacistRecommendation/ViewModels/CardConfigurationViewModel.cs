@@ -79,6 +79,7 @@ namespace PharmacistRecommendation.ViewModels
             LastName = patient.LastName;
             Cnp = patient.Cnp;
             Birthdate = patient.Birthdate ?? DateTime.MinValue;
+            BirthdateString = patient.Birthdate?.ToString("dd/MM/yyyy") ?? string.Empty;
             Gender = patient.Gender;
             Phone = patient.Phone;
             Email = patient.Email;
@@ -128,6 +129,7 @@ namespace PharmacistRecommendation.ViewModels
                 Birthdate = date;
             }
         }
+
         [RelayCommand]
         private async Task Save()
         {
@@ -155,14 +157,14 @@ namespace PharmacistRecommendation.ViewModels
             {
                 var card = await _pharmacyCardService.CreateCardAsync(
                              code: cardNumber,
-                    pharmacyId: pharmacyId,
-                        firstName: FirstName,
-                        lastName: LastName,
-                    cnp: Cnp,
-                    cid: Cid,
-                email: Email,
-                 phone: Phone,
-                         gender: Gender,
+                     pharmacyId: pharmacyId,
+                     firstName: FirstName,
+                     lastName: LastName,
+                     cnp: Cnp,
+                     cid: Cid,
+                     email: Email,
+                     phone: Phone,
+                     gender: Gender,
                    birthdate: birthdate == default(DateTime)
                  ? new DateTime(1900, 1, 1)
                              : birthdate
@@ -248,70 +250,82 @@ namespace PharmacistRecommendation.ViewModels
 
         private void Pd_PrintPage(object sender, PrintPageEventArgs e)
         {
-            var g = e.Graphics;
-
-            var margin = e.MarginBounds;
-            float left = margin.Left + 5;
-            float top = margin.Top + 5;
-            float right = margin.Right - 5;
-            float bottom = margin.Bottom - 5;
-
-            using var fontText = new SD.Font("Tahoma", 10f, SD.FontStyle.Regular);
-            using var fontSmall = new SD.Font("Tahoma", 8f, SD.FontStyle.Regular);
-            float lineHeight = fontText.GetHeight(g) * 1.2f;
-
-            string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
-
-            // Logo (opțional)
             try
             {
-                using var logo = SD.Image.FromFile("Resources/Images/farma.png");
-                float logoWidth = 80;
-                float logoHeight = 80;
-                g.DrawImage(logo, right - logoWidth, top - 15, logoWidth, logoHeight);
+                var g = e.Graphics;
+
+                var margin = e.MarginBounds;
+                float left = margin.Left + 5;
+                float top = margin.Top + 5;
+                float right = margin.Right - 5;
+                float bottom = margin.Bottom - 5;
+
+                using var fontText = new SD.Font("Tahoma", 10f, SD.FontStyle.Regular);
+                using var fontSmall = new SD.Font("Tahoma", 8f, SD.FontStyle.Regular);
+                float lineHeight = fontText.GetHeight(g) * 1.2f;
+
+                string Safe(string s) => string.IsNullOrWhiteSpace(s) ? "-" : s;
+
+                // Logo (opțional)
+                try
+                {
+                    using var logo = SD.Image.FromFile("Resources/Images/farma.png");
+                    float logoWidth = 80;
+                    float logoHeight = 80;
+                    g.DrawImage(logo, right - logoWidth, top - 15, logoWidth, logoHeight);
+                }
+                catch { }
+
+                float y = top;
+
+                // Informații pacient
+                g.DrawString($"Număr card: {Safe(cardNumber)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                g.DrawString($"Nume pacient: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                g.DrawString($"CNP: {Safe(Cnp)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                g.DrawString($"CID: {Safe(Cid)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                g.DrawString($"Telefon: {Safe(phone)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
+                g.DrawString($"E-mail: {Safe(email)}", fontText, SD.Brushes.Black, left, y); y += lineHeight * 1.5f;
+
+                // Checkbox Declaratie
+                float boxSize = 12;
+                g.DrawRectangle(Pens.Black, left, y, boxSize, boxSize);
+                g.DrawString("Declar că datele furnizate mai sus sunt corecte.", fontText, SD.Brushes.Black, left + boxSize + 5, y);
+                y += 100;
+
+                // Text consimțământ
+                var rect = new RectangleF(left, y, right - left, bottom - y - 100);
+                g.DrawString(_consentDecl, fontText, SD.Brushes.Black, rect);
+
+                // FOOTER
+                float footerY = bottom - 5 * lineHeight; 
+                float indent = 20;
+                float spacing = lineHeight + 2;
+
+                // Data generării
+                g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, SD.Brushes.Black, left + indent, footerY);
+
+                // Farmacist
+                g.DrawString($"Farmacist: {PharmacistNameEffective}", fontText, SD.Brushes.Black, left + indent, footerY + spacing);
+
+                // Asistent (dacă există)
+                if (!string.IsNullOrEmpty(AssistantName))
+                    g.DrawString($"Asistent: {AssistantName}", fontText, SD.Brushes.Black, left + indent, footerY + 2 * spacing);
+
+                // Semnătura
+                g.DrawString("Semnătura: ______________________", fontText, SD.Brushes.Black, left + indent, footerY + 3 * spacing);
+
+                // Text fix
+                g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, SD.Brushes.Gray, left + indent, footerY + 4 * spacing);
             }
-            catch { }
-
-            float y = top;
-
-            // Informații pacient
-            g.DrawString($"Număr card: {Safe(cardNumber)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"Nume pacient: {Safe($"{firstName} {lastName}".Trim())}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"CNP: {Safe(Cnp)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"CID: {Safe(Cid)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"Telefon: {Safe(phone)}", fontText, SD.Brushes.Black, left, y); y += lineHeight;
-            g.DrawString($"E-mail: {Safe(email)}", fontText, SD.Brushes.Black, left, y); y += lineHeight * 1.5f;
-
-            // Checkbox Declaratie
-            float boxSize = 12;
-            g.DrawRectangle(Pens.Black, left, y, boxSize, boxSize);
-            g.DrawString("Declar că datele furnizate mai sus sunt corecte.", fontText, SD.Brushes.Black, left + boxSize + 5, y);
-            y += 100;
-
-            // Text consimțământ
-            var rect = new RectangleF(left, y, right - left, bottom - y - 100);
-            g.DrawString(_consentDecl, fontText, SD.Brushes.Black, rect);
-
-            // FOOTER
-            float footerY = bottom - 5 * lineHeight; // punctul de start pentru footer
-            float indent = 20;
-            float spacing = lineHeight + 2;
-
-            // Data generării
-            g.DrawString($"Data: {DateTime.Now:dd.MM.yyyy HH:mm:ss}", fontText, SD.Brushes.Black, left + indent, footerY);
-
-            // Farmacist
-            g.DrawString($"Farmacist: {PharmacistNameEffective}", fontText, SD.Brushes.Black, left + indent, footerY + spacing);
-
-            // Asistent (dacă există)
-            if (!string.IsNullOrEmpty(AssistantName))
-                g.DrawString($"Asistent: {AssistantName}", fontText, SD.Brushes.Black, left + indent, footerY + 2 * spacing);
-
-            // Semnătura
-            g.DrawString("Semnătura: ______________________", fontText, SD.Brushes.Black, left + indent, footerY + 3 * spacing);
-
-            // Text fix
-            g.DrawString("Document generat cu Recomandarea Farmacistului", fontSmall, SD.Brushes.Gray, left + indent, footerY + 4 * spacing);
+            catch (Exception ex)
+            {
+                e.Graphics.DrawString(
+                    $"Eroare la generarea documentului: {ex.Message}",
+                    new SD.Font("Tahoma", 10),
+                    SD.Brushes.Red,
+                    50, 50
+                );
+            }
         }
 
 
@@ -326,6 +340,7 @@ namespace PharmacistRecommendation.ViewModels
             Phone = string.Empty;
             Email = string.Empty;
             Birthdate = DateTime.Today;
+            BirthdateString = null;
             Gender = null;
         }
 

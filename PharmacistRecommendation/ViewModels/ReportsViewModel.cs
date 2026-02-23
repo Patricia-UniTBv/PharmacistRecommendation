@@ -23,7 +23,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         _monitoringService = monitoringService;
         StartDate = DateTime.Today.AddDays(-30);
         EndDate = DateTime.Today;
-        
+
         System.Diagnostics.Debug.WriteLine("ReportsViewModel constructor called - services injected successfully");
     }
 
@@ -98,24 +98,25 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         }
     }
 
-    partial void OnSelectedPrescriptionChanged(Prescription? value)
-    {
-        if (value != null && CurrentReportType != default)
-        {
-            string mode = CurrentReportType switch
-            {
-                ReportTypeEnum.MixedActs => "withprescription",
-                ReportTypeEnum.OwnActs => "withoutprescription",
-                ReportTypeEnum.ConsecutivePrescriptionActs => "withprescription",
-                ReportTypeEnum.MonitoringList => "withoutprescription",
-                _ => "withoutprescription"
-            };
+    //partial void OnSelectedPrescriptionChanged(Prescription? value)
+    //{
+    //    if (value != null && CurrentReportType != default)
+    //    {
+    //        string mode = CurrentReportType switch
+    //        {
+    //            ReportTypeEnum.MixedActs => "withprescription",
+    //            ReportTypeEnum.OwnActs => "withoutprescription",
+    //            ReportTypeEnum.ConsecutivePrescriptionActs => "withprescription",
+    //            ReportTypeEnum.MonitoringList => "withoutprescription",
+    //            _ => "withoutprescription"
+    //        };
 
-            _ = Shell.Current.GoToAsync(
-                $"{nameof(MixedActIssuanceView)}?PrescriptionId={value.Id}&mode={mode}&IsReportViewMode=true");
-        }
-    }
+    //        _ = Shell.Current.GoToAsync(
+    //            $"{nameof(MixedActIssuanceView)}?PrescriptionId={value.Id}&mode={mode}&IsReportViewMode=true");
+    //    }
+    //}
 
+    //Incarcare date prescriptii
     [RelayCommand]
     private async Task OpenPrescription(Prescription prescription)
     {
@@ -130,12 +131,12 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             ReportTypeEnum.MonitoringList => "withoutprescription",
             _ => "withoutprescription"
         };
-
         await Shell.Current.GoToAsync(
             $"{nameof(MixedActIssuanceView)}?PrescriptionId={prescription.Id}&mode={mode}&IsReportViewMode=true"
         );
     }
 
+    //Incarcare date monitorizare 
     [RelayCommand]
     private async Task OpenMonitoring(Monitoring monitoring)
     {
@@ -209,7 +210,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
     {
         new ReportTypeModel
         {
-            Title = "Raport Acte Proprii",
+            Title = "Raport Acte Farmaceutice",
             Description = "Rapoarte pentru recomandările proprii ale farmaciei",
             Icon = "",
             ReportType = ReportTypeEnum.OwnActs
@@ -283,7 +284,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         {
             IsLoadingData = true;
             CurrentReportTitle = SelectedReportType.Title;
-            
+
             PrescriptionsData.Clear();
             MonitoringData.Clear();
             HasData = false;
@@ -306,9 +307,9 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
 
             if (!HasData)
             {
-                await Shell.Current.DisplayAlert("Info", 
+                await Shell.Current.DisplayAlert("Info",
                     $"Nu au fost găsite date pentru {SelectedReportType.Title} în perioada {StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}.\n\n" +
-                    $"Datele au fost căutate cu succes, dar nu există înregistrări pentru criteriile selectate.", 
+                    $"Datele au fost căutate cu succes, dar nu există înregistrări pentru criteriile selectate.",
                     "OK");
             }
         }
@@ -329,15 +330,14 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         System.Diagnostics.Debug.WriteLine("Loading Own Acts data...");
         var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
         System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
-        
+
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
-            .Where(p => string.IsNullOrEmpty(PatientFilter) || 
-                       (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                       (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
-            .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
-            .OrderBy(p => p.IssueDate)
-            .ToList();
+    .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
+    .Where(p => string.IsNullOrEmpty(PatientFilter) ||
+               (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+               (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
+    .OrderBy(p => p.IssueDate)
+    .ToList();
 
         System.Diagnostics.Debug.WriteLine($"Filtered Own Acts: {filteredPrescriptions.Count}");
 
@@ -355,15 +355,16 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         System.Diagnostics.Debug.WriteLine("Loading Consecutive Acts data...");
         var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
         System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
-        
+
         var filteredPrescriptions = prescriptions
-            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
-            .Where(p => string.IsNullOrEmpty(PatientFilter) || 
-                       (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                       (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
-            .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true))
-            .OrderBy(p => p.IssueDate)
-            .ToList();
+     .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
+     .Where(p => string.IsNullOrEmpty(PatientFilter) ||
+                (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
+     .Where(p => !p.PrescriptionMedications.Any() ||  
+                p.PrescriptionMedications.Any(m => m.IsWithPrescription == true)) 
+     .OrderBy(p => p.IssueDate)
+     .ToList();
 
         System.Diagnostics.Debug.WriteLine($"Filtered Consecutive Acts: {filteredPrescriptions.Count}");
 
@@ -424,15 +425,15 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
     private async Task RefreshDataAsync()
     {
         System.Diagnostics.Debug.WriteLine("RefreshDataAsync called");
-        
+
         if (SelectedReportType == null)
         {
-            await Shell.Current.DisplayAlert("Info", 
-                "Selectați mai întâi un tip de raport folosind butonul 'Încarcă Date'.", 
+            await Shell.Current.DisplayAlert("Info",
+                "Selectați mai întâi un tip de raport folosind butonul 'Încarcă Date'.",
                 "OK");
             return;
         }
-        
+
         await LoadReportDataAsync();
     }
 
@@ -473,10 +474,10 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
                 System.Diagnostics.Debug.WriteLine("Main thread: Showing success dialog");
-                
+
                 var openFile = await Shell.Current.DisplayAlert(
-                    "Succes", 
-                    $"PDF-ul a fost salvat cu succes!\nLocație: {filePath}\n\nDoriți să deschideți fișierul?", 
+                    "Succes",
+                    $"PDF-ul a fost salvat cu succes!\nLocație: {filePath}\n\nDoriți să deschideți fișierul?",
                     "Da", "Nu");
 
                 if (openFile)
@@ -497,7 +498,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             System.Diagnostics.Debug.WriteLine($"Main error in GenerateReportAsync: {ex}");
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await Shell.Current.DisplayAlert("Eroare", 
+                await Shell.Current.DisplayAlert("Eroare",
                     $"Eroare la generarea PDF-ului: {ex.Message}", "OK");
             });
         }
@@ -513,7 +514,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         try
         {
             System.Diagnostics.Debug.WriteLine($"Attempting to open file: {filePath}");
-            
+
             if (!File.Exists(filePath))
             {
                 await Shell.Current.DisplayAlert("Eroare", "Fișierul nu a fost găsit.", "OK");
@@ -529,7 +530,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             catch (Exception ex1)
             {
                 System.Diagnostics.Debug.WriteLine($"Method 1 failed: {ex1.Message}");
-                
+
                 try
                 {
                     System.Diagnostics.Debug.WriteLine("Method 2: Using Launcher.Default.OpenAsync with file path");
@@ -539,8 +540,8 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
                 catch (Exception ex2)
                 {
                     System.Diagnostics.Debug.WriteLine($"Method 2 failed: {ex2.Message}");
-                    
-                    await Shell.Current.DisplayAlert("Info", 
+
+                    await Shell.Current.DisplayAlert("Info",
                         $"PDF-ul a fost salvat la:\n{filePath}\n\nNu s-a putut deschide automat.", "OK");
                 }
             }
@@ -548,7 +549,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"TryOpenFileAsync general error: {ex}");
-            await Shell.Current.DisplayAlert("Avertizare", 
+            await Shell.Current.DisplayAlert("Avertizare",
                 $"PDF-ul a fost generat, dar nu a putut fi deschis automat.\nLocație: {filePath}", "OK");
         }
     }
@@ -560,7 +561,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         StartDate = DateTime.Today.AddDays(-30);
         EndDate = DateTime.Today;
         PatientFilter = string.Empty;
-        
+
         if (SelectedReportType != null)
         {
             _ = LoadReportDataAsync();

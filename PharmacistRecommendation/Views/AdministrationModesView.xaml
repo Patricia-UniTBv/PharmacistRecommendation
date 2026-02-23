@@ -6,7 +6,7 @@
     <VerticalStackLayout Padding="14">
         <Label Text="Configurare moduri de administrare" FontAttributes="Bold" FontSize="20"/>
         <HorizontalStackLayout Spacing="8" Margin="0,30,0,8">
-            <Entry Placeholder="Cutare dup nume..." Text="{Binding SearchText}" WidthRequest="180"/>
+            <Entry Placeholder="Cautare dupa nume..." Text="{Binding SearchText}" WidthRequest="180"/>
             <Button Text="Caut" Command="{Binding SearchCommand}" BackgroundColor="#34495E"/>
             <Button Text="Adaug nou" Command="{Binding AddCommand}" BackgroundColor="Green" />
         </HorizontalStackLayout>
@@ -16,11 +16,11 @@
                     <Grid ColumnDefinitions="3*,50,150,100" Padding="1" Margin="20,2,20,2" VerticalOptions="Center">
                         <Entry Grid.Column="0" Text="{Binding Name, Mode=TwoWay}" Placeholder="Nume mod administrare" VerticalOptions="Center"/>
                         <CheckBox Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}" VerticalOptions="Center" Color="#5E89AD"/>
-                        <Button Grid.Column="2" Text="Adaug/Editeaz" BackgroundColor="#34495E"
+                        <Button Grid.Column="2" Text="Adauga/Editeaza" BackgroundColor="#34495E"
                         Command="{Binding BindingContext.EditCommand, Source={x:Reference administration_modes_page}}"
                         CommandParameter="{Binding .}"
                         Margin="5,0"/>
-                        <Button Grid.Column="3" Text="terge" BackgroundColor="#8E0621"
+                        <Button Grid.Column="3" Text="Sterge" BackgroundColor="#8E0621"
                         Command="{Binding BindingContext.DeleteCommand, Source={x:Reference administration_modes_page}}"
                         CommandParameter="{Binding .}"
                         Margin="5,0"/>
