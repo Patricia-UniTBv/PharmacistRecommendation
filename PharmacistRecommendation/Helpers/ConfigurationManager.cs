@@ -145,6 +145,8 @@ namespace PharmacistRecommendation.Helpers
 
                 var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(UserConfigPath, json);
+
+                _configuration = null;
             }
             catch (Exception ex)
             {

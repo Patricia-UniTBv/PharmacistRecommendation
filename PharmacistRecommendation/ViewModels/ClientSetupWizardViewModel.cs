@@ -1,5 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Data.SqlClient;
 using PharmacistRecommendation.Helpers;
 using System.Diagnostics;
 
@@ -80,27 +81,42 @@ ProgressMessage = "Testare conexiune la server...";
          if (connectionSuccess)
        {
        IsConnectionSuccessful = true;
-      StatusMessage = "Conexiune reu?it?!\n\nServerul este accesibil ?i baza de date este configurat? corect.";
+      StatusMessage = "Conexiune reusita!\n\nServerul este accesibil si baza de date este configurata corect.";
          Debug.WriteLine("Client connection test successful.");
       }
    else
-    {
-        HasError = true;
-     StatusMessage = "Conexiune e?uat?!\n\nVerifica?i:\n" +
-          "- Adresa serverului este corect?\n" +
-   "- Parola pentru utilizatorul 'appuser' este corect?\n" +
-        "- Serverul SQL este accesibil din re?eaua dumneavoastr?\n" +
-   "- Baza de date PharmacistRecommendationDB exist? pe server";
-   Debug.WriteLine("Client connection test failed.");
-      }
- }
-        catch (Exception ex)
-  {
- HasError = true;
-       StatusMessage = $"A ap?rut o eroare:\n\n{ex.Message}\n\nV? rug?m s? verifica?i configurarea.";
-  Debug.WriteLine($"Client connection test error: {ex}");
+                {
+                    HasError = true;
+                    StatusMessage = $"Conexiune eșuată!\n\n" +
+                        $"Server: {config.DatabaseSettings.Server}\n" +
+                        $"Database: {config.DatabaseSettings.Database}\n" +
+                        $"Username: {config.DatabaseSettings.Username}\n\n" +
+                        $"Verificați:\n" +
+                        "- Adresa serverului este corectă\n" +
+                        "- Parola pentru utilizatorul 'appuser' este corectă\n" +
+                        "- Serverul SQL este accesibil din rețeaua dumneavoastră\n" +
+                        "- Baza de date PharmacistRecommendationDB există pe server";
+                    Debug.WriteLine("Client connection test failed.");
+                }
             }
-  finally
+            catch (SqlException sqlEx)
+            {
+                HasError = true;
+                StatusMessage = $"Eroare SQL Server:\n\n" +
+                    $"Mesaj: {sqlEx.Message}\n" +
+                    $"Număr eroare: {sqlEx.Number}\n\n" +
+                    $"Server: {ServerAddress}\n" +
+                    $"Database: PharmacistRecommendationDB\n" +
+                    $"Username: appuser";
+                Debug.WriteLine($"SQL Error: {sqlEx}");
+            }
+            catch (Exception ex)
+            {
+                HasError = true;
+                StatusMessage = $"Eroare generală:\n\n{ex.Message}";
+                Debug.WriteLine($"General error: {ex}");
+            }
+            finally
 {
      IsTesting = false;
            ProgressMessage = string.Empty;
@@ -114,8 +130,8 @@ ProgressMessage = "Testare conexiune la server...";
             {
    if (!IsConnectionSuccessful)
     {
-      await ShowAlert("Aten?ie", 
-    "V? rug?m s? testa?i conexiunea �nainte de a finaliza configurarea.", 
+      await ShowAlert("Atentie", 
+    "Va rugam sa testati conexiunea înainte de a finaliza configurarea.", 
               "OK");
          return;
       }

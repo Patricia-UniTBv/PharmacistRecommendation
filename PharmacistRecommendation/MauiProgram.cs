@@ -12,8 +12,8 @@ using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.Services;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
-using WinRT.Interop;
 using QuestPDF.Infrastructure;
+using WinRT.Interop;
 
 #if WINDOWS
 using Microsoft.UI;
@@ -118,44 +118,50 @@ namespace PharmacistRecommendation
             builder.Services.AddTransient<MainPageViewModel>();
 
             // Register Services
-            builder.Services.AddScoped<IMonitoringService, MonitoringService>();
-            builder.Services.AddScoped<IMonitoringRepository, MonitoringRepository>();
+            builder.Services.AddTransient<IMonitoringService, MonitoringService>();
+            builder.Services.AddTransient<IMonitoringRepository, MonitoringRepository>();
 
-            builder.Services.AddScoped<IPatientService, PatientService>();
-            builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+            builder.Services.AddTransient<IPatientService, PatientService>();
+            builder.Services.AddTransient<IPatientRepository, PatientRepository>();
 
-            builder.Services.AddScoped<IPdfReportService, PdfReportService>();
+            builder.Services.AddTransient<IPdfReportService, PdfReportService>();
 
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
 
-            builder.Services.AddScoped<IPharmacyCardService, PharmacyCardService>();
-            builder.Services.AddScoped<IPharmacyCardRepository, PharmacyCardRepository>();
+            builder.Services.AddTransient<IPharmacyCardService, PharmacyCardService>();
+            builder.Services.AddTransient<IPharmacyCardRepository, PharmacyCardRepository>();
 
-            builder.Services.AddScoped<IPharmacyService, PharmacyService>();
-            builder.Services.AddScoped<IPharmacyRepository, PharmacyRepository>();
+            builder.Services.AddTransient<IPharmacyService, PharmacyService>();
+            builder.Services.AddTransient<IPharmacyRepository, PharmacyRepository>();
 
-            builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
-            builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
+            builder.Services.AddTransient<IPrescriptionRepository, PrescriptionRepository>();
+            builder.Services.AddTransient<IPrescriptionService, PrescriptionService>();
 
-            builder.Services.AddScoped<IPrescriptionMedicationRepository, PrescriptionMedicationRepository>();
-            builder.Services.AddScoped<IPrescriptionMedicationService, PrescriptionMedicationService>();
+            builder.Services.AddTransient<IPrescriptionMedicationRepository, PrescriptionMedicationRepository>();
+            builder.Services.AddTransient<IPrescriptionMedicationService, PrescriptionMedicationService>();
 
-            builder.Services.AddScoped<IAdministrationModeRepository, AdministrationModeRepository>();
-            builder.Services.AddScoped<IAdministrationModeService, AdministrationModeService>();
+            builder.Services.AddTransient<IAdministrationModeRepository, AdministrationModeRepository>();
+            builder.Services.AddTransient<IAdministrationModeService, AdministrationModeService>();
 
-            builder.Services.AddScoped<IImportConfigurationRepository, ImportConfigurationRepository>();
-            builder.Services.AddScoped<IImportConfigurationService, ImportConfigurationService>();
+            builder.Services.AddTransient<IImportConfigurationRepository, ImportConfigurationRepository>();
+            builder.Services.AddTransient<IImportConfigurationService, ImportConfigurationService>();
 
-            builder.Services.AddScoped<IEmailConfigurationService, EmailConfigurationService>();
+            builder.Services.AddTransient<IEmailConfigurationService, EmailConfigurationService>();
 
-            builder.Services.AddScoped<IMedicationService, MedicationService>();
-            builder.Services.AddScoped<IMedicationImportService, MedicationImportService>();
-            builder.Services.AddScoped<ICsvFileParser, CsvFileParser>();
-            builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
+            builder.Services.AddTransient<IMedicationService, MedicationService>();
+            builder.Services.AddTransient<IMedicationImportService, MedicationImportService>();
+            builder.Services.AddTransient<ICsvFileParser, CsvFileParser>();
+            builder.Services.AddTransient<IMedicationRepository, MedicationRepository>();
 
-            builder.Services.AddScoped<ISecureStorageService, MauiSecureStorageService>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddTransient<ISecureStorageService, MauiSecureStorageService>();
+            
+            // AuthenticationService holds user state, so it must be Singleton.
+            // Note: This causes a captive dependency on IUserRepository (Transient).
+            // This means the UserRepository and its DbContext will live as long as the app.
+            // Since this is only used for Login/Logout which are infrequent, this is acceptable,
+            // but ideally AuthenticationService should use IServiceScopeFactory for its dependencies.
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddTransient<LoginView>();
             builder.Services.AddTransient<LoginViewModel>();

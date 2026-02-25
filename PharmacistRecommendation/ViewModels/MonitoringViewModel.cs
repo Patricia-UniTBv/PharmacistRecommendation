@@ -7,7 +7,7 @@ using Entities.Services.Interfaces;
 using PharmacistRecommendation.Helpers;
 using System.Collections.ObjectModel;
 using System.Text.Json;
-
+using System.Threading;
 
 namespace PharmacistRecommendation.ViewModels;
 
@@ -22,14 +22,24 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly IPharmacyService _pharmacyService;
     private readonly int _pharmacyId;
 
-    public MonitoringViewModel(IMonitoringService monitoringService,
-                               IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService)
+    // Added for debounce
+    private CancellationTokenSource _debounceCts;
+
+    public MonitoringViewModel(IMonitoringService monitoringService, IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
         _emailConfigurationService = emailConfigurationService;
         _pharmacyService = pharmacyService;
+
+        // Initialize lists
+        MonitoringTypes = new ObservableCollection<string>
+        {
+            "cardio",
+            "diabetes",
+            "temperature"
+        };
 
         StartDate = DateTime.Today.AddDays(-7);
         EndDate = DateTime.Today;
@@ -124,17 +134,44 @@ public partial class MonitoringViewModel : ObservableObject
     [RelayCommand]
     private async Task SearchPatientAsync()
     {
-        if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp))
+        if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp) || 
+           (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName)))
         {
-            var patient = await _patientService.GetPatientAsync(CardNumber, Cnp, FirstName, LastName);
-            await FillPatientData(patient);
-            return;
-        }
+            // Cancel previous search
+            _debounceCts?.Cancel();
+            _debounceCts = new CancellationTokenSource();
+            var token = _debounceCts.Token;
 
-        if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
-        {
-            var patient = await _patientService.GetPatientAsync(null, null, FirstName, LastName);
-            await FillPatientData(patient);
+            try
+            {
+                // Debounce - wait for user to stop typing
+                await Task.Delay(500, token);
+                
+                if (token.IsCancellationRequested) return;
+
+                Patient? patient = null;
+
+                if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp))
+                {
+                    patient = await _patientService.GetPatientAsync(CardNumber, Cnp, FirstName, LastName);
+                }
+                else
+                {
+                    patient = await _patientService.GetPatientAsync(null, null, FirstName, LastName);
+                }
+
+                if (token.IsCancellationRequested) return;
+
+                await FillPatientData(patient);
+            }
+            catch (TaskCanceledException)
+            {
+                // Expected when new search starts
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error searching patient: {ex.Message}");
+            }
         }
     }
 
@@ -152,7 +189,7 @@ public partial class MonitoringViewModel : ObservableObject
         PatientId = patient.Id;
         PatientEmail = patient.Email;
 
-        LoadHistoryAsync();
+        await LoadHistoryAsync();
     }
 
 

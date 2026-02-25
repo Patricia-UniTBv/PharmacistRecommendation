@@ -5,10 +5,11 @@ using PharmacistRecommendation.Helpers;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace PharmacistRecommendation.ViewModels
 {
- public partial class ServerSetupWizardViewModel : ObservableObject
+    public partial class ServerSetupWizardViewModel : ObservableObject
     {
         private static string BACPAC_FILE_PATH => Path.Combine(AppContext.BaseDirectory, "Database", "PharmacistRecommendationDB.bacpac");
         private static string SQLPACKAGE_PATH => Path.Combine(AppContext.BaseDirectory, "SqlPackage", "SqlPackage.exe");
@@ -38,39 +39,40 @@ private bool isCreating;
         private async Task<string> GetServerIPAddressAsync()
         {
             try
- {
-                await Task.Run(() => { }); // Make it async
-
-           string hostName = Dns.GetHostName();
-          IPAddress[] addresses = Dns.GetHostAddresses(hostName);
-
-   // Find first valid IPv4 address
-       foreach (var address in addresses)
-     {
- // Check if it's IPv4
-         if (address.AddressFamily == AddressFamily.InterNetwork)
-    {
-           string ipString = address.ToString();
-
-              // Exclude loopback addresses (127.x.x.x)
-     if (ipString.StartsWith("127."))
-     continue;
-
- // Exclude link-local addresses (169.254.x.x)
-      if (ipString.StartsWith("169.254."))
-    continue;
-
-    return ipString + "\\PHARMACYREC";
-           }
-      }
-            }
-    catch (Exception ex)
             {
-    Debug.WriteLine($"Error getting IP address: {ex.Message}");
-        }
+                return await Task.Run(() =>
+                {
+                    string hostName = Dns.GetHostName();
+                    IPAddress[] addresses = Dns.GetHostAddresses(hostName);
 
-  return "localhost\\PHARMACYREC";
-    }
+                    // Find first valid IPv4 address
+                    foreach (var address in addresses)
+                    {
+                        // Check if it's IPv4
+                        if (address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            string ipString = address.ToString();
+
+                            // Exclude loopback addresses (127.x.x.x)
+                            if (ipString.StartsWith("127."))
+                                continue;
+
+                            // Exclude link-local addresses (169.254.x.x)
+                            if (ipString.StartsWith("169.254."))
+                                continue;
+
+                            return ipString + "\\PHARMACYREC";
+                        }
+                    }
+                    return "localhost\\PHARMACYREC";
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting IP address: {ex.Message}");
+                return "localhost\\PHARMACYREC";
+            }
+        }
 
         [RelayCommand]
         private async Task CreateDatabaseAsync()
@@ -130,6 +132,13 @@ await Task.Delay(500);
   throw new Exception("Baza de date a fost creata, dar nu poate fi gasita.");
                 }
 
+   // Step 5.5: Create appuser login for client connections
+           ProgressMessage = "Creare utilizator pentru clienti...";
+            ProgressValue = 95;
+  await Task.Delay(500);
+
+       await CreateAppUserLoginAsync(server, database);
+
    // Step 6: Mark as configured
                 ProgressMessage = "Finalizare configurare...";
                 ProgressValue = 100;
@@ -168,8 +177,9 @@ await Task.Delay(500);
    {
    try
       {
-       string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;Connection Timeout=5";
-     using var connection = new SqlConnection(masterConnectionString);
+       // Increased timeout to 10 seconds for initial check
+                string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;Connection Timeout=10";
+                using var connection = new SqlConnection(masterConnectionString);
                 await connection.OpenAsync();
                 return true;
 }
@@ -258,91 +268,95 @@ Debug.WriteLine($"Database {database} dropped successfully.");
             // Use the bundled SqlPackage if no path provided
             sqlPackagePath ??= SQLPACKAGE_PATH;
 
-            try
+            await Task.Run(() =>
             {
-                // Build SqlPackage command
-                string arguments = $"/Action:Import " +
-                    $"/SourceFile:\"{BACPAC_FILE_PATH}\" " +
-                    $"/TargetServerName:\"{server}\" " +
-                    $"/TargetDatabaseName:\"{database}\" " +
-                    $"/TargetTrustServerCertificate:True " +
-                    $"/p:CommandTimeout=300";
-
-                var processStartInfo = new ProcessStartInfo
+                try
                 {
-                    FileName = sqlPackagePath,
-                    Arguments = arguments,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                };
+                    // Build SqlPackage command
+                    string arguments = $"/Action:Import " +
+                        $"/SourceFile:\"{BACPAC_FILE_PATH}\" " +
+                        $"/TargetServerName:\"{server}\" " +
+                        $"/TargetDatabaseName:\"{database}\" " +
+                        $"/TargetTrustServerCertificate:True " +
+                        $"/p:CommandTimeout=300";
 
-                using var process = new Process { StartInfo = processStartInfo };
-
-                var outputBuilder = new System.Text.StringBuilder();
-                var errorBuilder = new System.Text.StringBuilder();
-
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
+                    var processStartInfo = new ProcessStartInfo
                     {
-                        outputBuilder.AppendLine(e.Data);
-                        Debug.WriteLine($"SqlPackage: {e.Data}");
+                        FileName = sqlPackagePath,
+                        Arguments = arguments,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
 
-                        // Update progress message with key milestones
-                        if (e.Data.Contains("Importing"))
+                    using var process = new Process { StartInfo = processStartInfo };
+
+                    var outputBuilder = new StringBuilder();
+                    var errorBuilder = new StringBuilder();
+
+                    process.OutputDataReceived += (sender, e) =>
+                    {
+                        if (!string.IsNullOrEmpty(e.Data))
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            outputBuilder.AppendLine(e.Data);
+                            Debug.WriteLine($"SqlPackage: {e.Data}");
+
+                            // Update progress message with key milestones
+                            if (e.Data.Contains("Importing"))
                             {
-                                ProgressValue = 50;
-                                ProgressMessage = "Se importa datele în baza de date...";
-                            });
+                                MainThread.BeginInvokeOnMainThread(() =>
+                                {
+                                    ProgressValue = 50;
+                                    ProgressMessage = "Se importa datele în baza de date...";
+                                });
+                            }
+                            else if (e.Data.Contains("Successfully imported"))
+                            {
+                                MainThread.BeginInvokeOnMainThread(() =>
+                                {
+                                    ProgressValue = 80;
+                                    ProgressMessage = "Import finalizat cu succes!";
+                                });
+                            }
                         }
-                        else if (e.Data.Contains("Successfully imported"))
+                    };
+
+                    process.ErrorDataReceived += (sender, e) =>
+                    {
+                        if (!string.IsNullOrEmpty(e.Data))
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
-                            {
-                                ProgressValue = 80;
-                                ProgressMessage = "Import finalizat cu succes!";
-                            });
+                            errorBuilder.AppendLine(e.Data);
+                            Debug.WriteLine($"SqlPackage Error: {e.Data}");
                         }
-                    }
-                };
+                    };
 
-                process.ErrorDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
+                    process.Start();
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
+
+                    // Use blocking WaitForExit on this background thread to ensure all output is processed
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0)
                     {
-                        errorBuilder.AppendLine(e.Data);
-                        Debug.WriteLine($"SqlPackage Error: {e.Data}");
-                    }
-                };
+                        string errorMessage = errorBuilder.ToString();
+                        if (string.IsNullOrWhiteSpace(errorMessage))
+                        {
+                            errorMessage = outputBuilder.ToString();
+                        }
 
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    string errorMessage = errorBuilder.ToString();
-                    if (string.IsNullOrWhiteSpace(errorMessage))
-                    {
-                        errorMessage = outputBuilder.ToString();
+                        throw new Exception($"SqlPackage a esuat cu codul {process.ExitCode}:\n{errorMessage}");
                     }
 
-                    throw new Exception($"SqlPackage a esuat cu codul {process.ExitCode}:\n{errorMessage}");
+                    Debug.WriteLine("Database restored successfully using SqlPackage.");
                 }
-
-                Debug.WriteLine("Database restored successfully using SqlPackage.");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in RestoreUsingSqlPackageAsync: {ex}");
-                throw new Exception($"Eroare la importul bazei de date: {ex.Message}", ex);
-            }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error in RestoreUsingSqlPackageAsync: {ex}");
+                    throw new Exception($"Eroare la importul bazei de date: {ex.Message}", ex);
+                }
+            });
         }
 
         private string FindSqlPackageExe()
@@ -394,17 +408,82 @@ if (File.Exists(path))
       await connection.OpenAsync();
 
      string checkQuery = $"SELECT database_id FROM sys.databases WHERE name = '{database}'";
-                using var command = new SqlCommand(checkQuery, connection);
+       using var command = new SqlCommand(checkQuery, connection);
        var result = await command.ExecuteScalarAsync();
 
          return result != null;
         }
-            catch (Exception ex)
-        {
+     catch (Exception ex)
+  {
       Debug.WriteLine($"Error verifying database existence: {ex.Message}");
       return false;
     }
-      }
+  }
+
+        private async Task CreateAppUserLoginAsync(string server, string database)
+        {
+      try
+      {
+    Debug.WriteLine("Creating appuser login and database user...");
+      
+           string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;";
+     
+     using var connection = new SqlConnection(masterConnectionString);
+    await connection.OpenAsync();
+        
+     // Step 1: Create SQL Server login
+    string createLoginSql = @"
+     IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'appuser')
+BEGIN
+           CREATE LOGIN appuser WITH PASSWORD = 'Farmacie2025';
+         PRINT 'Login appuser created successfully';
+       END
+            ELSE
+       BEGIN
+  ALTER LOGIN appuser WITH PASSWORD = 'Farmacie2025';
+         PRINT 'Login appuser password updated';
+     END
+          
+       -- Grant remote connection permission
+    GRANT CONNECT SQL TO appuser;
+      ";
+                
+       using var loginCommand = new SqlCommand(createLoginSql, connection);
+      await loginCommand.ExecuteNonQueryAsync();
+                
+     Debug.WriteLine("appuser login created with remote permissions");
+     
+       // Step 2: Create database user and grant permissions
+       string dbConnectionString = $"Server={server};Database={database};Integrated Security=true;TrustServerCertificate=true;";
+        using var dbConnection = new SqlConnection(dbConnectionString);
+       await dbConnection.OpenAsync();
+                
+        string createUserSql = @"
+            IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'appuser')
+  BEGIN
+          CREATE USER appuser FOR LOGIN appuser;
+         PRINT 'User appuser created in database';
+           END
+         
+                  -- Grant necessary permissions
+ ALTER ROLE db_datareader ADD MEMBER appuser;
+    ALTER ROLE db_datawriter ADD MEMBER appuser;
+          GRANT EXECUTE TO appuser;
+     
+         PRINT 'Permissions granted to appuser';
+       ";
+        
+                using var userCommand = new SqlCommand(createUserSql, dbConnection);
+   await userCommand.ExecuteNonQueryAsync();
+                
+              Debug.WriteLine("Database user created and permissions granted");
+            }
+   catch (Exception ex)
+          {
+        Debug.WriteLine($"Error creating appuser: {ex.Message}");
+      throw new Exception($"Eroare la crearea utilizatorului appuser: {ex.Message}", ex);
+            }
+        }
 
         [RelayCommand]
         private async Task FinishAsync()
