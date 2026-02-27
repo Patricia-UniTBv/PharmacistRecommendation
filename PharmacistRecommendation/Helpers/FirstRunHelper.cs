@@ -11,8 +11,8 @@ namespace PharmacistRecommendation.Helpers
     public static class FirstRunHelper
     {
         private const string FIRST_RUN_FLAG_KEY = "app_first_run_completed";
-        private const string SERVER_CONNECTION_FORMAT = "Server={0};Database={1};Integrated Security=true;TrustServerCertificate=true;Connection Timeout=5";
-     private const string CLIENT_CONNECTION_FORMAT = "Server={0};Database={1};User Id={2};Password={3};TrustServerCertificate=true;Connection Timeout=5";
+        private const string SERVER_CONNECTION_FORMAT = "Server={0};Database={1};Integrated Security=true;TrustServerCertificate=true;Connection Timeout=15";
+        private const string CLIENT_CONNECTION_FORMAT = "Server={0};Database={1};User Id={2};Password={3};TrustServerCertificate=true;Connection Timeout=15";
 
         /// <summary>
         /// Checks if this is the first run of the application based on deployment mode
@@ -20,7 +20,14 @@ namespace PharmacistRecommendation.Helpers
         /// <returns>True if first run, false if already configured</returns>
         public static async Task<bool> IsFirstRunAsync()
         {
- try
+            // Check explicit preference flag first
+            // This prevents the setup wizard from appearing if the connection is temporarily unavailable
+            if (Preferences.Get(FIRST_RUN_FLAG_KEY, false))
+            {
+                return false;
+            }
+
+            try
             {
               var config = ConfigurationManager.LoadConfiguration();
   
@@ -46,34 +53,38 @@ namespace PharmacistRecommendation.Helpers
         /// </summary>
         private static async Task<bool> IsFirstRunServerModeAsync(AppConfiguration config)
         {
-    try
+            try
             {
-     // Server mode: Check if database exists at localhost\SQLEXPRESS
-      string server = config.DatabaseSettings.Server;
-          string database = config.DatabaseSettings.Database;
+                // Server mode: Check if database exists at localhost\SQLEXPRESS
+                string server = config.DatabaseSettings.Server;
+                string database = config.DatabaseSettings.Database;
 
                 // Build connection string to master database to check if our DB exists
-      string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;Connection Timeout=5";
+                // Increased timeout to 15 seconds to handle cold starts
+                string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;Connection Timeout=15";
 
-             using var connection = new SqlConnection(masterConnectionString);
-    await connection.OpenAsync();
+                using var connection = new SqlConnection(masterConnectionString);
+                await connection.OpenAsync();
 
-            // Check if the database exists
-     string checkDbQuery = $"SELECT database_id FROM sys.databases WHERE name = '{database}'";
-      using var command = new SqlCommand(checkDbQuery, connection);
-            var result = await command.ExecuteScalarAsync();
+                // Check if the database exists
+                string checkDbQuery = $"SELECT database_id FROM sys.databases WHERE name = '{database}'";
+                using var command = new SqlCommand(checkDbQuery, connection);
+                // Wait longer for the command execution also
+                command.CommandTimeout = 30;
+                var result = await command.ExecuteScalarAsync();
 
-             if (result == null)
-{
-  // Database doesn't exist - first run
-     Debug.WriteLine($"Database '{database}' not found on '{server}'. First run detected.");
-          return true;
-  }
+                if (result == null)
+                {
+                    // Database doesn't exist - first run
+                    Debug.WriteLine($"Database '{database}' not found on '{server}'. First run detected.");
+                    return true;
+                }
 
-     // Database exists - check if it's properly initialized
+                // Database exists - check if it's properly initialized
                 // Try to connect to the actual database
-string appConnectionString = string.Format(SERVER_CONNECTION_FORMAT, server, database);
-   using var appConnection = new SqlConnection(appConnectionString);
+                string appConnectionString = string.Format(SERVER_CONNECTION_FORMAT, server, database);
+                
+                using var appConnection = new SqlConnection(appConnectionString);
                 await appConnection.OpenAsync();
 
        // Check if essential tables exist (e.g., Pharmacy table)
