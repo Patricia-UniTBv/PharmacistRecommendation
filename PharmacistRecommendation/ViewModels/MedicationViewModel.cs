@@ -14,11 +14,15 @@ namespace PharmacistRecommendation.ViewModels
         private readonly IMedicationImportService _importService;
         private readonly IServiceProvider _serviceProvider;
         private readonly SemaphoreSlim _loadingSemaphore = new(1, 1); 
+        private CancellationTokenSource? _backgroundLoadCts;
         private string _searchText = string.Empty;
         private string _searchCode = string.Empty;
         private Medication? _selectedMedication;
         private bool _isLoading;
-        private int _selectedFilter = 0; 
+        private int _selectedFilter = 0;
+
+        private const int InitialBatchSize = 500;
+        private const int BackgroundBatchSize = 200;
 
         public MedicationViewModel(IMedicationService medicationService, IMedicationImportService importService, IServiceProvider serviceProvider)
         {
@@ -142,6 +146,19 @@ namespace PharmacistRecommendation.ViewModels
             };
         }
 
+        /// <summary>
+        /// Cancels any in-progress background loading so a new operation can start cleanly.
+        /// </summary>
+        private void CancelBackgroundLoad()
+        {
+            if (_backgroundLoadCts != null)
+            {
+                _backgroundLoadCts.Cancel();
+                _backgroundLoadCts.Dispose();
+                _backgroundLoadCts = null;
+            }
+        }
+
         public async Task LoadMedicationsAsync()
         {
             if (_medicationService == null)
@@ -155,19 +172,71 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
+            CancelBackgroundLoad();
+
             try
             {
                 IsLoading = true;
                 var filteredMedications = await GetFilteredMedicationsAsync();
 
+                // Show the first batch immediately
+                var initialBatch = filteredMedications.Take(InitialBatchSize).ToList();
+
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     Medications.Clear();
-                    foreach (var medication in filteredMedications)
+                    foreach (var medication in initialBatch)
                     {
                         Medications.Add(new MedicationDisplayItem(medication, this));
                     }
                 });
+
+                IsLoading = false;
+
+                // Load the rest in the background
+                var remaining = filteredMedications.Skip(InitialBatchSize).ToList();
+                if (remaining.Count > 0)
+                {
+                    _backgroundLoadCts = new CancellationTokenSource();
+                    var token = _backgroundLoadCts.Token;
+
+                    // Release the semaphore before background work so searches/imports aren't blocked
+                    _loadingSemaphore.Release();
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            for (int i = 0; i < remaining.Count; i += BackgroundBatchSize)
+                            {
+                                if (token.IsCancellationRequested)
+                                    return;
+
+                                var batch = remaining.Skip(i).Take(BackgroundBatchSize).ToList();
+
+                                await MainThread.InvokeOnMainThreadAsync(() =>
+                                {
+                                    if (token.IsCancellationRequested)
+                                        return;
+
+                                    foreach (var medication in batch)
+                                    {
+                                        Medications.Add(new MedicationDisplayItem(medication, this));
+                                    }
+                                });
+
+                                // Small yield to keep the UI responsive between batches
+                                await Task.Delay(30, CancellationToken.None);
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Expected when a new load/search cancels this background work
+                        }
+                    }, token);
+
+                    return; // Semaphore already released above
+                }
             }
             catch (Exception ex)
             {
@@ -176,7 +245,11 @@ namespace PharmacistRecommendation.ViewModels
             finally
             {
                 IsLoading = false;
-                _loadingSemaphore.Release();
+                // Only release if we didn't already release for background loading
+                if (_loadingSemaphore.CurrentCount == 0)
+                {
+                    _loadingSemaphore.Release();
+                }
             }
         }
 
@@ -187,6 +260,8 @@ namespace PharmacistRecommendation.ViewModels
                 await ShowAlert("Error", "Medication service not initialized", "OK");
                 return;
             }
+
+            CancelBackgroundLoad();
 
             if (!await _loadingSemaphore.WaitAsync(100))
             {
@@ -270,6 +345,8 @@ namespace PharmacistRecommendation.ViewModels
         {
             try
             {
+                CancelBackgroundLoad();
+
                 var fileResult = await FilePicker.PickAsync(new PickOptions
                 {
                     PickerTitle = "Select CSV or Excel file",
@@ -451,6 +528,8 @@ namespace PharmacistRecommendation.ViewModels
         {
             try
             {
+                CancelBackgroundLoad();
+
                 var fileResult = await FilePicker.PickAsync(new PickOptions
                 {
                     PickerTitle = "Selectați fișierul Nomenclator Propriu (CSV sau Excel)",
@@ -687,6 +766,7 @@ namespace PharmacistRecommendation.ViewModels
 
         public void Dispose()
         {
+            CancelBackgroundLoad();
             _loadingSemaphore?.Dispose();
         }
     }
