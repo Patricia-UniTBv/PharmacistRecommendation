@@ -462,13 +462,13 @@ namespace PharmacistRecommendation.ViewModels
             {
                 var fileResult = await FilePicker.PickAsync(new PickOptions
                 {
-                    PickerTitle = "Select Custom Nomenclator CSV file",
+                    PickerTitle = "Selectați fișierul Nomenclator Propriu (CSV sau Excel)",
                     FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
-                        { DevicePlatform.iOS, new[] { "public.comma-separated-values-text" } },
-                        { DevicePlatform.Android, new[] { "text/csv" } },
-                        { DevicePlatform.WinUI, new[] { ".csv" } },
-                        { DevicePlatform.macOS, new[] { "csv" } }
+                        { DevicePlatform.iOS, new[] { "public.comma-separated-values-text", "org.openxmlformats.spreadsheetml.sheet" } },
+                        { DevicePlatform.Android, new[] { "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } },
+                        { DevicePlatform.WinUI, new[] { ".csv", ".xlsx" } },
+                        { DevicePlatform.macOS, new[] { "csv", "xlsx" } }
                     })
                 });
 
@@ -477,7 +477,16 @@ namespace PharmacistRecommendation.ViewModels
                     IsLoading = true;
 
                     using var stream = await fileResult.OpenReadAsync();
-                    var csvData = await _importService.ParseCustomNomenclatorCsvFileAsync(stream);
+
+                    List<CsvMedicationRow> csvData;
+                    if (fileResult.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                    {
+                        csvData = await _importService.ParseCustomNomenclatorExcelFileAsync(stream);
+                    }
+                    else
+                    {
+                        csvData = await _importService.ParseCustomNomenclatorCsvFileAsync(stream);
+                    }
 
                     var previewResult = await _importService.PreviewCustomNomenclatorImportAsync(csvData);
 

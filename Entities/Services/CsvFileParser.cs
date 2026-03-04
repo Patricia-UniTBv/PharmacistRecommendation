@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using ClosedXML.Excel;
+using Entities.Models;
 using Entities.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -21,7 +22,9 @@ namespace Entities.Services
             try
             {
                 csvStream.Position = 0;
-                using var reader = new StreamReader(csvStream, Encoding.UTF8);
+                ThrowIfBinaryContent(csvStream);
+
+                using var reader = new StreamReader(csvStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
 
                 var headerLine = await reader.ReadLineAsync();
                 if (string.IsNullOrWhiteSpace(headerLine))
@@ -29,7 +32,8 @@ namespace Entities.Services
                     throw new InvalidOperationException("CSV file is empty or invalid");
                 }
 
-                var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
+                var delimiter = DetectDelimiter(headerLine);
+                var headers = SplitHeaderLine(headerLine, delimiter);
                 ValidateHeaders(headers);
 
                 string line;
@@ -43,7 +47,7 @@ namespace Entities.Services
 
                     try
                     {
-                        var medication = ParseCsvLine(line, headers);
+                        var medication = ParseCsvLine(line, headers, delimiter);
                         if (medication != null)
                         {
                             medications.Add(medication);
@@ -66,16 +70,125 @@ namespace Entities.Services
 
         public async Task<List<CsvMedicationRow>> ParseExcelAsync(Stream excelStream)
         {
-            await Task.CompletedTask;
-            throw new NotSupportedException(
-                "Excel file import is temporarily unavailable due to library conflicts. " +
-                "Please convert your Excel file to CSV format:\n\n" +
-                "1. Open your Excel file\n" +
-                "2. Go to File > Save As\n" +
-                "3. Choose 'CSV (Comma delimited)' format\n" +
-                "4. Save and try importing the CSV file instead\n\n" +
-                "We apologize for the inconvenience and are working to resolve this issue."
-            );
+            return await Task.Run(() =>
+            {
+                var medications = new List<CsvMedicationRow>();
+
+                using var workbook = new XLWorkbook(excelStream);
+                var worksheet = workbook.Worksheets.First();
+                var firstRow = worksheet.FirstRowUsed();
+                if (firstRow == null)
+                    throw new InvalidOperationException("Excel file is empty");
+
+                var headers = firstRow.CellsUsed()
+                    .Select(c => c.GetString().Trim())
+                    .ToArray();
+                ValidateHeaders(headers);
+
+                var dataRows = worksheet.RowsUsed().Skip(1);
+                int rowNumber = 1;
+                foreach (var row in dataRows)
+                {
+                    rowNumber++;
+                    try
+                    {
+                        var values = new string[headers.Length];
+                        for (int i = 0; i < headers.Length; i++)
+                            values[i] = row.Cell(i + 1).GetString().Trim();
+
+                        var medication = CreateMedicationRow(values, headers);
+                        if (medication != null)
+                            medications.Add(medication);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning($"Error parsing Excel row {rowNumber}: {ex.Message}");
+                    }
+                }
+
+                return medications;
+            });
+        }
+
+        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvAsync(Stream csvStream)
+        {
+            var medications = new List<CsvMedicationRow>();
+            csvStream.Position = 0;
+            ThrowIfBinaryContent(csvStream);
+
+            using var reader = new StreamReader(csvStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+            var headerLine = await reader.ReadLineAsync();
+
+            if (string.IsNullOrWhiteSpace(headerLine))
+                throw new InvalidOperationException("CSV file is empty or has no header");
+
+            var delimiter = DetectDelimiter(headerLine);
+            var headers = SplitHeaderLine(headerLine, delimiter);
+            ValidateCustomNomenclatorHeaders(headers);
+
+            string? line;
+            int lineNumber = 1;
+
+            while ((line = await reader.ReadLineAsync()) != null)
+            {
+                lineNumber++;
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                try
+                {
+                    var medication = ParseCustomNomenclatorCsvLine(line, headers, delimiter);
+                    medication.NormalizeEmptyStrings();
+                    medications.Add(medication);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Error parsing line {lineNumber}: {ex.Message}");
+                }
+            }
+
+            return medications;
+        }
+
+        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorExcelAsync(Stream excelStream)
+        {
+            return await Task.Run(() =>
+            {
+                var medications = new List<CsvMedicationRow>();
+
+                using var workbook = new XLWorkbook(excelStream);
+                var worksheet = workbook.Worksheets.First();
+                var firstRow = worksheet.FirstRowUsed();
+                if (firstRow == null)
+                    throw new InvalidOperationException("Excel file is empty");
+
+                var headers = firstRow.CellsUsed()
+                    .Select(c => c.GetString().Trim())
+                    .ToArray();
+                ValidateCustomNomenclatorHeaders(headers);
+
+                var dataRows = worksheet.RowsUsed().Skip(1);
+                int rowNumber = 1;
+                foreach (var row in dataRows)
+                {
+                    rowNumber++;
+                    try
+                    {
+                        var values = new string[headers.Length];
+                        for (int i = 0; i < headers.Length; i++)
+                            values[i] = row.Cell(i + 1).GetString().Trim();
+
+                        var medication = CreateCustomNomenclatorMedicationRow(values, headers);
+                        medication.NormalizeEmptyStrings();
+                        medications.Add(medication);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning($"Error parsing Excel row {rowNumber}: {ex.Message}");
+                    }
+                }
+
+                return medications;
+            });
         }
 
         public bool ValidateCsvStructure(Stream csvStream)
@@ -89,8 +202,32 @@ namespace Entities.Services
                 if (string.IsNullOrWhiteSpace(headerLine))
                     return false;
 
-                var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
+                var delimiter = DetectDelimiter(headerLine);
+                var headers = SplitHeaderLine(headerLine, delimiter);
                 ValidateHeaders(headers);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool ValidateCustomNomenclatorCsvStructure(Stream csvStream)
+        {
+            try
+            {
+                csvStream.Position = 0;
+                using var reader = new StreamReader(csvStream, Encoding.UTF8);
+                var headerLine = reader.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(headerLine))
+                    return false;
+
+                var delimiter = DetectDelimiter(headerLine);
+                var headers = SplitHeaderLine(headerLine, delimiter);
+                ValidateCustomNomenclatorHeaders(headers);
 
                 return true;
             }
@@ -127,6 +264,19 @@ namespace Entities.Services
             };
         }
 
+        public List<string> GetCustomNomenclatorRequiredColumns()
+        {
+            return new List<string>
+            {
+                "Denumire",
+                "Producator",
+                "Cod W",
+                "Cod ATC",
+                "Tip ANM",
+                "DCI"
+            };
+        }
+
         private void ValidateHeaders(string[] headers)
         {
             var requiredColumns = GetRequiredColumns();
@@ -138,9 +288,22 @@ namespace Entities.Services
             }
         }
 
-        private CsvMedicationRow ParseCsvLine(string line, string[] headers)
+        private void ValidateCustomNomenclatorHeaders(string[] headers)
         {
-            var values = ParseCsvValues(line);
+            var requiredColumns = new[] { "Denumire", "Producator" };
+            var missingColumns = requiredColumns.Where(req => !headers.Contains(req, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            if (missingColumns.Any())
+            {
+                throw new InvalidOperationException(
+                    $"Missing required columns: {string.Join(", ", missingColumns)}. " +
+                    $"Found columns: [{string.Join(", ", headers)}]");
+            }
+        }
+
+        private CsvMedicationRow ParseCsvLine(string line, string[] headers, char delimiter)
+        {
+            var values = ParseCsvValues(line, delimiter);
 
             if (values.Length != headers.Length)
             {
@@ -148,6 +311,18 @@ namespace Entities.Services
             }
 
             return CreateMedicationRow(values, headers);
+        }
+
+        private CsvMedicationRow ParseCustomNomenclatorCsvLine(string line, string[] headers, char delimiter)
+        {
+            var values = ParseCsvValues(line, delimiter);
+
+            if (values.Length != headers.Length)
+            {
+                throw new InvalidOperationException($"Column count mismatch. Expected {headers.Length}, got {values.Length}");
+            }
+
+            return CreateCustomNomenclatorMedicationRow(values, headers);
         }
 
         private CsvMedicationRow CreateMedicationRow(string[] values, string[] headers)
@@ -219,130 +394,6 @@ namespace Entities.Services
             return medication;
         }
 
-        private string[] ParseCsvValues(string line)
-        {
-            var values = new List<string>();
-            var currentValue = new StringBuilder();
-            bool inQuotes = false;
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                char c = line[i];
-
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    values.Add(currentValue.ToString().Trim());
-                    currentValue.Clear();
-                }
-                else
-                {
-                    currentValue.Append(c);
-                }
-            }
-
-            values.Add(currentValue.ToString().Trim());
-            return values.ToArray();
-        }
-
-        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvAsync(Stream csvStream)
-        {
-            var medications = new List<CsvMedicationRow>();
-            csvStream.Position = 0;
-
-            using var reader = new StreamReader(csvStream, Encoding.UTF8);
-            var headerLine = await reader.ReadLineAsync();
-            
-            if (string.IsNullOrWhiteSpace(headerLine))
-                throw new InvalidOperationException("CSV file is empty or has no header");
-
-            var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
-            ValidateCustomNomenclatorHeaders(headers);
-
-            string? line;
-            int lineNumber = 1;
-
-            while ((line = await reader.ReadLineAsync()) != null)
-            {
-                lineNumber++;
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                try
-                {
-                    var medication = ParseCustomNomenclatorCsvLine(line, headers);
-                    medication.NormalizeEmptyStrings();
-                    medications.Add(medication);
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException($"Error parsing line {lineNumber}: {ex.Message}");
-                }
-            }
-
-            return medications;
-        }
-
-        public bool ValidateCustomNomenclatorCsvStructure(Stream csvStream)
-        {
-            try
-            {
-                csvStream.Position = 0;
-                using var reader = new StreamReader(csvStream, Encoding.UTF8);
-                var headerLine = reader.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(headerLine))
-                    return false;
-
-                var headers = headerLine.Split(',').Select(h => h.Trim('"').Trim()).ToArray();
-                ValidateCustomNomenclatorHeaders(headers);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public List<string> GetCustomNomenclatorRequiredColumns()
-        {
-            return new List<string>
-            {
-                "Denumire",
-                "Producator", 
-                "Cod W", // Optional - might be empty for supplements
-                "Cod ATC",
-                "Tip ANM",
-                "DCI"
-            };
-        }
-
-        private void ValidateCustomNomenclatorHeaders(string[] headers)
-        {
-            var requiredColumns = new[] { "Denumire", "Producator" }; // minimum required
-            var missingColumns = requiredColumns.Where(req => !headers.Contains(req, StringComparer.OrdinalIgnoreCase)).ToList();
-
-            if (missingColumns.Any())
-            {
-                throw new InvalidOperationException($"Missing required columns: {string.Join(", ", missingColumns)}");
-            }
-        }
-
-        private CsvMedicationRow ParseCustomNomenclatorCsvLine(string line, string[] headers)
-        {
-            var values = ParseCsvValues(line);
-
-            if (values.Length != headers.Length)
-            {
-                throw new InvalidOperationException($"Column count mismatch. Expected {headers.Length}, got {values.Length}");
-            }
-
-            return CreateCustomNomenclatorMedicationRow(values, headers);
-        }
-
         private CsvMedicationRow CreateCustomNomenclatorMedicationRow(string[] values, string[] headers)
         {
             var medication = new CsvMedicationRow();
@@ -361,13 +412,13 @@ namespace Entities.Services
                         medication.FirmaProducatoare = value;
                         break;
                     case "cod w":
-                        medication.CodCIM = string.IsNullOrWhiteSpace(value) ? null : value; // CodW = CodCIM, can be null
+                        medication.CodCIM = string.IsNullOrWhiteSpace(value) ? null : value;
                         break;
                     case "cod atc":
                         medication.CodATC = value;
                         break;
                     case "tip anm":
-                        medication.ActiuneTerapeutica = value; // Store in existing field
+                        medication.ActiuneTerapeutica = value;
                         break;
                     case "dci":
                         medication.DCI = value;
@@ -376,6 +427,123 @@ namespace Entities.Services
             }
 
             return medication;
+        }
+
+        private string[] ParseCsvValues(string line, char delimiter)
+        {
+            var values = new List<string>();
+            var currentValue = new StringBuilder();
+            bool inQuotes = false;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == delimiter && !inQuotes)
+                {
+                    values.Add(currentValue.ToString().Trim());
+                    currentValue.Clear();
+                }
+                else
+                {
+                    currentValue.Append(c);
+                }
+            }
+
+            values.Add(currentValue.ToString().Trim());
+            return values.ToArray();
+        }
+
+        /// <summary>
+        /// Auto-detects the CSV delimiter by checking if the header line contains more 
+        /// semicolons than commas (common for European/Romanian CSV exports from Excel).
+        /// </summary>
+        private static char DetectDelimiter(string headerLine)
+        {
+            int commaCount = headerLine.Count(c => c == ',');
+            int semicolonCount = headerLine.Count(c => c == ';');
+
+            return semicolonCount > commaCount ? ';' : ',';
+        }
+
+        /// <summary>
+        /// Splits a header line by the given delimiter, trimming quotes and whitespace from each column name.
+        /// </summary>
+        private static string[] SplitHeaderLine(string headerLine, char delimiter)
+        {
+            // Use the same quote-aware parsing as data lines to handle quoted headers
+            var values = new List<string>();
+            var currentValue = new StringBuilder();
+            bool inQuotes = false;
+
+            for (int i = 0; i < headerLine.Length; i++)
+            {
+                char c = headerLine[i];
+
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == delimiter && !inQuotes)
+                {
+                    values.Add(currentValue.ToString().Trim());
+                    currentValue.Clear();
+                }
+                else
+                {
+                    currentValue.Append(c);
+                }
+            }
+
+            values.Add(currentValue.ToString().Trim());
+            return values.ToArray();
+        }
+
+        /// <summary>
+        /// Checks the first bytes of the stream for binary signatures (e.g. ZIP/XLSX magic bytes).
+        /// Resets stream position after checking. Throws with a user-friendly message if binary content is detected.
+        /// </summary>
+        private static void ThrowIfBinaryContent(Stream stream)
+        {
+            if (!stream.CanRead || stream.Length < 4)
+                return;
+
+            stream.Position = 0;
+            Span<byte> header = stackalloc byte[4];
+            int bytesRead = stream.Read(header);
+            stream.Position = 0;
+
+            if (bytesRead < 4)
+                return;
+
+            // ZIP magic bytes (PK\x03\x04) — .xlsx files are ZIP archives
+            if (header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04)
+            {
+                throw new InvalidOperationException(
+                    "Fișierul selectat este un fișier Excel (.xlsx), nu un fișier CSV.\n\n" +
+                    "Vă rugăm convertiți fișierul în format CSV:\n" +
+                    "1. Deschideți fișierul în Excel\n" +
+                    "2. Mergeți la File → Save As\n" +
+                    "3. Selectați formatul 'CSV UTF-8 (Comma delimited)' sau 'CSV (Comma delimited)'\n" +
+                    "4. Salvați și importați fișierul CSV rezultat");
+            }
+
+            // Check for non-text content (control characters in the first bytes, excluding BOM and common whitespace)
+            for (int i = 0; i < bytesRead; i++)
+            {
+                byte b = header[i];
+                // Allow: tab (0x09), LF (0x0A), CR (0x0D), printable ASCII (0x20+), UTF-8 continuation (0x80+), BOM bytes (0xEF, 0xBB, 0xBF)
+                if (b < 0x09 || (b > 0x0D && b < 0x20))
+                {
+                    throw new InvalidOperationException(
+                        "Fișierul selectat nu pare să fie un fișier text CSV valid.\n" +
+                        "Asigurați-vă că fișierul este salvat în format CSV (text), nu Excel (.xlsx).");
+                }
+            }
         }
     }
 }

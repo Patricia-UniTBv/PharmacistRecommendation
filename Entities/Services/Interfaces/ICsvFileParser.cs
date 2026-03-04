@@ -9,6 +9,7 @@ namespace Entities.Services.Interfaces
         bool ValidateCsvStructure(Stream csvStream);
         List<string> GetRequiredColumns();
         Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvAsync(Stream csvStream);
+        Task<List<CsvMedicationRow>> ParseCustomNomenclatorExcelAsync(Stream excelStream);
         bool ValidateCustomNomenclatorCsvStructure(Stream csvStream);
         List<string> GetCustomNomenclatorRequiredColumns();
     }

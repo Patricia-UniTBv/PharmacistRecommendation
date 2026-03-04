@@ -398,6 +398,11 @@ namespace Entities.Services
             return await _csvParser.ParseCustomNomenclatorCsvAsync(csvStream);
         }
 
+        public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorExcelFileAsync(Stream excelStream)
+        {
+            return await _csvParser.ParseCustomNomenclatorExcelAsync(excelStream);
+        }
+
         public async Task<CsvImportResult> PreviewCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData)
         {
             var result = new CsvImportResult();

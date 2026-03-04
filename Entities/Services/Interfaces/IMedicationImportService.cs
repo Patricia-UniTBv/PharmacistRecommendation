@@ -11,6 +11,7 @@ namespace Entities.Services.Interfaces
         Task<CsvImportResult> HandleManualMedicationConflictsAsync(List<MedicationConflict> conflicts);
         Task<CsvImportResult> HandleCodeChangesAsync(List<MedicationCodeChange> codeChanges);
         Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvFileAsync(Stream csvStream);
+        Task<List<CsvMedicationRow>> ParseCustomNomenclatorExcelFileAsync(Stream excelStream);
         Task<CsvImportResult> PreviewCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData);
         Task<CsvImportResult> ExecuteCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData, CsvImportOptions options);
     }
