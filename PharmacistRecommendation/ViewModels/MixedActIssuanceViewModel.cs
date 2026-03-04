@@ -28,7 +28,7 @@ namespace PharmacistRecommendation.ViewModels
     [QueryProperty(nameof(Mode), "mode")]
     [QueryProperty(nameof(PrescriptionId), "PrescriptionId")]
     [QueryProperty(nameof(IsReportViewMode), "IsReportViewMode")]
-    public partial class MixedActIssuanceViewModel : ObservableObject
+    public partial class MixedActIssuanceViewModel : ObservableObject, IDisposable
     {
         private string PrescriptionsPath { get; set; }
         private string ReceiptsPath { get; set; }
@@ -143,7 +143,7 @@ namespace PharmacistRecommendation.ViewModels
         public ObservableCollection<string> FilteredMedications { get; } = new();
         public bool HasSuggestions => Suggestions != null && Suggestions.Count > 0;
 
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource? _cts;
 
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService,
@@ -160,9 +160,29 @@ namespace PharmacistRecommendation.ViewModels
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
-            Task.Run(async () => await LoadMedicationsAsync());
-            Task.Run(async () => await LoadAdministrationModes());
+            _ = InitializeAsync();
             pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+        }
+
+        private async Task InitializeAsync()
+        {
+            try
+            {
+                await LoadMedicationsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading medications: {ex.Message}");
+            }
+
+            try
+            {
+                await LoadAdministrationModes();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading administration modes: {ex.Message}");
+            }
         }
 
 
@@ -228,9 +248,12 @@ namespace PharmacistRecommendation.ViewModels
             var all = await _medicationService.GetAllMedicationsAsync();
             _allMedicationsCache = all.Select(m => m.Denumire).ToList();
 
-            AllMedications.Clear();
-            foreach (var med in _allMedicationsCache)
-                AllMedications.Add(med);
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                AllMedications.Clear();
+                foreach (var med in _allMedicationsCache)
+                    AllMedications.Add(med);
+            });
         }
 
 
@@ -295,6 +318,7 @@ namespace PharmacistRecommendation.ViewModels
             await LoadMedicationsAsync();
 
             _cts?.Cancel();
+            _cts?.Dispose();
             _cts = new CancellationTokenSource();
 
             try
@@ -564,7 +588,7 @@ namespace PharmacistRecommendation.ViewModels
 
 
         [RelayCommand]
-        public async void SelectMedication(string medName)
+        public async Task SelectMedicationAsync(string medName)
         {
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
@@ -630,7 +654,7 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         [RelayCommand]
-        private async void Print()
+        private async Task PrintAsync()
         {
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
 
@@ -1040,7 +1064,7 @@ namespace PharmacistRecommendation.ViewModels
                 var modes = await _administrationModeService.GetAllAsync();
                 var activeModes = modes?.Where(c => c?.IsActive == true).ToList() ?? new List<AdministrationMode>();
 
-                MainThread.BeginInvokeOnMainThread(() =>
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     AdministrationModes = new ObservableCollection<AdministrationMode>(activeModes);
                 });
@@ -1125,5 +1149,11 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private bool isReadOnly;
 
+        public void Dispose()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
+        }
     }
 }

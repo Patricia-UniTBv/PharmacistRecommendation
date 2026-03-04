@@ -13,7 +13,7 @@ namespace PharmacistRecommendation.ViewModels;
 
 [QueryProperty(nameof(MonitoringId), "MonitoringId")]
 [QueryProperty(nameof(IsReportViewMode), "IsReportViewMode")]
-public partial class MonitoringViewModel : ObservableObject
+public partial class MonitoringViewModel : ObservableObject, IDisposable
 {
     private readonly IMonitoringService _monitoringService;
     private readonly IPatientService _patientService;
@@ -23,7 +23,7 @@ public partial class MonitoringViewModel : ObservableObject
     private readonly int _pharmacyId;
 
     // Added for debounce
-    private CancellationTokenSource _debounceCts;
+    private CancellationTokenSource? _debounceCts;
 
     public MonitoringViewModel(IMonitoringService monitoringService, IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService)
     {
@@ -92,7 +92,7 @@ public partial class MonitoringViewModel : ObservableObject
         set
         {
             _monitoringId = value;
-            LoadMonitoringAsync(value);
+            _ = LoadMonitoringAsync(value);
         }
     }
 
@@ -107,25 +107,25 @@ public partial class MonitoringViewModel : ObservableObject
     }
 
 
-    partial void OnCardNumberChanged(string oldValue, string newValue)
+    partial void OnCardNumberChanged(string? oldValue, string? newValue)
     {
         if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 3) 
             _ = SearchPatientAsync();
     }
 
-    partial void OnFirstNameChanged(string oldValue, string newValue)
+    partial void OnFirstNameChanged(string? oldValue, string? newValue)
     {
         if (!string.IsNullOrWhiteSpace(newValue))
             _ = SearchPatientAsync();
     }
 
-    partial void OnLastNameChanged(string oldValue, string newValue)
+    partial void OnLastNameChanged(string? oldValue, string? newValue)
     {
         if (!string.IsNullOrWhiteSpace(newValue))
             _ = SearchPatientAsync();
     }
 
-    partial void OnCnpChanged(string oldValue, string newValue)
+    partial void OnCnpChanged(string? oldValue, string? newValue)
     {
         if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5)
             _ = SearchPatientAsync();
@@ -137,8 +137,9 @@ public partial class MonitoringViewModel : ObservableObject
         if (!string.IsNullOrWhiteSpace(CardNumber) || !string.IsNullOrWhiteSpace(Cnp) || 
            (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName)))
         {
-            // Cancel previous search
+            // Cancel and dispose previous search
             _debounceCts?.Cancel();
+            _debounceCts?.Dispose();
             _debounceCts = new CancellationTokenSource();
             var token = _debounceCts.Token;
 
@@ -268,10 +269,13 @@ public partial class MonitoringViewModel : ObservableObject
 
         PatientId = patientIds.First(); 
 
-        if (HistoryList != null)
-            HistoryList.Clear();
-        else
-            HistoryList = new ObservableCollection<object>();
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            if (HistoryList != null)
+                HistoryList.Clear();
+            else
+                HistoryList = new ObservableCollection<object>();
+        });
 
         ValidationMessage = string.Empty;
 
@@ -280,8 +284,11 @@ public partial class MonitoringViewModel : ObservableObject
 
         var rows = await _monitoringService.GetHistoryByPatientIdsAsync(patientIds, start, end);
 
-        foreach (var row in rows)
-            HistoryList.Add(row);
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            foreach (var row in rows)
+                HistoryList.Add(row);
+        });
     }
 
 
@@ -426,10 +433,13 @@ public partial class MonitoringViewModel : ObservableObject
         if (patientId <= 0)
             return;
 
-        if (HistoryList != null)
-            HistoryList.Clear();
-        else
-            HistoryList = new ObservableCollection<object>();
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            if (HistoryList != null)
+                HistoryList.Clear();
+            else
+                HistoryList = new ObservableCollection<object>();
+        });
 
         ValidationMessage = string.Empty;
 
@@ -439,9 +449,17 @@ public partial class MonitoringViewModel : ObservableObject
             EndDate.Date.AddDays(1).AddTicks(-1)
         );
 
-        foreach (var row in rows)
-            HistoryList.Add(row);
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            foreach (var row in rows)
+                HistoryList.Add(row);
+        });
     }
 
-
+    public void Dispose()
+    {
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
+        _debounceCts = null;
+    }
 }

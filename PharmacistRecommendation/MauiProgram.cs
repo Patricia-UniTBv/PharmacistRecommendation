@@ -7,19 +7,15 @@ using Entities.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
-using Microsoft.UI;
 using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.Services;
 using PharmacistRecommendation.ViewModels;
 using PharmacistRecommendation.Views;
 using QuestPDF.Infrastructure;
-using WinRT.Interop;
 
 #if WINDOWS
 using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Windowing;
-using Windows.Storage;
 using WinRT.Interop;
 #endif
 
@@ -29,6 +25,19 @@ namespace PharmacistRecommendation
     {
         public static MauiApp CreateMauiApp()
         {
+            // Global exception handlers — catch unhandled exceptions before they crash the app
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                var ex = e.ExceptionObject as Exception;
+                System.Diagnostics.Debug.WriteLine($"[FATAL] AppDomain.UnhandledException: {ex}");
+            };
+
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR] UnobservedTaskException: {e.Exception}");
+                e.SetObserved(); // Prevent app termination
+            };
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -41,6 +50,23 @@ namespace PharmacistRecommendation
             QuestPDF.Settings.License = LicenseType.Community;
 
             builder.UseMauiCommunityToolkit();
+
+#if WINDOWS
+            builder.ConfigureLifecycleEvents(events =>
+            {
+                events.AddWindows(windows =>
+                {
+                    windows.OnWindowCreated(window =>
+                    {
+                        var hwnd = WindowNative.GetWindowHandle(window);
+                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+                        var appWindow = AppWindow.GetFromWindowId(windowId);
+
+                        appWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+                    });
+                });
+            });
+#endif
 
             // Load configuration from appsettings.json and user config
             string connectionString;
@@ -174,22 +200,6 @@ namespace PharmacistRecommendation
 #endif
 
             return builder.Build();
-#if WINDOWS
-            builder.ConfigureLifecycleEvents(events =>
-            {
-                events.AddWindows(windows =>
-                {
-                    windows.OnWindowCreated(window =>
-                    {
-                        var hwnd = WindowNative.GetWindowHandle(window);
-                        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-                        var appWindow = AppWindow.GetFromWindowId(windowId);
-
-                        appWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
-                    });
-                });
-            });
-#endif
         }
     }
 }

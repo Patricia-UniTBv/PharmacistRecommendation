@@ -8,7 +8,7 @@ using PharmacistRecommendation.Views;
 
 namespace PharmacistRecommendation.ViewModels
 {
-    public class MedicationViewModel : INotifyPropertyChanged
+    public class MedicationViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly IMedicationService _medicationService;
         private readonly IMedicationImportService _importService;
@@ -682,7 +682,7 @@ namespace PharmacistRecommendation.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        ~MedicationViewModel()
+        public void Dispose()
         {
             _loadingSemaphore?.Dispose();
         }

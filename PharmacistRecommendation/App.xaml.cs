@@ -12,6 +12,15 @@ namespace PharmacistRecommendation
    InitializeComponent();
        Current!.UserAppTheme = AppTheme.Light;
 
+#if WINDOWS
+        // WinUI3 unhandled exception handler — catches UI thread exceptions
+        Microsoft.UI.Xaml.Application.Current.UnhandledException += (s, e) =>
+        {
+            Debug.WriteLine($"[FATAL] WinUI UnhandledException: {e.Exception}");
+            e.Handled = true; // Prevent crash for recoverable errors
+        };
+#endif
+
    // Don't call async initialization here - do it after MainPage is set
        MainPage = new ContentPage(); // Temporary placeholder
         }
