@@ -298,23 +298,18 @@ namespace PharmacistRecommendation.ViewModels
                         csvData = await _importService.ParseCsvFileAsync(stream);
                     }
 
-                    var existingMedications = await _medicationService.GetAllMedicationsAsync();
-                    var inactiveToReactivate = new List<Medication>();
-
-                    foreach (var csvRow in csvData)
-                    {
-                        if (string.IsNullOrWhiteSpace(csvRow.CodCIM)) continue;
-
-                        var inactiveMedication = existingMedications
-                            .FirstOrDefault(m => m.CodCIM == csvRow.CodCIM && !m.IsActive);
-
-                        if (inactiveMedication != null)
-                        {
-                            inactiveToReactivate.Add(inactiveMedication);
-                        }
-                    }
-
                     var previewResult = await _importService.PreviewCsvImportAsync(csvData);
+
+                    var csvCodCIMs = new HashSet<string>(
+                        csvData
+                            .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
+                            .Select(row => row.CodCIM!),
+                        StringComparer.Ordinal);
+
+                    var existingMedications = await _medicationService.GetAllMedicationsAsync();
+                    var inactiveToReactivate = existingMedications
+                        .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && !m.IsActive && csvCodCIMs.Contains(m.CodCIM!))
+                        .ToList();
 
                     var previewMessage = $"Import Preview:\n" +
                                        $"• New medications: {previewResult.AddedCount}\n" +
@@ -394,22 +389,6 @@ namespace PharmacistRecommendation.ViewModels
 
                         var result = await _importService.ExecuteCsvImportAsync(csvData, importOptions);
 
-                        int reactivatedCount = 0;
-                        foreach (var medication in inactiveToReactivate)
-                        {
-                            try
-                            {
-                                medication.IsActive = true;
-                                medication.UpdatedAt = DateTime.Now;
-                                await _medicationService.UpdateMedicationAsync(medication);
-                                reactivatedCount++;
-                            }
-                            catch (Exception ex)
-                            {
-                                result.Warnings.Add($"Failed to reactivate {medication.Denumire}: {ex.Message}");
-                            }
-                        }
-
                         if (previewResult.ManualMedicationConflicts.Any(c => c.UserWantsUpdate))
                         {
                             var conflictResult = await _importService.HandleManualMedicationConflictsAsync(
@@ -417,6 +396,15 @@ namespace PharmacistRecommendation.ViewModels
 
                             result.ProcessedCount += conflictResult.ProcessedCount;
                         }
+
+                        var reactivatedCount = result.Warnings
+                            .Where(w => w.Contains("Reactivated"))
+                            .Select(w =>
+                            {
+                                var parts = w.Split(' ');
+                                return int.TryParse(parts.Length > 1 ? parts[1] : "0", out var n) ? n : 0;
+                            })
+                            .FirstOrDefault();
 
                         var resultMessage = $"Import Complete:\n" +
                                           $"• Added: {result.AddedCount}\n" +
@@ -448,7 +436,10 @@ namespace PharmacistRecommendation.ViewModels
             }
             catch (Exception ex)
             {
-                await ShowAlert("Import Error", ex.Message, "OK");
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                if (string.IsNullOrWhiteSpace(errorMessage))
+                    errorMessage = ex.ToString();
+                await ShowAlert("Import Error", errorMessage, "OK");
             }
             finally
             {
@@ -530,7 +521,10 @@ namespace PharmacistRecommendation.ViewModels
             }
             catch (Exception ex)
             {
-                await ShowAlert("Import Error", ex.Message, "OK");
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                if (string.IsNullOrWhiteSpace(errorMessage))
+                    errorMessage = ex.ToString();
+                await ShowAlert("Import Error", errorMessage, "OK");
             }
             finally
             {

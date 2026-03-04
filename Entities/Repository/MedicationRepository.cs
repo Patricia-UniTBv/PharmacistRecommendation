@@ -21,6 +21,14 @@ namespace Entities.Repository
                 .ToListAsync();
         }
 
+        public async Task<List<Medication>> GetAllNoTrackingAsync()
+        {
+            return await _context.Medications
+                .AsNoTracking()
+                .OrderBy(m => m.Denumire)
+                .ToListAsync();
+        }
+
         public async Task<List<Medication>> SearchAsync(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
@@ -196,6 +204,24 @@ namespace Entities.Repository
 
             await _context.SaveChangesAsync();
             return medication;
+        }
+
+        public async Task BatchUpdateActiveStatusAsync(List<int> medicationIds, bool isActive)
+        {
+            if (medicationIds == null || medicationIds.Count == 0)
+                return;
+
+            var medications = await _context.Medications
+                .Where(m => medicationIds.Contains(m.Id))
+                .ToListAsync();
+
+            foreach (var medication in medications)
+            {
+                medication.IsActive = isActive;
+                medication.UpdatedAt = DateTime.Now;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

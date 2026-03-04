@@ -24,13 +24,14 @@ namespace Entities.Services
         public async Task<CsvImportResult> PreviewCsvImportAsync(List<CsvMedicationRow> csvData)
         {
             var result = new CsvImportResult();
-            var existingMedications = await _medicationRepository.GetAllAsync();
+            var existingMedications = await _medicationRepository.GetAllNoTrackingAsync();
+            var codCimLookup = BuildCodCimLookup(existingMedications);
 
             foreach (var csvRow in csvData)
             {
                 try
                 {
-                    await ProcessCsvRow(csvRow, existingMedications, result, previewOnly: true);
+                    ProcessCsvRow(csvRow, existingMedications, codCimLookup, result, previewOnly: true);
                     result.ProcessedCount++;
                 }
                 catch (Exception ex)
@@ -47,12 +48,13 @@ namespace Entities.Services
         {
             var result = new CsvImportResult();
             var existingMedications = await _medicationRepository.GetAllAsync();
+            var codCimLookup = BuildCodCimLookup(existingMedications);
 
             foreach (var csvRow in csvData)
             {
                 try
                 {
-                    await ProcessCsvRow(csvRow, existingMedications, result, previewOnly: false, options);
+                    ProcessCsvRow(csvRow, existingMedications, codCimLookup, result, previewOnly: false, options);
                     result.ProcessedCount++;
                 }
                 catch (Exception ex)
@@ -68,24 +70,42 @@ namespace Entities.Services
 
                 try
                 {
-                    var inactiveCodCIMs = await DetectInactiveMedicationsAsync(csvData);
+                    // Build a HashSet of new CodCIMs for O(1) lookups
+                    var newCodCIMs = new HashSet<string>(
+                        csvData
+                            .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
+                            .Select(row => row.CodCIM!),
+                        StringComparer.Ordinal);
 
-                    if (inactiveCodCIMs.Any())
-                    {
-                        var inactiveCount = await MarkMedicationsAsInactiveAsync(inactiveCodCIMs);
-                        result.Warnings.Add($"Marked {inactiveCount} medications as inactive (not found in new import)");
-                    }
+                    // Reload from DB to get the actual current state after inserts/updates
+                    var currentMedications = await _medicationRepository.GetAllAsync();
 
-                    var activeCodCIMs = csvData
-                        .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
-                        .Select(row => row.CodCIM!)
-                        .Distinct()
+                    // Detect inactive: existing CSV_Import medications not in the new data
+                    var csvImportMedications = currentMedications
+                        .Where(m => m.DataSource == "CSV_Import" && !string.IsNullOrWhiteSpace(m.CodCIM))
                         .ToList();
 
-                    var reactivatedCount = await MarkMedicationsAsActiveAsync(activeCodCIMs);
-                    if (reactivatedCount > 0)
+                    var toMarkInactiveIds = csvImportMedications
+                        .Where(m => !newCodCIMs.Contains(m.CodCIM!) && m.IsActive)
+                        .Select(m => m.Id)
+                        .ToList();
+
+                    if (toMarkInactiveIds.Count > 0)
                     {
-                        result.Warnings.Add($"Reactivated {reactivatedCount} medications (found again in import)");
+                        await _medicationRepository.BatchUpdateActiveStatusAsync(toMarkInactiveIds, false);
+                        result.Warnings.Add($"Marked {toMarkInactiveIds.Count} medications as inactive (not found in new import)");
+                    }
+
+                    // Reactivate: medications that were previously inactive but are present in new data
+                    var toReactivateIds = currentMedications
+                        .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && !m.IsActive && newCodCIMs.Contains(m.CodCIM!))
+                        .Select(m => m.Id)
+                        .ToList();
+
+                    if (toReactivateIds.Count > 0)
+                    {
+                        await _medicationRepository.BatchUpdateActiveStatusAsync(toReactivateIds, true);
+                        result.Warnings.Add($"Reactivated {toReactivateIds.Count} medications (found again in import)");
                     }
                 }
                 catch (Exception ex)
@@ -162,15 +182,15 @@ namespace Entities.Services
         {
             var existingCsvMedications = await _medicationRepository.GetByDataSourceAsync("CSV_Import");
 
-            var newCodCIMs = newImportData
-                .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
-                .Select(row => row.CodCIM!)
-                .Distinct()
-                .ToList();
+            var newCodCIMs = new HashSet<string>(
+                newImportData
+                    .Where(row => !string.IsNullOrWhiteSpace(row.CodCIM))
+                    .Select(row => row.CodCIM!),
+                StringComparer.Ordinal);
 
             var inactiveCodCIMs = existingCsvMedications
                 .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) &&
-                           !newCodCIMs.Contains(m.CodCIM))
+                           !newCodCIMs.Contains(m.CodCIM!))
                 .Select(m => m.CodCIM!)
                 .ToList();
 
@@ -179,42 +199,63 @@ namespace Entities.Services
 
         public async Task<int> MarkMedicationsAsInactiveAsync(List<string> codCIMsToMarkInactive)
         {
+            var codCimSet = new HashSet<string>(codCIMsToMarkInactive, StringComparer.Ordinal);
             var medicationsToUpdate = await _medicationRepository.GetAllAsync();
-            var medicationsToMarkInactive = medicationsToUpdate
-                .Where(m => codCIMsToMarkInactive.Contains(m.CodCIM) && m.IsActive)
+            var idsToMarkInactive = medicationsToUpdate
+                .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && codCimSet.Contains(m.CodCIM!) && m.IsActive)
+                .Select(m => m.Id)
                 .ToList();
 
-            foreach (var medication in medicationsToMarkInactive)
+            if (idsToMarkInactive.Count > 0)
             {
-                medication.IsActive = false;
-                medication.UpdatedAt = DateTime.Now;
-                await _medicationRepository.UpdateAsync(medication);
+                await _medicationRepository.BatchUpdateActiveStatusAsync(idsToMarkInactive, false);
             }
 
-            return medicationsToMarkInactive.Count;
+            return idsToMarkInactive.Count;
         }
 
         public async Task<int> MarkMedicationsAsActiveAsync(List<string> codCIMsToMarkActive)
         {
+            var codCimSet = new HashSet<string>(codCIMsToMarkActive, StringComparer.Ordinal);
             var medicationsToUpdate = await _medicationRepository.GetAllAsync();
-            var medicationsToMarkActive = medicationsToUpdate
-                .Where(m => codCIMsToMarkActive.Contains(m.CodCIM) && !m.IsActive)
+            var idsToReactivate = medicationsToUpdate
+                .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && codCimSet.Contains(m.CodCIM!) && !m.IsActive)
+                .Select(m => m.Id)
                 .ToList();
 
-            foreach (var medication in medicationsToMarkActive)
+            if (idsToReactivate.Count > 0)
             {
-                medication.IsActive = true;
-                medication.UpdatedAt = DateTime.Now;
-                await _medicationRepository.UpdateAsync(medication);
+                await _medicationRepository.BatchUpdateActiveStatusAsync(idsToReactivate, true);
             }
 
-            return medicationsToMarkActive.Count;
+            return idsToReactivate.Count;
         }
 
-        private async Task ProcessCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
+        /// <summary>
+        /// Builds a Dictionary keyed by CodCIM for O(1) lookups instead of O(N) linear scans.
+        /// </summary>
+        private static Dictionary<string, Medication> BuildCodCimLookup(List<Medication> medications)
+        {
+            var lookup = new Dictionary<string, Medication>(StringComparer.Ordinal);
+            foreach (var m in medications)
+            {
+                if (!string.IsNullOrWhiteSpace(m.CodCIM) && !lookup.ContainsKey(m.CodCIM))
+                {
+                    lookup[m.CodCIM] = m;
+                }
+            }
+            return lookup;
+        }
+
+        private void ProcessCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
+            Dictionary<string, Medication> codCimLookup,
             CsvImportResult result, bool previewOnly, CsvImportOptions options = null)
         {
-            var existingByCodCIM = existingMedications.FirstOrDefault(m => m.CodCIM == csvRow.CodCIM);
+            Medication existingByCodCIM = null;
+            if (!string.IsNullOrWhiteSpace(csvRow.CodCIM))
+            {
+                codCimLookup.TryGetValue(csvRow.CodCIM, out existingByCodCIM);
+            }
 
             if (existingByCodCIM != null)
             {
@@ -270,24 +311,24 @@ namespace Entities.Services
         {
             return existingMedications.FirstOrDefault(m =>
                 m.CodCIM != csvRow.CodCIM && 
-                m.Denumire == csvRow.DenumireComericala &&
-                m.DCI == csvRow.DCI &&
-                m.FormaFarmaceutica == csvRow.FormaFarmaceutica &&
-                m.Concentratia == csvRow.Concentratie &&
-                m.FirmaProducatoare == csvRow.FirmaProducatoare &&
-                m.FirmaDetinatoare == csvRow.FirmaDetinatoare &&
-                m.CodATC == csvRow.CodATC &&
-                m.ActiuneTerapeutica == csvRow.ActiuneTerapeutica &&
-                m.Prescriptie == csvRow.Prescriptie &&
-                m.NrData == csvRow.NrDataAmbalaj &&
-                m.Ambalaj == csvRow.Ambalaj &&
-                m.VolumAmbalaj == csvRow.VolumAmbalaj &&
-                m.Valabilitate == csvRow.ValabilitateAmbalaj &&
-                m.Bulina == csvRow.Bulina &&
-                m.Diez == csvRow.Diez &&
-                m.Stea == csvRow.Stea &&
-                m.Triunghi == csvRow.Triunghi &&
-                m.Dreptunghi == csvRow.Dreptunghi
+                NullSafeEquals(m.Denumire, csvRow.DenumireComericala) &&
+                NullSafeEquals(m.DCI, csvRow.DCI) &&
+                NullSafeEquals(m.FormaFarmaceutica, csvRow.FormaFarmaceutica) &&
+                NullSafeEquals(m.Concentratia, csvRow.Concentratie) &&
+                NullSafeEquals(m.FirmaProducatoare, csvRow.FirmaProducatoare) &&
+                NullSafeEquals(m.FirmaDetinatoare, csvRow.FirmaDetinatoare) &&
+                NullSafeEquals(m.CodATC, csvRow.CodATC) &&
+                NullSafeEquals(m.ActiuneTerapeutica, csvRow.ActiuneTerapeutica) &&
+                NullSafeEquals(m.Prescriptie, csvRow.Prescriptie) &&
+                NullSafeEquals(m.NrData, csvRow.NrDataAmbalaj) &&
+                NullSafeEquals(m.Ambalaj, csvRow.Ambalaj) &&
+                NullSafeEquals(m.VolumAmbalaj, csvRow.VolumAmbalaj) &&
+                NullSafeEquals(m.Valabilitate, csvRow.ValabilitateAmbalaj) &&
+                NullSafeEquals(m.Bulina, csvRow.Bulina) &&
+                NullSafeEquals(m.Diez, csvRow.Diez) &&
+                NullSafeEquals(m.Stea, csvRow.Stea) &&
+                NullSafeEquals(m.Triunghi, csvRow.Triunghi) &&
+                NullSafeEquals(m.Dreptunghi, csvRow.Dreptunghi)
             );
         }
 
@@ -295,54 +336,71 @@ namespace Entities.Services
         {
             var changedFields = new List<string>();
 
-            if (existing.Denumire != updated.Denumire) changedFields.Add("Denumire");
-            if (existing.DCI != updated.DCI) changedFields.Add("DCI");
-            if (existing.FormaFarmaceutica != updated.FormaFarmaceutica) changedFields.Add("FormaFarmaceutica");
-            if (existing.Concentratia != updated.Concentratia) changedFields.Add("Concentratia");
-            if (existing.FirmaProducatoare != updated.FirmaProducatoare) changedFields.Add("FirmaProducatoare");
-            if (existing.FirmaDetinatoare != updated.FirmaDetinatoare) changedFields.Add("FirmaDetinatoare");
-            if (existing.CodATC != updated.CodATC) changedFields.Add("CodATC");
-            if (existing.ActiuneTerapeutica != updated.ActiuneTerapeutica) changedFields.Add("ActiuneTerapeutica");
-            if (existing.Prescriptie != updated.Prescriptie) changedFields.Add("Prescriptie");
-            if (existing.NrData != updated.NrData) changedFields.Add("NrData");
-            if (existing.Ambalaj != updated.Ambalaj) changedFields.Add("Ambalaj");
-            if (existing.VolumAmbalaj != updated.VolumAmbalaj) changedFields.Add("VolumAmbalaj");
-            if (existing.Valabilitate != updated.Valabilitate) changedFields.Add("Valabilitate");
-            if (existing.Bulina != updated.Bulina) changedFields.Add("Bulina");
-            if (existing.Diez != updated.Diez) changedFields.Add("Diez");
-            if (existing.Stea != updated.Stea) changedFields.Add("Stea");
-            if (existing.Triunghi != updated.Triunghi) changedFields.Add("Triunghi");
-            if (existing.Dreptunghi != updated.Dreptunghi) changedFields.Add("Dreptunghi");
+            if (!NullSafeEquals(existing.Denumire, updated.Denumire)) changedFields.Add("Denumire");
+            if (!NullSafeEquals(existing.DCI, updated.DCI)) changedFields.Add("DCI");
+            if (!NullSafeEquals(existing.FormaFarmaceutica, updated.FormaFarmaceutica)) changedFields.Add("FormaFarmaceutica");
+            if (!NullSafeEquals(existing.Concentratia, updated.Concentratia)) changedFields.Add("Concentratia");
+            if (!NullSafeEquals(existing.FirmaProducatoare, updated.FirmaProducatoare)) changedFields.Add("FirmaProducatoare");
+            if (!NullSafeEquals(existing.FirmaDetinatoare, updated.FirmaDetinatoare)) changedFields.Add("FirmaDetinatoare");
+            if (!NullSafeEquals(existing.CodATC, updated.CodATC)) changedFields.Add("CodATC");
+            if (!NullSafeEquals(existing.ActiuneTerapeutica, updated.ActiuneTerapeutica)) changedFields.Add("ActiuneTerapeutica");
+            if (!NullSafeEquals(existing.Prescriptie, updated.Prescriptie)) changedFields.Add("Prescriptie");
+            if (!NullSafeEquals(existing.NrData, updated.NrData)) changedFields.Add("NrData");
+            if (!NullSafeEquals(existing.Ambalaj, updated.Ambalaj)) changedFields.Add("Ambalaj");
+            if (!NullSafeEquals(existing.VolumAmbalaj, updated.VolumAmbalaj)) changedFields.Add("VolumAmbalaj");
+            if (!NullSafeEquals(existing.Valabilitate, updated.Valabilitate)) changedFields.Add("Valabilitate");
+            if (!NullSafeEquals(existing.Bulina, updated.Bulina)) changedFields.Add("Bulina");
+            if (!NullSafeEquals(existing.Diez, updated.Diez)) changedFields.Add("Diez");
+            if (!NullSafeEquals(existing.Stea, updated.Stea)) changedFields.Add("Stea");
+            if (!NullSafeEquals(existing.Triunghi, updated.Triunghi)) changedFields.Add("Triunghi");
+            if (!NullSafeEquals(existing.Dreptunghi, updated.Dreptunghi)) changedFields.Add("Dreptunghi");
 
             return changedFields;
+        }
+
+        /// <summary>
+        /// Treats null and empty/whitespace strings as equal to avoid false positives
+        /// when comparing DB values (which may be null) against parsed CSV values.
+        /// </summary>
+        private static bool NullSafeEquals(string? a, string? b)
+        {
+            var normA = string.IsNullOrWhiteSpace(a) ? null : a;
+            var normB = string.IsNullOrWhiteSpace(b) ? null : b;
+            return string.Equals(normA, normB, StringComparison.Ordinal);
         }
 
         private Medication MapCsvToMedication(CsvMedicationRow csvRow)
         {
             return new Medication
             {
-                CodCIM = csvRow.CodCIM,
-                Denumire = csvRow.DenumireComericala,
-                DCI = csvRow.DCI,
-                FormaFarmaceutica = csvRow.FormaFarmaceutica,
-                Concentratia = csvRow.Concentratie,
-                FirmaProducatoare = csvRow.FirmaProducatoare,
-                FirmaDetinatoare = csvRow.FirmaDetinatoare,
-                CodATC = csvRow.CodATC,
-                ActiuneTerapeutica = csvRow.ActiuneTerapeutica,
-                Prescriptie = csvRow.Prescriptie,
-                NrData = csvRow.NrDataAmbalaj,
-                Ambalaj = csvRow.Ambalaj,
-                VolumAmbalaj = csvRow.VolumAmbalaj,
-                Valabilitate = csvRow.ValabilitateAmbalaj,
-                Bulina = csvRow.Bulina,
-                Diez = csvRow.Diez,
-                Stea = csvRow.Stea,
-                Triunghi = csvRow.Triunghi,
-                Dreptunghi = csvRow.Dreptunghi,
+                CodCIM = NullIfEmpty(csvRow.CodCIM),
+                Denumire = NullIfEmpty(csvRow.DenumireComericala),
+                DCI = NullIfEmpty(csvRow.DCI),
+                FormaFarmaceutica = NullIfEmpty(csvRow.FormaFarmaceutica),
+                Concentratia = NullIfEmpty(csvRow.Concentratie),
+                FirmaProducatoare = NullIfEmpty(csvRow.FirmaProducatoare),
+                FirmaDetinatoare = NullIfEmpty(csvRow.FirmaDetinatoare),
+                CodATC = NullIfEmpty(csvRow.CodATC),
+                ActiuneTerapeutica = NullIfEmpty(csvRow.ActiuneTerapeutica),
+                Prescriptie = NullIfEmpty(csvRow.Prescriptie),
+                NrData = NullIfEmpty(csvRow.NrDataAmbalaj),
+                Ambalaj = NullIfEmpty(csvRow.Ambalaj),
+                VolumAmbalaj = NullIfEmpty(csvRow.VolumAmbalaj),
+                Valabilitate = NullIfEmpty(csvRow.ValabilitateAmbalaj),
+                Bulina = NullIfEmpty(csvRow.Bulina),
+                Diez = NullIfEmpty(csvRow.Diez),
+                Stea = NullIfEmpty(csvRow.Stea),
+                Triunghi = NullIfEmpty(csvRow.Triunghi),
+                Dreptunghi = NullIfEmpty(csvRow.Dreptunghi),
+                IsActive = true,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
+        }
+
+        private static string? NullIfEmpty(string? value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? null : value;
         }
 
         private async Task ExecuteDatabaseOperations(CsvImportResult result)
@@ -353,10 +411,15 @@ namespace Entities.Services
                 _logger.LogInformation($"Added {result.NewMedications.Count} new medications");
             }
 
-            foreach (var update in result.UpdatedMedications)
+            if (result.UpdatedMedications.Any())
             {
-                ApplyChangesToMedication(update.ExistingMedication, update.NewData);
-                await _medicationRepository.UpdateAsync(update.ExistingMedication);
+                var medicationsToUpdate = new List<Medication>();
+                foreach (var update in result.UpdatedMedications)
+                {
+                    ApplyChangesToMedication(update.ExistingMedication, update.NewData);
+                    medicationsToUpdate.Add(update.ExistingMedication);
+                }
+                await _medicationRepository.BatchUpdateAsync(medicationsToUpdate);
             }
 
             foreach (var codeChange in result.CodeChanges.Where(c => !c.RequiresUserConfirmation))
@@ -406,13 +469,13 @@ namespace Entities.Services
         public async Task<CsvImportResult> PreviewCustomNomenclatorImportAsync(List<CsvMedicationRow> csvData)
         {
             var result = new CsvImportResult();
-            var existingMedications = await _medicationRepository.GetAllAsync();
+            var existingMedications = await _medicationRepository.GetAllNoTrackingAsync();
 
             foreach (var csvRow in csvData)
             {
                 try
                 {
-                    await ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: true);
+                    ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: true);
                     result.ProcessedCount++;
                 }
                 catch (Exception ex)
@@ -434,7 +497,7 @@ namespace Entities.Services
             {
                 try
                 {
-                    await ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: false, options);
+                    ProcessCustomNomenclatorCsvRow(csvRow, existingMedications, result, previewOnly: false, options);
                     result.ProcessedCount++;
                 }
                 catch (Exception ex)
@@ -452,10 +515,10 @@ namespace Entities.Services
             return result;
         }
 
-        private async Task ProcessCustomNomenclatorCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
+        private void ProcessCustomNomenclatorCsvRow(CsvMedicationRow csvRow, List<Medication> existingMedications,
             CsvImportResult result, bool previewOnly, CsvImportOptions? options = null)
         {
-            // First, check for any existing custom nomenclator entry with this exact name
+            // First, check for any existing custom nomenclator with this exact name
             var existingByCustomName = existingMedications.FirstOrDefault(m =>
                 m.CustomNomenclatorName == csvRow.DenumireComericala &&
                 m.DataSource == "Custom_Nomenclator");

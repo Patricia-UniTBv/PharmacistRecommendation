@@ -72,8 +72,6 @@ namespace Entities.Services
         {
             return await Task.Run(() =>
             {
-                var medications = new List<CsvMedicationRow>();
-
                 using var workbook = new XLWorkbook(excelStream);
                 var worksheet = workbook.Worksheets.First();
                 var firstRow = worksheet.FirstRowUsed();
@@ -85,11 +83,18 @@ namespace Entities.Services
                     .ToArray();
                 ValidateHeaders(headers);
 
-                var dataRows = worksheet.RowsUsed().Skip(1);
-                int rowNumber = 1;
-                foreach (var row in dataRows)
+                var lastRowUsed = worksheet.LastRowUsed();
+                int lastRowNumber = lastRowUsed?.RowNumber() ?? firstRow.RowNumber();
+                int firstDataRow = firstRow.RowNumber() + 1;
+                int estimatedCount = lastRowNumber - firstDataRow + 1;
+                var medications = new List<CsvMedicationRow>(Math.Max(estimatedCount, 0));
+
+                for (int rowIdx = firstDataRow; rowIdx <= lastRowNumber; rowIdx++)
                 {
-                    rowNumber++;
+                    var row = worksheet.Row(rowIdx);
+                    if (row.IsEmpty())
+                        continue;
+
                     try
                     {
                         var values = new string[headers.Length];
@@ -102,7 +107,7 @@ namespace Entities.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Error parsing Excel row {rowNumber}: {ex.Message}");
+                        _logger.LogWarning($"Error parsing Excel row {rowIdx}: {ex.Message}");
                     }
                 }
 
@@ -153,8 +158,6 @@ namespace Entities.Services
         {
             return await Task.Run(() =>
             {
-                var medications = new List<CsvMedicationRow>();
-
                 using var workbook = new XLWorkbook(excelStream);
                 var worksheet = workbook.Worksheets.First();
                 var firstRow = worksheet.FirstRowUsed();
@@ -166,11 +169,18 @@ namespace Entities.Services
                     .ToArray();
                 ValidateCustomNomenclatorHeaders(headers);
 
-                var dataRows = worksheet.RowsUsed().Skip(1);
-                int rowNumber = 1;
-                foreach (var row in dataRows)
+                var lastRowUsed = worksheet.LastRowUsed();
+                int lastRowNumber = lastRowUsed?.RowNumber() ?? firstRow.RowNumber();
+                int firstDataRow = firstRow.RowNumber() + 1;
+                int estimatedCount = lastRowNumber - firstDataRow + 1;
+                var medications = new List<CsvMedicationRow>(Math.Max(estimatedCount, 0));
+
+                for (int rowIdx = firstDataRow; rowIdx <= lastRowNumber; rowIdx++)
                 {
-                    rowNumber++;
+                    var row = worksheet.Row(rowIdx);
+                    if (row.IsEmpty())
+                        continue;
+
                     try
                     {
                         var values = new string[headers.Length];
@@ -183,7 +193,7 @@ namespace Entities.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Error parsing Excel row {rowNumber}: {ex.Message}");
+                        _logger.LogWarning($"Error parsing Excel row {rowIdx}: {ex.Message}");
                     }
                 }
 
