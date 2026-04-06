@@ -377,13 +377,14 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
 
         var filteredPrescriptions = prescriptions
-    .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
-    .Where(p => string.IsNullOrEmpty(PatientFilter) ||
-               (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-               (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-               (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-    .OrderBy(p => p.IssueDate)
-    .ToList();
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
+            .Where(p => string.IsNullOrEmpty(PatientFilter) ||
+                       (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                       (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                       (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
+            .Where(p => !p.PrescriptionMedications.Any() || p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
+            .OrderBy(p => p.IssueDate)
+            .ToList();
 
         System.Diagnostics.Debug.WriteLine($"Filtered Own Acts: {filteredPrescriptions.Count}");
 
@@ -403,15 +404,14 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         System.Diagnostics.Debug.WriteLine($"Total prescriptions from DB: {prescriptions.Count}");
 
         var filteredPrescriptions = prescriptions
-     .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
-     .Where(p => string.IsNullOrEmpty(PatientFilter) ||
-                (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-               (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-     .Where(p => !p.PrescriptionMedications.Any() ||  
-                p.PrescriptionMedications.Any(m => m.IsWithPrescription == true)) 
-     .OrderBy(p => p.IssueDate)
-     .ToList();
+            .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
+            .Where(p => string.IsNullOrEmpty(PatientFilter) ||
+                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
+            .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true)) 
+            .OrderBy(p => p.IssueDate)
+            .ToList();
 
         System.Diagnostics.Debug.WriteLine($"Filtered Consecutive Acts: {filteredPrescriptions.Count}");
 

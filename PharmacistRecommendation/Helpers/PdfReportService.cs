@@ -169,7 +169,7 @@ public class PdfReportService : IPdfReportService
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-                .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
+                .Where(p => !p.PrescriptionMedications.Any() || p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
 
