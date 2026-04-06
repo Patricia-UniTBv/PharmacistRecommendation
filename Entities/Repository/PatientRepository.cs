@@ -14,6 +14,15 @@ namespace Entities.Repository
             _context = context;
         }
 
+        public async Task<List<Patient>> GetAllAsync()
+        {
+            return await _context.Patients
+                .Include(p => p.PharmacyCards)
+                .OrderBy(p => p.LastName)
+                .ThenBy(p => p.FirstName)
+                .ToListAsync();
+        }
+
         public async Task<Patient> AddAsync(Patient patient)
         {
             _context.Patients.Add(patient);

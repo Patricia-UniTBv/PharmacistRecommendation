@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:conv="clr-namespace:PharmacistRecommendation.Converters"
+             xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
+             xmlns:dto="clr-namespace:DTO;assembly=DTO"
+             x:Class="PharmacistRecommendation.Views.AdminDashboardView"
+             x:DataType="vm:AdminDashboardViewModel"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:MonitoringTypeConverter x:Key="MonitoringTypeConverter"/>
+            <Color x:Key="HeaderGray">#D3D3D3</Color>
+            <Color x:Key="BorderGray">#CCCCCC</Color>
+            <Color x:Key="TextGray">#333333</Color>
+            <Color x:Key="LightGray">#F5F5F5</Color>
+            <Color x:Key="ActiveTab">#4A90D9</Color>
+            <Color x:Key="ActiveTabText">White</Color>
+            <Color x:Key="InactiveTab">#E0E0E0</Color>
+            <Color x:Key="EditPanel">#F0F4FA</Color>
+
+            <Style x:Key="TabButton" TargetType="Button">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource InactiveTab}"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="HeightRequest" Value="36"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="3,0"/>
+            </Style>
+
+            <Style x:Key="ActiveTabButton" TargetType="Button">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource ActiveTab}"/>
+                <Setter Property="TextColor" Value="{StaticResource ActiveTabText}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="HeightRequest" Value="36"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="3,0"/>
+            </Style>
+
+            <Style x:Key="ActionBtn" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="#E0E0E0"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="HeightRequest" Value="30"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+
+            <Style x:Key="SaveBtn" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+
+            <Style x:Key="CancelBtn" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="BackgroundColor" Value="#E0E0E0"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+
+            <Style x:Key="FieldLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="TextColor" Value="#666666"/>
+                <Setter Property="Margin" Value="0,4,0,1"/>
+            </Style>
+
+            <Style x:Key="FieldEntry" TargetType="Entry">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="HeightRequest" Value="34"/>
+            </Style>
+
+            <Style x:Key="FieldEditor" TargetType="Editor">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
+                <Setter Property="HeightRequest" Value="60"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- HEADER -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource HeaderGray}"
+                Stroke="{StaticResource BorderGray}"
+                StrokeThickness="1"
+                Padding="12,8">
+            <Label Text="Panou Administrare Date"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextGray}"
+                   VerticalOptions="Center"/>
+        </Border>
+
+        <!-- TAB BAR -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                Stroke="{StaticResource BorderGray}"
+                StrokeThickness="0,0,0,1"
+                Padding="8,6">
+            <HorizontalStackLayout Spacing="0">
+                <Button Text="Pacienți"
+                        Command="{Binding SwitchTabCommand}"
+                        CommandParameter="patients"
+                        Style="{StaticResource TabButton}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPatientsVisible}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="TextColor" Value="White"/>
+                            <Setter Property="FontAttributes" Value="Bold"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button Text="Utilizatori"
+                        Command="{Binding SwitchTabCommand}"
+                        CommandParameter="users"
+                        Style="{StaticResource TabButton}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsUsersVisible}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="TextColor" Value="White"/>
+                            <Setter Property="FontAttributes" Value="Bold"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button Text="Rețete / Acte"
+                        Command="{Binding SwitchTabCommand}"
+                        CommandParameter="prescriptions"
+                        Style="{StaticResource TabButton}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPrescriptionsVisible}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="TextColor" Value="White"/>
+                            <Setter Property="FontAttributes" Value="Bold"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button Text="Monitorizări"
+                        Command="{Binding SwitchTabCommand}"
+                        CommandParameter="monitorings"
+                        Style="{StaticResource TabButton}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsMonitoringsVisible}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="TextColor" Value="White"/>
+                            <Setter Property="FontAttributes" Value="Bold"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </HorizontalStackLayout>
+        </Border>
+
+        <!-- MAIN CONTENT -->
+        <Grid Grid.Row="2">
+
+            <!-- ═══════════ PATIENTS TAB ═══════════ -->
+            <Grid RowDefinitions="Auto,Auto,*"
+                  IsVisible="{Binding IsPatientsVisible}">
+
+                <!-- Filter bar -->
+                <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
+                        Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Entry Placeholder="Nume, CNP sau nr. card"
+                               Text="{Binding PatientSearchText}"
+                               WidthRequest="280"
+                               HeightRequest="32"
+                               FontSize="13"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Column headers -->
+                <Grid Grid.Row="1" ColumnDefinitions="2*,2*,1.5*,1.5*,2*,1.5*,Auto"
+                      BackgroundColor="{StaticResource HeaderGray}"
+                      Padding="10,6">
+                    <Label Grid.Column="0" Text="Nume"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="1" Text="Prenume"    FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="2" Text="CNP"        FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="3" Text="Nr. Card"   FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="4" Text="Email"      FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text="Telefon"    FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="6" Text=""           FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                </Grid>
+
+                <!-- List -->
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Patients}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Patient">
+                            <Border Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="2*,2*,1.5*,1.5*,2*,1.5*,Auto"
+                                      Padding="10,4" MinimumHeightRequest="38">
+                                    <Label Grid.Column="0" Text="{Binding LastName}"   FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding FirstName}"  FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Cnp}"        FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="3" Text="{Binding CardNumber}" FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="4" Text="{Binding Email}"      FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="5" Text="{Binding Phone}"      FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Button Grid.Column="6" Text="Editează"
+                                            Style="{StaticResource ActionBtn}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=EditPatientCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <!-- ═══════════ USERS TAB ═══════════ -->
+            <Grid RowDefinitions="Auto,Auto,*"
+                  IsVisible="{Binding IsUsersVisible}">
+
+                <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
+                        Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Rol:" VerticalOptions="Center" FontSize="13"/>
+                        <Picker ItemsSource="{Binding UserRoleFilters}"
+                                SelectedItem="{Binding SelectedUserRoleFilter}"
+                                WidthRequest="140" FontSize="13"/>
+                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Entry Placeholder="Nume sau username"
+                               Text="{Binding UserSearchText}"
+                               WidthRequest="220" HeightRequest="32" FontSize="13"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Grid Grid.Row="1" ColumnDefinitions="2*,2*,1.5*,2*,2*,1.5*,Auto"
+                      BackgroundColor="{StaticResource HeaderGray}" Padding="10,6">
+                    <Label Grid.Column="0" Text="Nume"      FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="1" Text="Prenume"   FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="2" Text="Rol"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="3" Text="Username"  FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="4" Text="Email"     FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text="NCM"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="6" Text=""          FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                </Grid>
+
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Users}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:UserDTO">
+                            <Border Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="2*,2*,1.5*,2*,2*,1.5*,Auto"
+                                      Padding="10,4" MinimumHeightRequest="38">
+                                    <Label Grid.Column="0" Text="{Binding LastName}"  FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding FirstName}" FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Role}"      FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="3" Text="{Binding Username}"  FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="4" Text="{Binding Email}"     FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="5" Text="{Binding Ncm}"       FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Button Grid.Column="6" Text="Editează"
+                                            Style="{StaticResource ActionBtn}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=EditUserCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <!-- ═══════════ PRESCRIPTIONS TAB ═══════════ -->
+            <Grid RowDefinitions="Auto,Auto,*"
+                  IsVisible="{Binding IsPrescriptionsVisible}">
+
+                <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
+                        Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="De la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Date="{Binding PrescriptionFromDate}" FontSize="13"/>
+                        <Label Text="Până la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Date="{Binding PrescriptionToDate}" FontSize="13"/>
+                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Entry Placeholder="Pacient, serie sau nr."
+                               Text="{Binding PrescriptionSearchText}"
+                               WidthRequest="200" HeightRequest="32" FontSize="13"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Grid Grid.Row="1" ColumnDefinitions="1.2*,2*,1.5*,1*,2*,Auto"
+                      BackgroundColor="{StaticResource HeaderGray}" Padding="10,6">
+                    <Label Grid.Column="0" Text="Data"              FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="1" Text="Pacient"           FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="2" Text="CNP Pacient"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="3" Text="Serie / Nr."       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="4" Text="Serviciu farmac."  FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text=""                  FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                </Grid>
+
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Prescriptions}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Prescription">
+                            <Border Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="1.2*,2*,1.5*,1*,2*,Auto"
+                                      Padding="10,4" MinimumHeightRequest="38">
+                                    <Label Grid.Column="0" Text="{Binding IssueDate, StringFormat='{0:dd.MM.yyyy}'}" FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding PatientName}"           FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding PatientCnp}"            FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="3" Text="{Binding Series}"                FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="4" Text="{Binding PharmaceuticalService}" FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Button Grid.Column="5" Text="Editează"
+                                            Style="{StaticResource ActionBtn}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=EditPrescriptionCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <!-- ═══════════ MONITORING TAB ═══════════ -->
+            <Grid RowDefinitions="Auto,Auto,*"
+                  IsVisible="{Binding IsMonitoringsVisible}">
+
+                <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
+                        Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="De la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Date="{Binding MonitoringFromDate}" FontSize="13"/>
+                        <Label Text="Până la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Date="{Binding MonitoringToDate}" FontSize="13"/>
+                        <Label Text="Tip:" VerticalOptions="Center" FontSize="13"/>
+                        <Picker ItemsSource="{Binding MonitoringTypeFilters}"
+                                SelectedItem="{Binding SelectedMonitoringTypeFilter}"
+                                WidthRequest="130" FontSize="13"/>
+                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Entry Placeholder="Pacient sau CNP"
+                               Text="{Binding MonitoringSearchText}"
+                               WidthRequest="180" HeightRequest="32" FontSize="13"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Grid Grid.Row="1" ColumnDefinitions="1.2*,2*,1.5*,1*,1*,2*,Auto"
+                      BackgroundColor="{StaticResource HeaderGray}" Padding="10,6">
+                    <Label Grid.Column="0" Text="Data"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="1" Text="Pacient"    FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="2" Text="CNP"        FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="3" Text="Tip"        FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="4" Text="Înălțime"   FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text="Note"       FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="6" Text=""           FontAttributes="Bold" FontSize="12" VerticalTextAlignment="Center"/>
+                </Grid>
+
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Monitorings}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Monitoring">
+                            <Border Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="1.2*,2*,1.5*,1*,1*,2*,Auto"
+                                      Padding="10,4" MinimumHeightRequest="38">
+                                    <Label Grid.Column="0" Text="{Binding MonitoringDate, StringFormat='{0:dd.MM.yyyy}'}"           FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding Patient.LastName, StringFormat='{0} '}"                   FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Patient.Cnp}"                                             FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="3" Text="{Binding ParametersJson, Converter={StaticResource MonitoringTypeConverter}}" FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="4" Text="{Binding Height, StringFormat='{0} cm'}"                           FontSize="13" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="5" Text="{Binding Notes}"                                                   FontSize="13" VerticalTextAlignment="Center" LineBreakMode="TailTruncation"/>
+                                    <Button Grid.Column="6" Text="Editează"
+                                            Style="{StaticResource ActionBtn}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=EditMonitoringCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+        </Grid>
+
+        <!-- EDIT PANEL -->
+        <Border Grid.Row="3"
+                BackgroundColor="{StaticResource EditPanel}"
+                Stroke="{StaticResource ActiveTab}"
+                StrokeThickness="0,2,0,0"
+                Padding="16,10">
+            <Grid>
+
+                <!-- Patient edit -->
+                <VerticalStackLayout IsVisible="{Binding IsPatientEditVisible}" Spacing="4">
+                    <Label Text="Editare pacient" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientLastName}"  Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Prenume" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientFirstName}" Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="CNP" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientCnp}"       Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3">
+                            <Label Text="CID" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientCid}"       Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="4">
+                            <Label Text="Email" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientEmail}"     Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="5">
+                            <Label Text="Telefon" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientPhone}"     Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="6">
+                            <Label Text="Gen" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditPatientGender}"    Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
+                        <Button Text="Salvează"  Command="{Binding SavePatientCommand}"   Style="{StaticResource SaveBtn}"/>
+                        <Button Text="Anulează"  Command="{Binding CancelPatientEditCommand}" Style="{StaticResource CancelBtn}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- User edit -->
+                <VerticalStackLayout IsVisible="{Binding IsUserEditVisible}" Spacing="4">
+                    <Label Text="Editare utilizator" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserLastName}"  Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Prenume" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserFirstName}" Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="Email" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserEmail}"     Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3">
+                            <Label Text="Telefon" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserPhone}"     Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="4">
+                            <Label Text="NCM" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserNcm}"       Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
+                        <Button Text="Salvează"  Command="{Binding SaveUserCommand}"   Style="{StaticResource SaveBtn}"/>
+                        <Button Text="Anulează"  Command="{Binding CancelUserEditCommand}" Style="{StaticResource CancelBtn}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Prescription edit -->
+                <VerticalStackLayout IsVisible="{Binding IsPrescriptionEditVisible}" Spacing="4">
+                    <Label Text="Editare rețetă / act" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Diagnostic" Style="{StaticResource FieldLabel}"/>
+                            <Editor Text="{Binding EditPrescriptionDiagnosis}"      Style="{StaticResource FieldEditor}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Observații farmacist" Style="{StaticResource FieldLabel}"/>
+                            <Editor Text="{Binding EditPrescriptionObservations}"   Style="{StaticResource FieldEditor}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="Recomandare farmacist" Style="{StaticResource FieldLabel}"/>
+                            <Editor Text="{Binding EditPrescriptionRecommendation}" Style="{StaticResource FieldEditor}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
+                        <Button Text="Salvează"  Command="{Binding SavePrescriptionCommand}"   Style="{StaticResource SaveBtn}"/>
+                        <Button Text="Anulează"  Command="{Binding CancelPrescriptionEditCommand}" Style="{StaticResource CancelBtn}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Monitoring edit -->
+                <VerticalStackLayout IsVisible="{Binding IsMonitoringEditVisible}" Spacing="4">
+                    <Label Text="Editare monitorizare" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Înălțime (cm)" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditMonitoringHeight}" Keyboard="Numeric" Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Greutate (kg)" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditMonitoringWeight}" Keyboard="Numeric" Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="Note" Style="{StaticResource FieldLabel}"/>
+                            <Editor Text="{Binding EditMonitoringNotes}" Style="{StaticResource FieldEditor}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
+                        <Button Text="Salvează"  Command="{Binding SaveMonitoringCommand}"   Style="{StaticResource SaveBtn}"/>
+                        <Button Text="Anulează"  Command="{Binding CancelMonitoringEditCommand}" Style="{StaticResource CancelBtn}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

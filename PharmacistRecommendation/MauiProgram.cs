@@ -187,6 +187,9 @@ namespace PharmacistRecommendation
             // avoiding the captive dependency problem with transient DbContext.
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
+            builder.Services.AddTransient<AdminDashboardView>();
+            builder.Services.AddTransient<AdminDashboardViewModel>();
+
             builder.Services.AddTransient<LoginView>();
             builder.Services.AddTransient<LoginViewModel>();
 

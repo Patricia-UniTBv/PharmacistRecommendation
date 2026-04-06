@@ -4,6 +4,8 @@ namespace Entities.Services.Interfaces
 {
     public interface IPatientService
     {
+        Task<List<Patient>> GetAllPatientsAsync();
+        Task UpdatePatientAsync(Patient patient);
         Task<Patient?> GetPatientByCardCodeAsync(string cardCode);
         Task<Patient> GetOrCreatePatientAsync(string cardNumber, Patient dto);
         Task<Patient?> GetPatientByCnpAsync(string cnp);

@@ -78,6 +78,16 @@ namespace Entities.Services
             await _repo.UpdateAsync(existing);
         }
 
+        public async Task UpdateMonitoringBasicAsync(int id, string? notes, decimal? height, decimal? weight)
+        {
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) return;
+            entity.Notes = notes;
+            entity.Height = height;
+            entity.Weight = weight;
+            await _repo.UpdateAsync(entity);
+        }
+
         public async Task DeleteHistoryRowAsync(int id)
         {
             await _repo.DeleteAsync(id);

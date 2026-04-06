@@ -117,5 +117,14 @@ namespace Entities.Services
             return await _repository.GetByIdAsync(id);
         }
 
+        public async Task<List<Patient>> GetAllPatientsAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task UpdatePatientAsync(Patient patient)
+        {
+            await _repository.UpdateAsync(patient);
+        }
     }
 }

@@ -124,7 +124,11 @@ namespace PharmacistRecommendation.ViewModels
                 {
                     SessionManager.SetCurrentUser(result.User);
 
-                    await Shell.Current.GoToAsync("test_main");
+                    var destination = result.User?.Role == "Admin"
+                        ? "admin_dashboard"
+                        : "test_main";
+
+                    await Shell.Current.GoToAsync(destination);
                 }
                 else
                 {

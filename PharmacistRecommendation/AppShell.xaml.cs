@@ -34,6 +34,7 @@ namespace PharmacistRecommendation
             Routing.RegisterRoute("email_configuration", typeof(EmailConfigurationView));
             Routing.RegisterRoute("add_pharmacy", typeof(AddPharmacyView));
             Routing.RegisterRoute("server_configuration", typeof(ServerConfigurationView));
+            Routing.RegisterRoute("admin_dashboard", typeof(AdminDashboardView));
 
             Routing.RegisterRoute(nameof(AddPharmacyView), typeof(AddPharmacyView));
             Routing.RegisterRoute(nameof(LoginAddUserView), typeof(LoginAddUserView));
