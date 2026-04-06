@@ -41,7 +41,9 @@ namespace Entities.Repository
 
         public async Task UpdateAsync(Prescription prescription)
         {
-            _context.Prescriptions.Update(prescription);
+            var existing = await _context.Prescriptions.FindAsync(prescription.Id);
+            if (existing == null) return;
+            _context.Entry(existing).CurrentValues.SetValues(prescription);
             await _context.SaveChangesAsync();
         }
 

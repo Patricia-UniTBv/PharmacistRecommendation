@@ -66,11 +66,11 @@ namespace Entities.Repository
 
         public async Task<Patient> UpdateAsync(Patient patient)
         {
-            _context.Patients.Update(patient);
-
+            var existing = await _context.Patients.FindAsync(patient.Id);
+            if (existing == null) return patient;
+            _context.Entry(existing).CurrentValues.SetValues(patient);
             await _context.SaveChangesAsync();
-
-            return patient;
+            return existing;
         }
     }
 }
