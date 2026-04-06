@@ -182,11 +182,9 @@ namespace PharmacistRecommendation
 
             builder.Services.AddTransient<ISecureStorageService, MauiSecureStorageService>();
             
-            // AuthenticationService holds user state, so it must be Singleton.
-            // Note: This causes a captive dependency on IUserRepository (Transient).
-            // This means the UserRepository and its DbContext will live as long as the app.
-            // Since this is only used for Login/Logout which are infrequent, this is acceptable,
-            // but ideally AuthenticationService should use IServiceScopeFactory for its dependencies.
+            // AuthenticationService holds user session state, so it must be Singleton.
+            // It uses IServiceScopeFactory internally to resolve IUserRepository per operation,
+            // avoiding the captive dependency problem with transient DbContext.
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddTransient<LoginView>();

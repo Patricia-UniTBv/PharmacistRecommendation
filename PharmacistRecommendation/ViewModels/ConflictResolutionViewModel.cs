@@ -70,6 +70,9 @@ namespace PharmacistRecommendation.ViewModels
 
         private void ApplySelections()
         {
+            // Guard: if ShowConflictsAsync was never called, or Apply was already clicked, do nothing.
+            if (_completionSource == null) return;
+
             var resolvedConflicts = new List<MedicationConflict>();
 
             foreach (var conflictVm in Conflicts)
@@ -95,7 +98,10 @@ namespace PharmacistRecommendation.ViewModels
                 resolvedConflicts.Add(originalConflict);
             }
 
-            _completionSource?.SetResult(resolvedConflicts);
+            // Capture and null out before completing to prevent double-call from crashing.
+            var tcs = _completionSource;
+            _completionSource = null;
+            tcs.SetResult(resolvedConflicts);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

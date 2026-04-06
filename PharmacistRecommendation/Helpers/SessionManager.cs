@@ -13,7 +13,7 @@ namespace PharmacistRecommendation.Helpers
 
         public static int? GetCurrentUserId()
         {
-            return CurrentUser.Id;
+            return CurrentUser?.Id;
         }
 
         public static int? GetCurrentPharmacyId()

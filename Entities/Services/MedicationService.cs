@@ -49,8 +49,8 @@ namespace Entities.Services
                 if (medication == null)
                     throw new ArgumentNullException(nameof(medication));
 
-                medication.CreatedAt = DateTime.Now;
-                medication.UpdatedAt = DateTime.Now;
+                medication.CreatedAt = DateTime.UtcNow;
+                medication.UpdatedAt = DateTime.UtcNow;
                 medication.DataSource = "Manual";
 
                 return await _medicationRepository.AddAsync(medication);
@@ -68,7 +68,7 @@ namespace Entities.Services
                 if (medication == null)
                     throw new ArgumentNullException(nameof(medication));
 
-                medication.UpdatedAt = DateTime.Now;
+                medication.UpdatedAt = DateTime.UtcNow;
                 return await _medicationRepository.UpdateAsync(medication);
             }
             catch (Exception ex)

@@ -1,21 +1,22 @@
 using DTO;
 using Entities.Repository.Interfaces;
 using Entities.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Entities.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ISecureStorageService _secureStorage;
         private UserDTO? _currentUser;
         private string? _currentToken;
 
         public event EventHandler<AuthResult> AuthenticationStateChanged;
 
-        public AuthenticationService(IUserRepository userRepository, ISecureStorageService secureStorage)
+        public AuthenticationService(IServiceScopeFactory scopeFactory, ISecureStorageService secureStorage)
         {
-            _userRepository = userRepository;
+            _scopeFactory = scopeFactory;
             _secureStorage = secureStorage;
         }
 
@@ -34,7 +35,10 @@ namespace Entities.Services
                     return emptyResult;
                 }
 
-                var users = await _userRepository.GetAllAsync();
+                using var scope = _scopeFactory.CreateScope();
+                var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+                var users = await userRepository.GetAllAsync();
                 var user = users.FirstOrDefault(u => u.Username?.Equals(username, StringComparison.OrdinalIgnoreCase) == true);
 
                 if (user == null)
@@ -144,7 +148,9 @@ namespace Entities.Services
 
                 if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(userIdStr) && int.TryParse(userIdStr, out int userId))
                 {
-                    var user = await _userRepository.GetByIdAsync(userId);
+                    using var scope = _scopeFactory.CreateScope();
+                    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                    var user = await userRepository.GetByIdAsync(userId);
                     if (user != null)
                     {
                         _currentUser = new UserDTO

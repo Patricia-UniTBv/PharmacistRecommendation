@@ -554,14 +554,18 @@ namespace PharmacistRecommendation.ViewModels
                  .ToList()
             };
 
-            if (PrescriptionId > 0)
-            {
-                await _prescriptionService.DeletePrescriptionAsync(PrescriptionId);
-            }
+            int? oldPrescriptionId = PrescriptionId > 0 ? PrescriptionId : null;
 
+            // Add the new prescription first. If this fails, the old one is untouched.
             await _prescriptionService.AddPrescriptionAsync(prescription);
             PrescriptionId = prescription.Id;
             Prescription = prescription;
+
+            // Only delete the old record after the new one is safely written.
+            if (oldPrescriptionId.HasValue)
+            {
+                await _prescriptionService.DeletePrescriptionAsync(oldPrescriptionId.Value);
+            }
 
             IsPrintButtonEnabled = true;
             await ShowAlert("Rețeta a fost salvată cu succes!");

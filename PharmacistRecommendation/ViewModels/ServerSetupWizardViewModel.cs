@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -35,6 +36,46 @@ private bool isCreating;
         public ServerSetupWizardViewModel()
         {
  }
+
+        private static bool IsValidDatabaseName(string name) =>
+            !string.IsNullOrWhiteSpace(name) &&
+            name.Length <= 128 &&
+            Regex.IsMatch(name, @"^[a-zA-Z0-9_\-]+$");
+
+        private static string GenerateAppUserPassword()
+        {
+            // Character sets that satisfy SQL Server password complexity and are safe inside a SQL string literal.
+            const string upper   = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string lower   = "abcdefghjkmnpqrstuvwxyz";
+            const string digits  = "23456789";
+            const string special = "!@#%&*";
+            const string all     = upper + lower + digits + special;
+
+            var password = new char[14];
+            // Guarantee at least one of each required type.
+            password[0] = upper[RngIndex(upper.Length)];
+            password[1] = lower[RngIndex(lower.Length)];
+            password[2] = digits[RngIndex(digits.Length)];
+            password[3] = special[RngIndex(special.Length)];
+            for (int i = 4; i < password.Length; i++)
+                password[i] = all[RngIndex(all.Length)];
+
+            // Fisher-Yates shuffle.
+            for (int i = password.Length - 1; i > 0; i--)
+            {
+                int j = RngIndex(i + 1);
+                (password[i], password[j]) = (password[j], password[i]);
+            }
+
+            return new string(password);
+        }
+
+        private static int RngIndex(int max)
+        {
+            var bytes = new byte[4];
+            System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
+            return (int)(BitConverter.ToUInt32(bytes, 0) % (uint)max);
+        }
 
         private async Task<string> GetServerIPAddressAsync()
         {
@@ -137,7 +178,8 @@ await Task.Delay(500);
             ProgressValue = 95;
   await Task.Delay(500);
 
-       await CreateAppUserLoginAsync(server, database);
+       string appUserPassword = GenerateAppUserPassword();
+       await CreateAppUserLoginAsync(server, database, appUserPassword);
 
    // Step 6: Mark as configured
                 ProgressMessage = "Finalizare configurare...";
@@ -155,7 +197,7 @@ await Task.Delay(500);
           "========================================\n\n" +
           "INFORMATII PENTRU CALCULATOARELE CLIENT:\n\n" +
       $"Adresa IP Server: {serverIP}\n" +
-   "Parola: Farmacie2025\n\n" +
+   $"Parola: {appUserPassword}\n\n" +
       "Va rugam sa salvati aceste informatii!\n" +
 "Acestea vor fi necesare pentru conectarea\n" +
          "calculatoarelor client la acest server.\n\n" +
@@ -194,13 +236,17 @@ return false;
         {
 try
  {
+      if (!IsValidDatabaseName(database))
+          throw new ArgumentException($"Invalid database name: {database}");
+
       string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;Connection Timeout=10";
   using var connection = new SqlConnection(masterConnectionString);
      await connection.OpenAsync();
 
       // Check if database exists
-      string checkQuery = $"SELECT database_id FROM sys.databases WHERE name = '{database}'";
+      string checkQuery = "SELECT database_id FROM sys.databases WHERE name = @dbName";
     using var checkCommand = new SqlCommand(checkQuery, connection);
+    checkCommand.Parameters.AddWithValue("@dbName", database);
        var result = await checkCommand.ExecuteScalarAsync();
 
       if (result != null)
@@ -208,14 +254,16 @@ try
      Debug.WriteLine($"Database {database} exists, dropping it...");
 
              // Set database to single user mode to disconnect users
+             // Database name is validated above; bracket-quoting protects the DDL.
     string setSingleUserQuery = $@"
-        IF EXISTS (SELECT name FROM sys.databases WHERE name = '{database}')
+        IF EXISTS (SELECT name FROM sys.databases WHERE name = @dbName)
               BEGIN
            ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
     DROP DATABASE [{database}];
    END";
 
      using var dropCommand = new SqlCommand(setSingleUserQuery, connection);
+  dropCommand.Parameters.AddWithValue("@dbName", database);
   dropCommand.CommandTimeout = 60;
    await dropCommand.ExecuteNonQueryAsync();
 
@@ -308,7 +356,7 @@ Debug.WriteLine($"Database {database} dropped successfully.");
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
                                     ProgressValue = 50;
-                                    ProgressMessage = "Se importa datele în baza de date...";
+                                    ProgressMessage = "Se importa datele ï¿½n baza de date...";
                                 });
                             }
                             else if (e.Data.Contains("Successfully imported"))
@@ -407,8 +455,9 @@ if (File.Exists(path))
          using var connection = new SqlConnection(masterConnectionString);
       await connection.OpenAsync();
 
-     string checkQuery = $"SELECT database_id FROM sys.databases WHERE name = '{database}'";
+     string checkQuery = "SELECT database_id FROM sys.databases WHERE name = @dbName";
        using var command = new SqlCommand(checkQuery, connection);
+       command.Parameters.AddWithValue("@dbName", database);
        var result = await command.ExecuteScalarAsync();
 
          return result != null;
@@ -420,30 +469,33 @@ if (File.Exists(path))
     }
   }
 
-        private async Task CreateAppUserLoginAsync(string server, string database)
+        private async Task CreateAppUserLoginAsync(string server, string database, string password)
         {
       try
       {
     Debug.WriteLine("Creating appuser login and database user...");
-      
+
            string masterConnectionString = $"Server={server};Database=master;Integrated Security=true;TrustServerCertificate=true;";
-     
+
      using var connection = new SqlConnection(masterConnectionString);
     await connection.OpenAsync();
-        
-     // Step 1: Create SQL Server login
-    string createLoginSql = @"
+
+     // Step 1: Create SQL Server login.
+     // Password is generated at runtime â€” not stored in source code.
+     // Single quotes inside the password are doubled to escape them in the SQL literal.
+     string escapedPassword = password.Replace("'", "''");
+    string createLoginSql = $@"
      IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'appuser')
 BEGIN
-           CREATE LOGIN appuser WITH PASSWORD = 'Farmacie2025';
+           CREATE LOGIN appuser WITH PASSWORD = '{escapedPassword}';
          PRINT 'Login appuser created successfully';
        END
             ELSE
        BEGIN
-  ALTER LOGIN appuser WITH PASSWORD = 'Farmacie2025';
+  ALTER LOGIN appuser WITH PASSWORD = '{escapedPassword}';
          PRINT 'Login appuser password updated';
      END
-          
+
        -- Grant remote connection permission
     GRANT CONNECT SQL TO appuser;
       ";

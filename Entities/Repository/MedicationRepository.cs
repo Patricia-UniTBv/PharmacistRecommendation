@@ -63,8 +63,8 @@ namespace Entities.Repository
             if (medication == null)
                 throw new ArgumentNullException(nameof(medication));
 
-            medication.CreatedAt = DateTime.Now;
-            medication.UpdatedAt = DateTime.Now;
+            medication.CreatedAt = DateTime.UtcNow;
+            medication.UpdatedAt = DateTime.UtcNow;
 
             _context.Medications.Add(medication);
             await _context.SaveChangesAsync();
@@ -103,7 +103,11 @@ namespace Entities.Repository
             existingMedication.Triunghi = medication.Triunghi;
             existingMedication.Dreptunghi = medication.Dreptunghi;
             existingMedication.PreviousCodCIM = medication.PreviousCodCIM;
-            existingMedication.UpdatedAt = DateTime.Now;
+            existingMedication.DataSource = medication.DataSource;
+            existingMedication.IsActive = medication.IsActive;
+            existingMedication.CustomNomenclatorName = medication.CustomNomenclatorName;
+            existingMedication.LinkedOfficialMedicationId = medication.LinkedOfficialMedicationId;
+            existingMedication.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
@@ -167,8 +171,8 @@ namespace Entities.Repository
 
             foreach (var medication in medications)
             {
-                medication.CreatedAt = DateTime.Now;
-                medication.UpdatedAt = DateTime.Now;
+                medication.CreatedAt = DateTime.UtcNow;
+                medication.UpdatedAt = DateTime.UtcNow;
             }
 
             _context.Medications.AddRange(medications);
@@ -184,7 +188,7 @@ namespace Entities.Repository
 
             foreach (var medication in medications)
             {
-                medication.UpdatedAt = DateTime.Now;
+                medication.UpdatedAt = DateTime.UtcNow;
                 _context.Medications.Update(medication);
             }
 
@@ -200,7 +204,7 @@ namespace Entities.Repository
 
             medication.PreviousCodCIM = oldCodCIM;
             medication.CodCIM = newCodCIM;
-            medication.UpdatedAt = DateTime.Now;
+            medication.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return medication;
@@ -218,7 +222,7 @@ namespace Entities.Repository
             foreach (var medication in medications)
             {
                 medication.IsActive = isActive;
-                medication.UpdatedAt = DateTime.Now;
+                medication.UpdatedAt = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();

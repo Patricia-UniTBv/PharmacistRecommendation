@@ -96,9 +96,10 @@ namespace Entities.Services
                         result.Warnings.Add($"Marked {toMarkInactiveIds.Count} medications as inactive (not found in new import)");
                     }
 
-                    // Reactivate: medications that were previously inactive but are present in new data
+                    // Reactivate: only CSV_Import medications that were previously inactive but are present in new data.
+                    // Excluding Manual medications prevents unintentionally reactivating entries a user deliberately deactivated.
                     var toReactivateIds = currentMedications
-                        .Where(m => !string.IsNullOrWhiteSpace(m.CodCIM) && !m.IsActive && newCodCIMs.Contains(m.CodCIM!))
+                        .Where(m => m.DataSource == "CSV_Import" && !string.IsNullOrWhiteSpace(m.CodCIM) && !m.IsActive && newCodCIMs.Contains(m.CodCIM!))
                         .Select(m => m.Id)
                         .ToList();
 
@@ -393,8 +394,8 @@ namespace Entities.Services
                 Triunghi = NullIfEmpty(csvRow.Triunghi),
                 Dreptunghi = NullIfEmpty(csvRow.Dreptunghi),
                 IsActive = true,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
         }
 
@@ -453,7 +454,7 @@ namespace Entities.Services
             existing.Stea = updated.Stea;
             existing.Triunghi = updated.Triunghi;
             existing.Dreptunghi = updated.Dreptunghi;
-            existing.UpdatedAt = DateTime.Now;
+            existing.UpdatedAt = DateTime.UtcNow;
         }
 
         public async Task<List<CsvMedicationRow>> ParseCustomNomenclatorCsvFileAsync(Stream csvStream)
@@ -601,8 +602,8 @@ namespace Entities.Services
                 LinkedOfficialMedicationId = officialMedication?.Id, // Link if exists
                 
                 DataSource = "Custom_Nomenclator",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
                 IsActive = true
             };
 

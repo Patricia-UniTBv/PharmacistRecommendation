@@ -606,8 +606,8 @@ namespace PharmacistRecommendation.ViewModels
                 Stea = HasStea ? "X" : null,
                 Triunghi = HasTriunghi ? "X" : null,
                 Dreptunghi = HasDreptunghi ? "X" : null,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
                 IsActive = true
             };
         }
@@ -632,7 +632,7 @@ namespace PharmacistRecommendation.ViewModels
                 {
                     CodCIM, Denumire, DCI, FormaFarmaceutica, Concentratia,
                     CodATC, ActiuneTerapeutica, Prescriptie,
-                    Timestamp = DateTime.Now
+                    Timestamp = DateTime.UtcNow
                 };
                 
                 var json = System.Text.Json.JsonSerializer.Serialize(formData);

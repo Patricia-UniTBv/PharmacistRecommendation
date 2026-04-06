@@ -20,7 +20,10 @@ namespace PharmacistRecommendation.Helpers.Services
                     if (text.Contains("<prescription"))
                         return file.FullName;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Could not read prescription file '{file.FullName}': {ex.Message}");
+                }
             }
             return null;
         }

@@ -29,11 +29,16 @@ namespace Entities.Repository
 
         public async Task<Patient?> GetByNameAsync(string? firstName, string? lastName)
         {
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                return null;
+
+            var normalizedFirst = firstName.Trim().ToLower();
+            var normalizedLast = lastName.Trim().ToLower();
+
             return await _context.Patients
                 .Include(p => p.PharmacyCards)
-                .FirstOrDefaultAsync(p => p.FirstName.ToLower().Trim() == firstName.ToLower().Trim() &&
-                                          p.LastName.ToLower().Trim() == lastName.ToLower().Trim());
-
+                .FirstOrDefaultAsync(p => p.FirstName.ToLower().Trim() == normalizedFirst &&
+                                          p.LastName.ToLower().Trim() == normalizedLast);
         }
 
         public async Task<Patient?> GetByCardCodeAsync(string cardCode)
