@@ -145,9 +145,11 @@ namespace PharmacistRecommendation.ViewModels
 
         private CancellationTokenSource? _cts;
 
+        private readonly IPharmacyCardService _pharmacyCardService;
+
 
         public MixedActIssuanceViewModel(IPrescriptionService prescriptionService, IAdministrationModeService administrationModeService, IPharmacyService pharmacyService,
-            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService, IPatientService patientService, IUserService userService)
+            IImportConfigurationService importService, IMedicationService medicationService, IEmailConfigurationService emailConfigurationService, IPatientService patientService, IUserService userService, IPharmacyCardService pharmacyCardService)
         {
             _prescriptionService = prescriptionService ?? throw new ArgumentNullException(nameof(prescriptionService));
             _administrationModeService = administrationModeService ?? throw new ArgumentNullException(nameof(administrationModeService));
@@ -157,6 +159,7 @@ namespace PharmacistRecommendation.ViewModels
             _patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
             _emailConfigurationService = emailConfigurationService;
             _userService = userService;
+            _pharmacyCardService = pharmacyCardService;
 
             AddSuggestionCommand = new RelayCommand<string>(AddSuggestionToText);
 
@@ -195,7 +198,7 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty]
         private Prescription prescription;
 
-        public bool IsSaveButtonVisible => !IsReportViewMode;
+        public bool IsSaveButtonVisible => true;
 
         partial void OnIsReportViewModeChanged(bool value)
         {
@@ -484,9 +487,29 @@ namespace PharmacistRecommendation.ViewModels
                 return;
             }
 
+            var pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+            Patient? patient = null;
+
+            if (!string.IsNullOrWhiteSpace(CardNumber))
+            {
+                var card = await _pharmacyCardService.CreateCardAsync(
+                    CardNumber, pharmacyId, PatientName ?? "-", "-", PatientCnp, null, PatientEmail, null, null, null);
+                patient = card.Patient;
+            }
+            else if (!string.IsNullOrWhiteSpace(PatientName) || !string.IsNullOrWhiteSpace(PatientCnp))
+            {
+                var patientDto = new Patient
+                {
+                    FirstName = PatientName ?? "-",
+                    LastName = "-",
+                    Cnp = PatientCnp
+                };
+                patient = await _patientService.GetOrCreatePatientAsync(null, patientDto);
+            }
+
             var prescription = new Prescription
             {
-                //PatientId = int.TryParse(this.CardNumber, out int id) ? id : 0,
+                PatientId = patient?.Id,
                 PatientName = this.PatientName,
                 PatientCnp = this.PatientCnp,
                 CaregiverName = this.CaregiverName,
@@ -503,7 +526,7 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacistRecommendation = this.PharmacistRecommendation,
                 PharmaceuticalService = this.SelectedPharmaceuticalService,
                 DoctorStamp = this.DoctorStamp,
-                IssueDate = DateTime.Now,
+                IssueDate = PrescriptionId > 0 && this.Prescription != null ? this.Prescription.IssueDate : DateTime.Now,
                 PrescriptionMedications = this.MedicationsWithPrescription
                  .Select(m => new PrescriptionMedication
                  {
@@ -512,7 +535,7 @@ namespace PharmacistRecommendation.ViewModels
                      Noon = m.Noon,
                      Evening = m.Evening,
                      Night = m.Night,
-                     AdministrationModeId = m.AdministrationMode?.Id,
+                     AdministrationModeId = m.AdministrationMode?.Id ?? 1,
                      IsWithPrescription = true
                  })
                  .Concat(
@@ -524,18 +547,25 @@ namespace PharmacistRecommendation.ViewModels
                              Noon = m.Noon,
                              Evening = m.Evening,
                              Night = m.Night,
-                             AdministrationModeId = m.AdministrationMode?.Id,
+                             AdministrationModeId = m.AdministrationMode?.Id ?? 1,
                              IsWithPrescription = false
                          })
                  )
                  .ToList()
-   };
+            };
 
-  await _prescriptionService.AddPrescriptionAsync(prescription);
-         IsPrintButtonEnabled = true;
-      await ShowAlert("Rețeta a fost salvată cu succes!");
+            if (PrescriptionId > 0)
+            {
+                await _prescriptionService.DeletePrescriptionAsync(PrescriptionId);
+            }
 
-            var pharmacyId = SessionManager.GetCurrentPharmacyId() ?? 1;
+            await _prescriptionService.AddPrescriptionAsync(prescription);
+            PrescriptionId = prescription.Id;
+            Prescription = prescription;
+
+            IsPrintButtonEnabled = true;
+            await ShowAlert("Rețeta a fost salvată cu succes!");
+
             var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
 
             var exportDto = new PrescriptionExportDto
@@ -545,7 +575,7 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacyCUI = pharmacy.CUI,
                 PharmacyPhone = pharmacy.Phone,
                 PharmacyEmail = pharmacy.Email,
-                PacientCard = cardNumber,
+                PacientCard = CardNumber,
                 CardAderenta = "",
                 RetetaType = showWithPrescription ? "Compensată" : "Necompensată",
                 Note = pharmacistObservations,
@@ -688,6 +718,7 @@ namespace PharmacistRecommendation.ViewModels
                 IssueDate = DateTime.Now,
                 PatientName = this.PatientName!,
                 PatientCnp = this.PatientCnp!,
+                PatientCard = this.CardNumber,
                 CaregiverName = this.CaregiverName!,
                 CaregiverCnp = this.CaregiverCnp!,
                 ModeCode = mode switch
@@ -770,6 +801,7 @@ namespace PharmacistRecommendation.ViewModels
                 IssueDate = DateTime.Now,
                 PatientName = this.PatientName!,
                 PatientCnp = this.PatientCnp!,
+                PatientCard = this.CardNumber,
                 CaregiverName = this.CaregiverName!,
                 CaregiverCnp = this.CaregiverCnp!,
                 ModeCode = mode switch
@@ -837,7 +869,7 @@ namespace PharmacistRecommendation.ViewModels
                 PharmacyCUI = pharmacy.CUI,
                 PharmacyPhone = pharmacy.Phone,
                 PharmacyEmail = pharmacy.Email,
-                PacientCard = cardNumber,
+                PacientCard = CardNumber,
                 CardAderenta = "",
                 RetetaType = ShowWithPrescription && ShowWithoutPrescription ? "Mixtă" :
                              ShowWithPrescription ? "Compensată" : "Necompensată",
@@ -955,15 +987,18 @@ namespace PharmacistRecommendation.ViewModels
             }
 
             string selected = null;
-
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            if (filtered.Length == 1)
+            {
+                selected = filtered.First();
+            }
+            else
             {
                 selected = await Application.Current.MainPage.DisplayActionSheet(
-                    "Selectați medicamentul",
-                    "Anulare",
+                    "Alege medicament",
+                    "Anulează",
                     null,
                     filtered);
-            });
+            }
 
             if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
                 drug.Name = selected;
@@ -994,15 +1029,18 @@ namespace PharmacistRecommendation.ViewModels
             }
 
             string selected = null;
-
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            if (filtered.Length == 1)
+            {
+                selected = filtered.First();
+            }
+            else
             {
                 selected = await Application.Current.MainPage.DisplayActionSheet(
                     "Selectați medicamentul",
                     "Anulare",
                     null,
                     filtered);
-            });
+            }
 
             if (!string.IsNullOrEmpty(selected) && selected != "Anulare")
               drug.Name = selected;
@@ -1120,6 +1158,7 @@ namespace PharmacistRecommendation.ViewModels
                         }));
                 PatientName = presc.PatientName;
                 PatientCnp = presc.PatientCnp;
+                CardNumber = presc.Patient?.PharmacyCards?.FirstOrDefault()?.Code ?? string.Empty;
                 CaregiverName = presc.CaregiverName;
                 CaregiverCnp = presc.CaregiverCnp;
                 PrescriptionNumber = presc.Number;

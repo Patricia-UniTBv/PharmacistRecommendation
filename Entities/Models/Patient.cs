@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Entities.Models;
 
@@ -30,4 +31,6 @@ public partial class Patient
     public virtual ICollection<PharmacyCard> PharmacyCards { get; set; } = new List<PharmacyCard>();
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+
+    public string? CardNumber => PharmacyCards?.FirstOrDefault()?.Code;
 }

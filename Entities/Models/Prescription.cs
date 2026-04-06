@@ -47,6 +47,8 @@ public partial class Prescription
 
     public string? PatientCnp { get; set; }
 
+    public string? CardNumber => Patient?.CardNumber;
+
     public virtual Document? Document { get; set; }
 
     public virtual Patient? Patient { get; set; }

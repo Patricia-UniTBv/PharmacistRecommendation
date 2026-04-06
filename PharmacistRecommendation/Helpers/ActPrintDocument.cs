@@ -13,12 +13,12 @@ namespace PharmacistRecommendation.Helpers
         public string? PharmacyName { get; set; }
         public string? PharmacyAddress { get; set; }
         public string? PharmacyPhone { get; set; }
-        public string? Logo { get; set; }
         public string? Series { get; set; }
         public string? Number { get; set; }
         public DateTime IssueDate { get; set; }
         public string? PatientName { get; set; }
         public string? PatientCnp { get; set; }
+        public string? PatientCard { get; set; }
         public string? CaregiverName { get; set; }
         public string? CaregiverCnp { get; set; }
         public string? ModeCode { get; set; }
@@ -54,6 +54,9 @@ namespace PharmacistRecommendation.Helpers
 
         protected override void OnPrintPage(PrintPageEventArgs e)
         {
+            var g = e.Graphics;
+            if (g == null) return;
+
             try
             {
                 SafePrint(e);
@@ -120,8 +123,10 @@ namespace PharmacistRecommendation.Helpers
             y += lineHeight;
 
             float cnpOffset = 350;
+            float cardOffset = 500;
             SafeDrawString(g, $"PACIENT: {PatientName}", fontText, Brushes.Black, textStartX, y);
             SafeDrawString(g, $"CNP: {PatientCnp}", fontText, Brushes.Black, textStartX + cnpOffset, y);
+            SafeDrawString(g, $"CARD: {PatientCard}", fontText, Brushes.Black, textStartX + cardOffset, y);
             y += lineHeight;
 
             SafeDrawString(g, $"APARȚINĂTOR: {CaregiverName}", fontText, Brushes.Black, textStartX, y);

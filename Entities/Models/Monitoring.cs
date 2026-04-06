@@ -24,4 +24,6 @@ public partial class Monitoring
     public virtual PharmacyCard? Card { get; set; }
 
     public virtual Patient Patient { get; set; } = null!;
+
+    public string? CardNumber => Patient?.CardNumber;
 }

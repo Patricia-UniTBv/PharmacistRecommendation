@@ -20,18 +20,20 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
     private readonly IPdfReportService _pdfReportService;
     private readonly IEmailConfigurationService _emailConfigurationService;
     private readonly IPharmacyService _pharmacyService;
+    private readonly IPharmacyCardService _pharmacyCardService;
     private readonly int _pharmacyId;
 
     // Added for debounce
     private CancellationTokenSource? _debounceCts;
 
-    public MonitoringViewModel(IMonitoringService monitoringService, IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService)
+    public MonitoringViewModel(IMonitoringService monitoringService, IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService, IPharmacyCardService pharmacyCardService)
     {
         _monitoringService = monitoringService;
         _patientService = patientService;
         _pdfReportService = pdfReportService;
         _emailConfigurationService = emailConfigurationService;
         _pharmacyService = pharmacyService;
+        _pharmacyCardService = pharmacyCardService;
 
         // Initialize lists
         MonitoringTypes = new ObservableCollection<string>
@@ -92,14 +94,15 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
         set
         {
             _monitoringId = value;
-            _ = LoadMonitoringAsync(value);
+            if (value > 0)
+                _ = LoadMonitoringAsync(value);
         }
     }
 
     [ObservableProperty]
     bool isReportViewMode = false;
 
-    public bool IsSaveButtonVisible => !IsReportViewMode;
+    public bool IsSaveButtonVisible => true;
 
     partial void OnIsReportViewModeChanged(bool value)
     {
@@ -198,21 +201,34 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
     private async Task SaveAsync()
     {
 
-        var patientDto = new Patient
-        {
-            FirstName = FirstName,
-            LastName = LastName,
-            Cnp = Cnp,
-            Gender = Gender
-        };
+        Patient patient;
+        int? cardId = null;
 
-        var patient = await _patientService.GetOrCreatePatientAsync(cardNumber, patientDto);
+        if (!string.IsNullOrWhiteSpace(cardNumber))
+        {
+            var card = await _pharmacyCardService.CreateCardAsync(
+                cardNumber, _pharmacyId, FirstName ?? "-", LastName ?? "-", Cnp, Cid, PatientEmail, null, Gender, Age.HasValue ? DateTime.Today.AddYears(-Age.Value) : null);
+            patient = card.Patient;
+            cardId = card.Id;
+        }
+        else
+        {
+            var patientDto = new Patient
+            {
+                FirstName = FirstName ?? "-",
+                LastName = LastName ?? "-",
+                Cnp = Cnp,
+                Gender = Gender
+            };
+            patient = await _patientService.GetOrCreatePatientAsync(null, patientDto);
+            cardId = patient.PharmacyCards?.FirstOrDefault()?.Id;
+        }
 
         var dto = new MonitoringDTO
         {
             PatientId = patient.Id, 
-            CardId = null,               
-            MonitoringDate = DateTime.Now,
+            CardId = cardId,
+            MonitoringDate = MonitoringId > 0 ? EndDate : DateTime.Now, // Past monitoring keeps its date; new monitoring gets now
             MonitoringType = SelectedMonitoringType,
             Height = Height,
             Weight = Weight,
@@ -231,7 +247,14 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
             BodyTemperature = BodyTemperature
         };
 
-        await _monitoringService.AddMonitoringAsync(dto, loggedInUserId); 
+        if (MonitoringId > 0)
+        {
+            await _monitoringService.UpdateMonitoringAsync(MonitoringId, dto);
+        }
+        else
+        {
+            await _monitoringService.AddMonitoringAsync(dto, loggedInUserId); 
+        }
 
         await Shell.Current.DisplayAlert("Succes", "Datele au fost salvate!", "OK");
 
@@ -410,6 +433,7 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
         LastName = monitoring.Patient.LastName;
         Cnp = monitoring.Patient.Cnp;
         Cid = monitoring.Patient.Cid;
+        CardNumber = monitoring.Patient.CardNumber ?? string.Empty;
 
         PatientId = monitoring.PatientId;
 

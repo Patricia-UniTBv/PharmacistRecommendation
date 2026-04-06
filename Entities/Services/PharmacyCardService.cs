@@ -20,7 +20,16 @@ namespace Entities.Services
 
             Patient? patient = null;
 
-            if (!string.IsNullOrWhiteSpace(cnp))
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                var existingByCode = await _cardRepository.GetByCodeAsync(code);
+                if (existingByCode != null && existingByCode.Patient != null)
+                {
+                    patient = existingByCode.Patient;
+                }
+            }
+
+            if (patient == null && !string.IsNullOrWhiteSpace(cnp))
             {
                 patient = await _patientRepository.GetByCnpAsync(cnp);
             }
@@ -43,13 +52,14 @@ namespace Entities.Services
             }
             else
             {
-                patient.FirstName = string.IsNullOrWhiteSpace(firstName) ? patient.FirstName : firstName;
-                patient.LastName = string.IsNullOrWhiteSpace(lastName) ? patient.LastName : lastName;
+                patient.FirstName = string.IsNullOrWhiteSpace(firstName) || firstName == "-" ? patient.FirstName : firstName;
+                patient.LastName = string.IsNullOrWhiteSpace(lastName) || lastName == "-" ? patient.LastName : lastName;
                 patient.Cid = string.IsNullOrWhiteSpace(cid) ? patient.Cid : cid;
                 patient.Email = string.IsNullOrWhiteSpace(email) ? patient.Email : email;
                 patient.Phone = string.IsNullOrWhiteSpace(phone) ? patient.Phone : phone;
                 patient.Gender = string.IsNullOrWhiteSpace(gender) ? patient.Gender : gender;
                 patient.Birthdate = birthdate ?? patient.Birthdate;
+                if (!string.IsNullOrWhiteSpace(cnp)) patient.Cnp = cnp;
 
                 await _patientRepository.UpdateAsync(patient);
             }

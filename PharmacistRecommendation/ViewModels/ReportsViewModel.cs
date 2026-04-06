@@ -136,6 +136,29 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         );
     }
 
+    [RelayCommand]
+    private async Task DeletePrescription(Prescription prescription)
+    {
+        if (prescription == null)
+            return;
+
+        bool confirm = await Shell.Current.DisplayAlert("Confirmare", "Sunteți sigur că doriți să ștergeți acest raport?", "Da", "Nu");
+        if (!confirm)
+            return;
+
+        try
+        {
+            await _prescriptionService.DeletePrescriptionAsync(prescription.Id);
+            PrescriptionsData.Remove(prescription);
+            DataCount = $"Total acte găsite: {PrescriptionsData.Count}";
+            await Shell.Current.DisplayAlert("Succes", "Actul a fost șters cu succes.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Eroare", $"Eroare la ștergerea actului: {ex.Message}", "OK");
+        }
+    }
+
     //Incarcare date monitorizare 
     [RelayCommand]
     private async Task OpenMonitoring(Monitoring monitoring)
@@ -154,6 +177,28 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         SelectedMonitoring = null;
     }
 
+    [RelayCommand]
+    private async Task DeleteMonitoring(Monitoring monitoring)
+    {
+        if (monitoring == null)
+            return;
+
+        bool confirm = await Shell.Current.DisplayAlert("Confirmare", "Sunteți sigur că doriți să ștergeți această monitorizare?", "Da", "Nu");
+        if (!confirm)
+            return;
+
+        try
+        {
+            await _monitoringService.DeleteHistoryRowAsync(monitoring.Id);
+            MonitoringData.Remove(monitoring);
+            DataCount = $"Total monitorizări: {MonitoringData.Count}";
+            await Shell.Current.DisplayAlert("Succes", "Monitorizarea a fost ștearsă cu succes.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Eroare", $"Eroare la ștergerea monitorizării: {ex.Message}", "OK");
+        }
+    }
 
 
     public void Dispose()
@@ -335,7 +380,8 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
     .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
     .Where(p => string.IsNullOrEmpty(PatientFilter) ||
                (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-               (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
+               (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+               (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
     .OrderBy(p => p.IssueDate)
     .ToList();
 
@@ -360,7 +406,8 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
      .Where(p => p.IssueDate >= StartDate && p.IssueDate <= EndDate.Date.AddDays(1).AddTicks(-1))
      .Where(p => string.IsNullOrEmpty(PatientFilter) ||
                 (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true))
+                (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+               (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
      .Where(p => !p.PrescriptionMedications.Any() ||  
                 p.PrescriptionMedications.Any(m => m.IsWithPrescription == true)) 
      .OrderBy(p => p.IssueDate)
@@ -385,7 +432,8 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
             .Where(m => m.MonitoringDate >= StartDate &&
                         m.MonitoringDate <= EndDate.Date.AddDays(1).AddTicks(-1))
             .Where(m => string.IsNullOrEmpty(PatientFilter) ||
-                        m.Patient.Cnp.Contains(PatientFilter) ||
+                        m.Patient.Cnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true ||
+                        m.Patient.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                         $"{m.Patient.FirstName} {m.Patient.LastName}"
                             .Contains(PatientFilter, StringComparison.OrdinalIgnoreCase))
             .OrderBy(m => m.MonitoringDate)

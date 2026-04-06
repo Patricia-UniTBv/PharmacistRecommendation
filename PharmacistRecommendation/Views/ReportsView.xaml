@@ -147,7 +147,7 @@
                                 <!-- HEADER -->
                                 <CollectionView.Header>
                                     <Grid Padding="5"
-                      ColumnDefinitions="120,*,180,180,100"
+                      ColumnDefinitions="120,*,180,180,100,180"
                       ColumnSpacing="10"
                       BackgroundColor="#34495E">
                                         <Label Grid.Column="0"
@@ -168,12 +168,18 @@
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="3"
-                           Text="Serie/Nr"
+                           Text="Card"
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="4"
+                           Text="Serie/Nr"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="5"
                            Text="Acțiuni"
                            FontAttributes="Bold"
                            TextColor="White"
@@ -186,7 +192,7 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="models:Prescription">
                                         <Grid Padding="5"
-                          ColumnDefinitions="120,*,180,180,100"
+                          ColumnDefinitions="120,*,180,180,100,180"
                           ColumnSpacing="10"
                           HeightRequest="38">
 
@@ -232,8 +238,25 @@
                                    VerticalTextAlignment="Center"/>
                                             </Frame>
 
-                                            <!-- SERIE/NR -->
+                                            <!-- CARD -->
                                             <Frame Grid.Column="3"
+                               BackgroundColor="White"
+                               Padding="5"
+                               CornerRadius="5"
+                               HasShadow="False"
+                               VerticalOptions="Fill">
+                                                <Label FontSize="12"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalOptions="Center"
+                                   VerticalTextAlignment="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="CardNumber" TargetNullValue="—" FallbackValue="—" />
+                                                    </Label.Text>
+                                                </Label>
+                                            </Frame>
+
+                                            <!-- SERIE/NR -->
+                                            <Frame Grid.Column="4"
                                BackgroundColor="White"
                                Padding="5"
                                CornerRadius="5"
@@ -252,13 +275,9 @@
                                                 </Label>
                                             </Frame>
 
-                                            <Frame Grid.Column="4"
-                                                    BackgroundColor="Transparent"
-                                                    Padding="0"
-                                                    HasShadow="False"
-                                                    HeightRequest="30"
-                                                    VerticalOptions="Center">
+                                            <Grid Grid.Column="5" ColumnDefinitions="*,*" ColumnSpacing="5" HeightRequest="30" VerticalOptions="Center">
                                                 <Button Text="Vizualizare"
+                                                         Grid.Column="0"
                                                          FontSize="12"
                                                          BackgroundColor="#3498DB"
                                                          TextColor="White"
@@ -268,7 +287,19 @@
                                                          Padding="0,1,0,14" 
                                     Command="{Binding Source={x:Reference PrescriptionCollectionView}, Path=BindingContext.OpenPrescriptionCommand}"
                                     CommandParameter="{Binding .}"/>
-                                            </Frame>
+                                                
+                                                <Button Text="Șterge"
+                                                         Grid.Column="1"
+                                                         FontSize="12"
+                                                         BackgroundColor="#E74C3C"
+                                                         TextColor="White"
+                                                         CornerRadius="5"
+                                                         VerticalOptions="Fill"
+                                                         HorizontalOptions="Fill"
+                                                         Padding="0,1,0,14" 
+                                    Command="{Binding Source={x:Reference PrescriptionCollectionView}, Path=BindingContext.DeletePrescriptionCommand}"
+                                    CommandParameter="{Binding .}"/>
+                                            </Grid>
 
                                         </Grid>
                                     </DataTemplate>
@@ -299,7 +330,7 @@
                                 <!-- HEADER -->
                                 <CollectionView.Header>
                                     <Grid Padding="5"
-                      ColumnDefinitions="120,*,180,180,100"
+                      ColumnDefinitions="120,*,180,180,180,180"
                       ColumnSpacing="10"
                       BackgroundColor="#34495E">
 
@@ -326,6 +357,12 @@
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="4"
+                           Text="Card"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                                        <Label Grid.Column="5"
                            Text=""
                            TextColor="White"/>
                                     </Grid>
@@ -337,7 +374,7 @@
 
                                         <Grid Padding="5"
                           HeightRequest="38"
-                          ColumnDefinitions="120,*,180,180,100"
+                          ColumnDefinitions="120,*,180,180,180,180"
                           ColumnSpacing="10">
 
                                             <!-- DATA -->
@@ -401,14 +438,28 @@
                                    VerticalOptions="Center"
                                    VerticalTextAlignment="Center"/>
                                             </Frame>
+                                            
 
+                                            <!-- CARD -->
                                             <Frame Grid.Column="4"
-       BackgroundColor="Transparent"
-       Padding="0"
-       HasShadow="False"
-       HeightRequest="30"
-       VerticalOptions="Center">
+                               BackgroundColor="White"
+                               Padding="5"
+                               CornerRadius="5"
+                               HasShadow="False"
+                               VerticalOptions="Fill">
+                                                <Label FontSize="12"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalOptions="Center"
+                                   VerticalTextAlignment="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="CardNumber" TargetNullValue="—" FallbackValue="—" />
+                                                    </Label.Text>
+                                                </Label>
+                                            </Frame>
+
+                                            <Grid Grid.Column="5" ColumnDefinitions="*,*" ColumnSpacing="5" HeightRequest="30" VerticalOptions="Center">
                                                 <Button Text="Vizualizare"
+            Grid.Column="0"
             FontSize="12"
             BackgroundColor="#3498DB"
             TextColor="White"
@@ -418,7 +469,19 @@
             Padding="0,1,0,14" 
             Command="{Binding Source={x:Reference CollectionViewReference}, Path=BindingContext.OpenMonitoringCommand}"
             CommandParameter="{Binding .}"/>
-                                            </Frame>
+                                                
+                                                <Button Text="Șterge"
+            Grid.Column="1"
+            FontSize="12"
+            BackgroundColor="#E74C3C"
+            TextColor="White"
+            CornerRadius="5"
+            VerticalOptions="Fill"
+            HorizontalOptions="Fill"
+            Padding="0,1,0,14" 
+            Command="{Binding Source={x:Reference CollectionViewReference}, Path=BindingContext.DeleteMonitoringCommand}"
+            CommandParameter="{Binding .}"/>
+                                            </Grid>
 
 
                                         </Grid>
@@ -429,7 +492,6 @@
 
                         </StackLayout>
                     </Frame>
-
 
 
                     <Label IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"

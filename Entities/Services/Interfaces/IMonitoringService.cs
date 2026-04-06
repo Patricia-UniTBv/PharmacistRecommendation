@@ -8,6 +8,7 @@ namespace Entities.Services.Interfaces
         Task<List<Monitoring>> GetAllMonitoringsAsync();
         Task<Monitoring?> GetMonitoringByIdAsync(int id);
         Task<int> AddMonitoringAsync(MonitoringDTO dto, int loggedInUserId);
+        Task UpdateMonitoringAsync(int monitoringId, MonitoringDTO dto);
 
         Task DeleteHistoryRowAsync(int id);
         Task<IEnumerable<HistoryRowDto>> GetHistoryAsync(int patientId, DateTime from, DateTime to);

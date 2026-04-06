@@ -22,6 +22,7 @@ namespace PharmacistRecommendation.Helpers
         public DateTime IssueDate { get; set; }
         public string? PatientName { get; set; }
         public string? PatientCnp { get; set; }
+        public string? PatientCard { get; set; }
         public string? CaregiverName { get; set; }
         public string? CaregiverCnp { get; set; }
         public string? ModeCode { get; set; }
@@ -109,8 +110,10 @@ namespace PharmacistRecommendation.Helpers
             y += lineHeight;
 
             double cnpOffset = 200;
+            double cardOffset = 350;
             g.DrawString($"PACIENT: {PatientName}", fontText, XBrushes.Black, textStartX, y);
             g.DrawString($"CNP: {PatientCnp}", fontText, XBrushes.Black, textStartX + cnpOffset, y);
+            g.DrawString($"CARD: {PatientCard}", fontText, XBrushes.Black, textStartX + cardOffset, y);
             y += lineHeight;
 
             g.DrawString($"APARȚINĂTOR: {CaregiverName}", fontText, XBrushes.Black, textStartX, y);

@@ -138,7 +138,8 @@ public class PdfReportService : IPdfReportService
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
                 .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
+                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                           (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
                 .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true) &&
                            p.PrescriptionMedications.Any(m => m.IsWithPrescription == false))
                 .OrderBy(p => p.IssueDate)
@@ -166,7 +167,8 @@ public class PdfReportService : IPdfReportService
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
                 .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
+                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                           (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
                 .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
@@ -193,7 +195,8 @@ public class PdfReportService : IPdfReportService
                 .Where(p => p.IssueDate >= startDate && p.IssueDate <= endDate)
                 .Where(p => string.IsNullOrEmpty(patientFilter) ||
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
-                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true))
+                           (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
+                           (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
                 .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
@@ -292,7 +295,7 @@ public class PdfReportService : IPdfReportService
 
                         if (prescriptions.Any())
                         {
-                            col.Item().Text("Date găsite - tabelul va fi implementat în versiunea următoare.");
+                            col.Item().Text("Date găsite - tabelul va fi implementat în versiunea următore.");
                         }
                         else
                         {
@@ -324,6 +327,7 @@ public class PdfReportService : IPdfReportService
             string safePatientName = string.Join("_", patientName.Split(Path.GetInvalidFileNameChars()));
             string patientCnp = string.IsNullOrWhiteSpace(p?.Cnp) ? "—" : p.Cnp!;
             string patientCid = string.IsNullOrWhiteSpace(p?.Cid) ? "—" : p.Cid!;
+            string patientCard = p?.PharmacyCards?.FirstOrDefault()?.Code ?? "—";
 
             var rows = (await _monitoringService.GetHistoryAsync(patientId, from, to))
                        .OrderBy(r => r.Date)
@@ -338,7 +342,7 @@ public class PdfReportService : IPdfReportService
             AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
             AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
+            var folder = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "RaportPDFs");
             Directory.CreateDirectory(folder);
             var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
@@ -383,6 +387,8 @@ public class PdfReportService : IPdfReportService
                 g.DrawString($"Pacient: {patientName}", fontText, Brushes.Black, left, top);
                 g.DrawString($"CNP: {patientCnp}", fontText, Brushes.Black, left + 300, top);
                 g.DrawString($"CID: {patientCid}", fontText, Brushes.Black, left + 450, top);
+                top += lineHeight;
+                g.DrawString($"Card farmacie: {patientCard}", fontText, Brushes.Black, left, top);
                 top += lineHeight * 2;
 
                 // Tabel date (simplificat aici)
@@ -474,6 +480,7 @@ public class PdfReportService : IPdfReportService
         string safePatientName = string.Join("_", patientName.Split(Path.GetInvalidFileNameChars()));
         string patientCnp = string.IsNullOrWhiteSpace(p?.Cnp) ? "—" : p.Cnp!;
         string patientCid = string.IsNullOrWhiteSpace(p?.Cid) ? "—" : p.Cid!;
+        string patientCard = p?.PharmacyCards?.FirstOrDefault()?.Code ?? "—";
 
         var rows = (await _monitoringService.GetHistoryAsync(patientId, from, to))
                    .OrderBy(r => r.Date)
@@ -488,7 +495,7 @@ public class PdfReportService : IPdfReportService
         AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
         AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-        var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
+        var folder = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "RaportPDFs");
         Directory.CreateDirectory(folder);
         var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
@@ -533,6 +540,8 @@ public class PdfReportService : IPdfReportService
             g.DrawString($"Pacient: {patientName}", fontText, Brushes.Black, left, top);
             g.DrawString($"CNP: {patientCnp}", fontText, Brushes.Black, left + 300, top);
             g.DrawString($"CID: {patientCid}", fontText, Brushes.Black, left + 450, top);
+            top += lineHeight;
+            g.DrawString($"Card farmacie: {patientCard}", fontText, Brushes.Black, left, top);
             top += lineHeight * 2;
 
             // Tabel date (simplificat aici)

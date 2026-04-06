@@ -16,6 +16,7 @@ namespace Entities.Repository
             return await _context.Monitorings
                 .AsNoTracking()
                 .Include(m => m.Patient)
+                    .ThenInclude(p => p.PharmacyCards)
                 .OrderByDescending(m => m.MonitoringDate)
                 .ToListAsync();
         }
@@ -24,6 +25,7 @@ namespace Entities.Repository
         {
             return await _context.Monitorings
                 .Include(m => m.Patient)
+                    .ThenInclude(p => p.PharmacyCards)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
@@ -33,6 +35,12 @@ namespace Entities.Repository
             _context.Monitorings.Add(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
+        }
+
+        public async Task UpdateAsync(Monitoring entity)
+        {
+            _context.Monitorings.Update(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)

@@ -22,28 +22,31 @@ namespace Entities.Repository
         }
         public async Task<Patient?> GetByCnpAsync(string cnp)
         {
-            return await _context.Patients.FirstOrDefaultAsync(p => p.Cnp == cnp);
+            return await _context.Patients
+                .Include(p => p.PharmacyCards)
+                .FirstOrDefaultAsync(p => p.Cnp == cnp);
         }
 
         public async Task<Patient?> GetByNameAsync(string? firstName, string? lastName)
         {
             return await _context.Patients
-    .FirstOrDefaultAsync(p => p.FirstName.ToLower().Trim() == firstName.ToLower().Trim() &&
-                              p.LastName.ToLower().Trim() == lastName.ToLower().Trim());
+                .Include(p => p.PharmacyCards)
+                .FirstOrDefaultAsync(p => p.FirstName.ToLower().Trim() == firstName.ToLower().Trim() &&
+                                          p.LastName.ToLower().Trim() == lastName.ToLower().Trim());
 
         }
 
         public async Task<Patient?> GetByCardCodeAsync(string cardCode)
         {
-            return await _context.PharmacyCards
-                .Where(pc => pc.Code == cardCode)
-                .Select(pc => pc.Patient)
-                .FirstOrDefaultAsync();
+            return await _context.Patients
+                .Include(p => p.PharmacyCards)
+                .FirstOrDefaultAsync(p => p.PharmacyCards.Any(pc => pc.Code == cardCode));
         }
 
         public async Task<Patient?> GetByIdAsync(int id)
         {
             return await _context.Patients
+                  .Include(p => p.PharmacyCards)
                   .Where(p => p.Id == id).FirstOrDefaultAsync();
         }
 

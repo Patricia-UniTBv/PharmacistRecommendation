@@ -16,11 +16,15 @@ namespace Entities.Repository
         public async Task<List<Prescription>> GetAllAsync()
             => await _context.Prescriptions
                 .Include(p => p.PrescriptionMedications)
+                .Include(p => p.Patient)
+                    .ThenInclude(patient => patient.PharmacyCards)
                 .ToListAsync();
 
         public async Task<Prescription?> GetByIdAsync(int id)
             => await _context.Prescriptions
                 .Include(p => p.PrescriptionMedications)
+                .Include(p => p.Patient)
+                    .ThenInclude(patient => patient.PharmacyCards)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task<List<Prescription>> GetByPatientCnpOrCidAsync(string cnpOrCid)
@@ -43,9 +47,13 @@ namespace Entities.Repository
 
         public async Task DeleteAsync(int id)
         {
-            var prescription = await _context.Prescriptions.FindAsync(id);
+            var prescription = await _context.Prescriptions
+                .Include(p => p.PrescriptionMedications)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (prescription != null)
             {
+                _context.PrescriptionMedications.RemoveRange(prescription.PrescriptionMedications);
                 _context.Prescriptions.Remove(prescription);
                 await _context.SaveChangesAsync();
             }

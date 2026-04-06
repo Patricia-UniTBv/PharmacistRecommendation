@@ -55,6 +55,29 @@ namespace Entities.Services
             return await _repo.AddAsync(entity);
         }
 
+        public async Task UpdateMonitoringAsync(int monitoringId, MonitoringDTO dto)
+        {
+            var existing = await _repo.GetByIdAsync(monitoringId);
+            if (existing == null) throw new InvalidOperationException($"Monitoring ID {monitoringId} not found");
+
+            existing.PatientId = dto.PatientId;
+            existing.CardId = dto.CardId;
+            existing.Height = dto.Height;
+            existing.Weight = dto.Weight;
+            existing.Notes = dto.Notes;
+            existing.ParametersJson = JsonSerializer.Serialize(new
+            {
+                dto.MaxBloodPressure,
+                dto.MinBloodPressure,
+                dto.HeartRate,
+                dto.PulseOximetry,
+                dto.BloodGlucose,
+                dto.BodyTemperature
+            });
+
+            await _repo.UpdateAsync(existing);
+        }
+
         public async Task DeleteHistoryRowAsync(int id)
         {
             await _repo.DeleteAsync(id);
