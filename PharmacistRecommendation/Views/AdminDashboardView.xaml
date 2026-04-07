@@ -422,7 +422,9 @@
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="6">
                             <Label Text="Gen" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientGender}"    Style="{StaticResource FieldEntry}"/>
+                            <Picker ItemsSource="{Binding GenderOptions}"
+                                    SelectedItem="{Binding EditPatientGender}"
+                                    FontSize="13" HeightRequest="34"/>
                         </VerticalStackLayout>
                     </Grid>
                     <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
@@ -434,7 +436,7 @@
                 <!-- User edit -->
                 <VerticalStackLayout IsVisible="{Binding IsUserEditVisible}" Spacing="4">
                     <Label Text="Editare utilizator" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
-                    <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
                             <Entry Text="{Binding EditUserLastName}"  Style="{StaticResource FieldEntry}"/>
@@ -444,20 +446,32 @@
                             <Entry Text="{Binding EditUserFirstName}" Style="{StaticResource FieldEntry}"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="2">
+                            <Label Text="Username" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserUsername}"  Style="{StaticResource FieldEntry}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3">
                             <Label Text="Email" Style="{StaticResource FieldLabel}"/>
                             <Entry Text="{Binding EditUserEmail}"     Style="{StaticResource FieldEntry}"/>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="3">
+                        <VerticalStackLayout Grid.Column="4">
                             <Label Text="Telefon" Style="{StaticResource FieldLabel}"/>
                             <Entry Text="{Binding EditUserPhone}"     Style="{StaticResource FieldEntry}"/>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="4">
+                        <VerticalStackLayout Grid.Column="5">
                             <Label Text="NCM" Style="{StaticResource FieldLabel}"/>
                             <Entry Text="{Binding EditUserNcm}"       Style="{StaticResource FieldEntry}"/>
                         </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="6">
+                            <Label Text="Parolă nouă" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserNewPassword}"     IsPassword="True" Style="{StaticResource FieldEntry}" Placeholder="(nemodificată)"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="7">
+                            <Label Text="Confirmare parolă" Style="{StaticResource FieldLabel}"/>
+                            <Entry Text="{Binding EditUserConfirmPassword}" IsPassword="True" Style="{StaticResource FieldEntry}" Placeholder="(nemodificată)"/>
+                        </VerticalStackLayout>
                     </Grid>
                     <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
-                        <Button Text="Salvează"  Command="{Binding SaveUserCommand}"   Style="{StaticResource SaveBtn}"/>
+                        <Button Text="Salvează"  Command="{Binding SaveUserCommand}"       Style="{StaticResource SaveBtn}"/>
                         <Button Text="Anulează"  Command="{Binding CancelUserEditCommand}" Style="{StaticResource CancelBtn}"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>

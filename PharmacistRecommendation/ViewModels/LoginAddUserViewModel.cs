@@ -70,7 +70,7 @@ namespace PharmacistRecommendation.ViewModels
         public bool HasLoginError => !string.IsNullOrEmpty(LoginErrorMessage);
         public bool HasAddUserError => !string.IsNullOrEmpty(AddUserErrorMessage);
 
-        public string[] AvailableRoles { get; } = { "Pharmacist", "Assistant" };
+        public string[] AvailableRoles { get; } = { "Pharmacist", "Assistant", "Admin" };
 
         public LoginAddUserViewModel(IAuthenticationService authService, IUserService userService, IPharmacyService pharmacyService)
         {

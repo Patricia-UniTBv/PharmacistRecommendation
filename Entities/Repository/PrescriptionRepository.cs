@@ -47,6 +47,21 @@ namespace Entities.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Prescription>> GetByPatientIdAsync(int patientId)
+            => await _context.Prescriptions
+                .Where(p => p.PatientId == patientId)
+                .ToListAsync();
+
+        public async Task UpdatePatientNameAsync(int patientId, string newPatientName)
+        {
+            var prescriptions = await _context.Prescriptions
+                .Where(p => p.PatientId == patientId)
+                .ToListAsync();
+            foreach (var p in prescriptions)
+                p.PatientName = newPatientName;
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var prescription = await _context.Prescriptions

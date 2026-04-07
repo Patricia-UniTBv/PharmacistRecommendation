@@ -11,11 +11,12 @@ namespace PharmacistRecommendation
     public partial class AppShell : Shell
     {
         private readonly IAuthenticationService _authService;
+        private List<MenuBarItem> _savedMenuBarItems = new();
 
         public AppShell()
         {
             InitializeComponent();
-            
+
             // Get authentication service
             _authService = ServiceHelper.GetService<IAuthenticationService>();
             
@@ -62,58 +63,94 @@ namespace PharmacistRecommendation
             }
         }
 
+        protected override void OnNavigated(ShellNavigatedEventArgs args)
+        {
+            base.OnNavigated(args);
+
+            if (IsAdmin())
+            {
+                if (MenuBarItems.Count > 0)
+                {
+                    _savedMenuBarItems = MenuBarItems.ToList();
+                    MenuBarItems.Clear();
+                }
+            }
+            else
+            {
+                if (_savedMenuBarItems.Count > 0 && MenuBarItems.Count == 0)
+                {
+                    foreach (var item in _savedMenuBarItems)
+                        MenuBarItems.Add(item);
+                    _savedMenuBarItems.Clear();
+                }
+            }
+        }
+
+        private bool IsAdmin() => SessionManager.CurrentUser?.Role?.ToLower() == "admin";
+
         private async void OnNewCardClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("new_card");
         }
 
         private async void OnMonitClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("monitoring");
         }
 
         private async void OnMixedIssuanceClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("mixed_issuance?mode=mixed");
         }
 
         private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
         }
 
         private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
         }
 
         private async void OnTestMainPageClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("test_main");
         }
 
         private async void OnReportsClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("reports");
         }
 
         private async void OnMixedActsReportClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("reports?type=mixed");
         }
 
         private async void OnOwnActsReportClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("reports?type=own");
         }
 
         private async void OnConsecutiveActsReportClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("reports?type=consecutive");
         }
 
         private async void OnMonitoringListReportClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("reports?type=monitoring");
         }
 
@@ -124,40 +161,49 @@ namespace PharmacistRecommendation
 
         private async void OnUsersManagementClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("users_management");
         }
 
         private async void OnGdprConfigClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("gdpr_configuration");
         }
 
         private async void OnAdministrationModesClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("administration_modes");
         }
 
         private async void OnImportConfigClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("import_configuration");
         }
 
         private async void OnMedicationsClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await Shell.Current.GoToAsync("medications");
         }
+
         private async void OnEmailConfigClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await GoToAsync("email_configuration");
         }
 
         private async void OnAddPharmacyClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await GoToAsync("add_pharmacy");
         }
 
         private async void OnServerConfigClicked(object sender, EventArgs e)
         {
+            if (IsAdmin()) return;
             await GoToAsync("server_configuration");
         }
 

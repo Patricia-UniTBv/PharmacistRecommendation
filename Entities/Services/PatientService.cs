@@ -84,16 +84,6 @@ namespace Entities.Services
                 patient = await _repository.GetByNameAsync(firstName.Trim(), lastName.Trim());
             }
 
-            // Dacă există pacient, actualizează câmpurile cu cele noi
-            if (patient != null)
-            {
-                if (!string.IsNullOrWhiteSpace(firstName)) patient.FirstName = firstName.Trim();
-                if (!string.IsNullOrWhiteSpace(lastName)) patient.LastName = lastName.Trim();
-                if (!string.IsNullOrWhiteSpace(cnp)) patient.Cnp = cnp.Trim();
-
-                await _repository.UpdateAsync(patient);
-            }
-
             return patient;
         }
 

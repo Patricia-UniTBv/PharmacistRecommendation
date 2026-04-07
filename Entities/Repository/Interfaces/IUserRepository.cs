@@ -7,6 +7,7 @@ namespace Entities.Repository.Interfaces
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task<User?> GetByIdAsync(int id);
+        Task<User?> GetByUsernameAsync(string username);
         Task<User?> GetFirstUserByRoleAsync(string role);
         Task<int> AddAsync(User entity);
         Task UpdateAsync(User user);

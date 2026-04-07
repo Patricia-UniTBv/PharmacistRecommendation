@@ -62,6 +62,12 @@ namespace Entities.Services
 
             return await _repo.AddAsync(user);
         }
+        public async Task<bool> IsUsernameTakenAsync(string username, int excludeUserId)
+        {
+            var existing = await _repo.GetByUsernameAsync(username);
+            return existing != null && existing.Id != excludeUserId;
+        }
+
         public async Task UpdateUserAsync(UserDTO dto)
         {
             var existing = await _repo.GetByIdAsync(dto.Id);

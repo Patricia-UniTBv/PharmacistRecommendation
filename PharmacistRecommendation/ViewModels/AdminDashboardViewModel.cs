@@ -88,6 +88,8 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] string editPatientPhone     = string.Empty;
         [ObservableProperty] string editPatientGender    = string.Empty;
 
+        public string[] GenderOptions { get; } = { "", "Masculin", "Feminin" };
+
         private async Task LoadPatientsAsync()
         {
             _allPatients = await _patientService.GetAllPatientsAsync();
@@ -128,15 +130,28 @@ namespace PharmacistRecommendation.ViewModels
         private async Task SavePatientAsync()
         {
             if (_editingPatient == null) return;
+
+            var oldFirstName = _editingPatient.FirstName ?? string.Empty;
+            var oldLastName  = _editingPatient.LastName  ?? string.Empty;
+
             _editingPatient.FirstName = EditPatientFirstName.Trim();
             _editingPatient.LastName  = EditPatientLastName.Trim();
-            _editingPatient.Cnp       = string.IsNullOrWhiteSpace(EditPatientCnp)   ? null : EditPatientCnp.Trim();
-            _editingPatient.Cid       = string.IsNullOrWhiteSpace(EditPatientCid)   ? null : EditPatientCid.Trim();
-            _editingPatient.Email     = string.IsNullOrWhiteSpace(EditPatientEmail) ? null : EditPatientEmail.Trim();
-            _editingPatient.Phone     = string.IsNullOrWhiteSpace(EditPatientPhone) ? null : EditPatientPhone.Trim();
-            _editingPatient.Gender    = string.IsNullOrWhiteSpace(EditPatientGender)? null : EditPatientGender.Trim();
+            _editingPatient.Cnp       = string.IsNullOrWhiteSpace(EditPatientCnp)    ? null : EditPatientCnp.Trim();
+            _editingPatient.Cid       = string.IsNullOrWhiteSpace(EditPatientCid)    ? null : EditPatientCid.Trim();
+            _editingPatient.Email     = string.IsNullOrWhiteSpace(EditPatientEmail)  ? null : EditPatientEmail.Trim();
+            _editingPatient.Phone     = string.IsNullOrWhiteSpace(EditPatientPhone)  ? null : EditPatientPhone.Trim();
+            _editingPatient.Gender    = string.IsNullOrWhiteSpace(EditPatientGender) ? null : EditPatientGender.Trim();
 
             await _patientService.UpdatePatientAsync(_editingPatient);
+
+            // Keep denormalized PatientName on prescriptions in sync if the name changed
+            var nameChanged = _editingPatient.FirstName != oldFirstName || _editingPatient.LastName != oldLastName;
+            if (nameChanged)
+            {
+                var newPatientName = $"{_editingPatient.FirstName} {_editingPatient.LastName}".Trim();
+                await _prescriptionService.UpdatePatientNameOnPrescriptionsAsync(_editingPatient.Id, newPatientName);
+            }
+
             IsPatientEditVisible = false;
             _editingPatient = null;
             await LoadPatientsAsync();
@@ -161,11 +176,14 @@ namespace PharmacistRecommendation.ViewModels
 
         [ObservableProperty] bool isUserEditVisible;
         private UserDTO? _editingUser;
-        [ObservableProperty] string editUserFirstName = string.Empty;
-        [ObservableProperty] string editUserLastName  = string.Empty;
-        [ObservableProperty] string editUserEmail     = string.Empty;
-        [ObservableProperty] string editUserPhone     = string.Empty;
-        [ObservableProperty] string editUserNcm       = string.Empty;
+        [ObservableProperty] string editUserFirstName       = string.Empty;
+        [ObservableProperty] string editUserLastName        = string.Empty;
+        [ObservableProperty] string editUserUsername        = string.Empty;
+        [ObservableProperty] string editUserEmail           = string.Empty;
+        [ObservableProperty] string editUserPhone           = string.Empty;
+        [ObservableProperty] string editUserNcm             = string.Empty;
+        [ObservableProperty] string editUserNewPassword     = string.Empty;
+        [ObservableProperty] string editUserConfirmPassword = string.Empty;
 
         private async Task LoadUsersAsync()
         {
@@ -196,21 +214,57 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private void EditUser(UserDTO user)
         {
-            _editingUser      = user;
-            EditUserFirstName = user.FirstName ?? string.Empty;
-            EditUserLastName  = user.LastName  ?? string.Empty;
-            EditUserEmail     = user.Email     ?? string.Empty;
-            EditUserPhone     = user.Phone     ?? string.Empty;
-            EditUserNcm       = user.Ncm       ?? string.Empty;
-            IsUserEditVisible = true;
+            _editingUser             = user;
+            EditUserFirstName        = user.FirstName ?? string.Empty;
+            EditUserLastName         = user.LastName  ?? string.Empty;
+            EditUserUsername         = user.Username  ?? string.Empty;
+            EditUserEmail            = user.Email     ?? string.Empty;
+            EditUserPhone            = user.Phone     ?? string.Empty;
+            EditUserNcm              = user.Ncm       ?? string.Empty;
+            EditUserNewPassword      = string.Empty;
+            EditUserConfirmPassword  = string.Empty;
+            IsUserEditVisible        = true;
         }
 
         [RelayCommand]
         private async Task SaveUserAsync()
         {
             if (_editingUser == null) return;
+
+            var newUsername = EditUserUsername.Trim();
+            if (string.IsNullOrWhiteSpace(newUsername))
+            {
+                await Shell.Current.DisplayAlert("Eroare", "Username-ul nu poate fi gol.", "OK");
+                return;
+            }
+            if (await _userService.IsUsernameTakenAsync(newUsername, _editingUser.Id))
+            {
+                await Shell.Current.DisplayAlert("Eroare", $"Username-ul \"{newUsername}\" este deja folosit de alt utilizator.", "OK");
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditUserNewPassword))
+            {
+                if (EditUserNewPassword != EditUserConfirmPassword)
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Parolele nu coincid.", "OK");
+                    return;
+                }
+                if (EditUserNewPassword.Length < 6)
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Parola trebuie să aibă cel puțin 6 caractere.", "OK");
+                    return;
+                }
+                _editingUser.Password = EditUserNewPassword;
+            }
+            else
+            {
+                _editingUser.Password = null;
+            }
+
             _editingUser.FirstName = EditUserFirstName.Trim();
             _editingUser.LastName  = EditUserLastName.Trim();
+            _editingUser.Username  = EditUserUsername.Trim();
             _editingUser.Email     = EditUserEmail.Trim();
             _editingUser.Phone     = EditUserPhone.Trim();
             _editingUser.Ncm       = EditUserNcm.Trim();

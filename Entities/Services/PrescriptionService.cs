@@ -30,6 +30,9 @@ namespace Entities.Services
 
         public Task DeletePrescriptionAsync(int id)
             => _repository.DeleteAsync(id);
+
+        public Task UpdatePatientNameOnPrescriptionsAsync(int patientId, string newPatientName)
+            => _repository.UpdatePatientNameAsync(patientId, newPatientName);
     }
 
 }

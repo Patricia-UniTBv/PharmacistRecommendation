@@ -218,6 +218,7 @@ namespace PharmacistRecommendation.ViewModels
 
         partial void OnCardNumberChanged(string value)
         {
+            if (IsReportViewMode) return;
             _ = LoadPatientByCard(value);
         }
 
@@ -558,7 +559,10 @@ namespace PharmacistRecommendation.ViewModels
 
             // Add the new prescription first. If this fails, the old one is untouched.
             await _prescriptionService.AddPrescriptionAsync(prescription);
-            PrescriptionId = prescription.Id;
+            // Set backing field directly to avoid triggering OnPrescriptionIdChanged,
+            // which would fire LoadPrescriptionAsync concurrently with DeletePrescriptionAsync below,
+            // causing a concurrent DbContext operation crash.
+            prescriptionId = prescription.Id;
             Prescription = prescription;
 
             // Only delete the old record after the new one is safely written.

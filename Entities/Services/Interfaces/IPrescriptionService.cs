@@ -10,5 +10,6 @@ namespace Entities.Services.Interfaces
         Task AddPrescriptionAsync(Prescription prescription);
         Task UpdatePrescriptionAsync(Prescription prescription);
         Task DeletePrescriptionAsync(int id);
+        Task UpdatePatientNameOnPrescriptionsAsync(int patientId, string newPatientName);
     }
 }

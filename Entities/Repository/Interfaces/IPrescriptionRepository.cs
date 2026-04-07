@@ -7,8 +7,10 @@ namespace Entities.Repository.Interfaces
         Task<List<Prescription>> GetAllAsync();
         Task<Prescription?> GetByIdAsync(int id);
         Task<List<Prescription>> GetByPatientCnpOrCidAsync(string cnpOrCid);
+        Task<List<Prescription>> GetByPatientIdAsync(int patientId);
         Task AddAsync(Prescription prescription);
         Task UpdateAsync(Prescription prescription);
         Task DeleteAsync(int id);
+        Task UpdatePatientNameAsync(int patientId, string newPatientName);
     }
 }
