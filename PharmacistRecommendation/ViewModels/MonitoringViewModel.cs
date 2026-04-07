@@ -25,6 +25,7 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
 
     // Added for debounce
     private CancellationTokenSource? _debounceCts;
+    private bool _isFillingPatientData;
 
     public MonitoringViewModel(IMonitoringService monitoringService, IPatientService patientService, IPdfReportService pdfReportService, IEmailConfigurationService emailConfigurationService, IPharmacyService pharmacyService, IPharmacyCardService pharmacyCardService)
     {
@@ -112,24 +113,28 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
 
     partial void OnCardNumberChanged(string? oldValue, string? newValue)
     {
-        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 3) 
+        if (_isFillingPatientData) return;
+        if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 3)
             _ = SearchPatientAsync();
     }
 
     partial void OnFirstNameChanged(string? oldValue, string? newValue)
     {
+        if (_isFillingPatientData) return;
         if (!string.IsNullOrWhiteSpace(newValue))
             _ = SearchPatientAsync();
     }
 
     partial void OnLastNameChanged(string? oldValue, string? newValue)
     {
+        if (_isFillingPatientData) return;
         if (!string.IsNullOrWhiteSpace(newValue))
             _ = SearchPatientAsync();
     }
 
     partial void OnCnpChanged(string? oldValue, string? newValue)
     {
+        if (_isFillingPatientData) return;
         if (!string.IsNullOrWhiteSpace(newValue) && newValue.Length >= 5)
             _ = SearchPatientAsync();
     }
@@ -182,16 +187,25 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
     private async Task FillPatientData(Patient? patient)
     {
         if (patient is null)
-            return; 
+            return;
 
-        FirstName = patient.FirstName;
-        LastName = patient.LastName;
-        Cnp = patient.Cnp!;
-        Cid = patient.Cid!;
-        Age = PatientHelper.CalculateAge(patient.Birthdate);
-        Gender = patient.Gender!;
-        PatientId = patient.Id;
-        PatientEmail = patient.Email;
+        _isFillingPatientData = true;
+        try
+        {
+            CardNumber = patient.CardNumber ?? CardNumber;
+            FirstName = patient.FirstName;
+            LastName = patient.LastName;
+            Cnp = patient.Cnp!;
+            Cid = patient.Cid!;
+            Age = PatientHelper.CalculateAge(patient.Birthdate);
+            Gender = patient.Gender!;
+            PatientId = patient.Id;
+            PatientEmail = patient.Email;
+        }
+        finally
+        {
+            _isFillingPatientData = false;
+        }
 
         await LoadHistoryAsync();
     }

@@ -1,86 +1,125 @@
-﻿<ContentPage
+<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PharmacistRecommendation.ViewModels"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
     x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
-    x:Name="MixedActIssuance"
-    BackgroundColor="White">
+    x:Name="MixedActIssuance">
+
+    <ContentPage.Resources>
+        <!-- Small circular "+" add button -->
+        <Style x:Key="AddRowButton" TargetType="Button">
+            <Setter Property="BackgroundColor"      Value="{StaticResource PrimaryContainer}"/>
+            <Setter Property="TextColor"            Value="{StaticResource Primary}"/>
+            <Setter Property="FontFamily"           Value="OpenSansSemiBold"/>
+            <Setter Property="FontSize"             Value="16"/>
+            <Setter Property="CornerRadius"         Value="9"/>
+            <Setter Property="HeightRequest"        Value="28"/>
+            <Setter Property="WidthRequest"         Value="28"/>
+            <Setter Property="MinimumHeightRequest" Value="28"/>
+            <Setter Property="MinimumWidthRequest"  Value="28"/>
+            <Setter Property="Padding"              Value="0"/>
+            <Setter Property="BorderWidth"          Value="0"/>
+        </Style>
+
+        <!-- Subtle delete button -->
+        <Style x:Key="DeleteRowButton" TargetType="Button">
+            <Setter Property="BackgroundColor"      Value="{StaticResource ErrorLight}"/>
+            <Setter Property="TextColor"            Value="{StaticResource Error}"/>
+            <Setter Property="FontSize"             Value="13"/>
+            <Setter Property="CornerRadius"         Value="4"/>
+            <Setter Property="HeightRequest"        Value="28"/>
+            <Setter Property="WidthRequest"         Value="28"/>
+            <Setter Property="MinimumHeightRequest" Value="28"/>
+            <Setter Property="MinimumWidthRequest"  Value="28"/>
+            <Setter Property="Padding"              Value="0"/>
+            <Setter Property="BorderWidth"          Value="0"/>
+        </Style>
+
+        <Style x:Key="TableCard" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="StrokeShape"     Value="RoundRectangle 8"/>
+            <Setter Property="Stroke"          Value="{StaticResource BorderDefault}"/>
+            <Setter Property="BackgroundColor" Value="{StaticResource Surface}"/>
+            <Setter Property="Padding"         Value="6"/>
+        </Style>
+
+        <Style x:Key="ColumnHeader" TargetType="Label">
+            <Setter Property="TextColor"   Value="{StaticResource TextSecondary}"/>
+            <Setter Property="FontFamily"  Value="OpenSansSemiBold"/>
+            <Setter Property="FontSize"    Value="11"/>
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="4" BackgroundColor="White">
-            <HorizontalStackLayout Spacing="10" Padding="0,0,0,8">
-               
+        <VerticalStackLayout Padding="12,8" Spacing="6">
+
+            <!-- Title bar -->
+            <HorizontalStackLayout Spacing="10" Padding="0,0,0,6">
                 <Label Text="{Binding PageTitle}"
-                       FontSize="18"
-                       FontAttributes="Bold"
+                       Style="{StaticResource PageTitle}"
                        VerticalOptions="Center"
-                       HorizontalOptions="StartAndExpand"
-                       TextColor="#222" />
+                       HorizontalOptions="StartAndExpand"/>
                 <Button Text="Recomandare nouă"
-                         Command="{Binding NewRecommendationCommand}"
-                         FontSize="14" HeightRequest="34"
-                         BackgroundColor="#ece8fa" TextColor="#36317f"
-                         CornerRadius="8" />
+                        Command="{Binding NewRecommendationCommand}"
+                        Style="{StaticResource OutlineButton}"
+                        FontSize="13"
+                        HeightRequest="34"/>
                 <Button Text="Import date"
-                         Command="{Binding ImportDataCommand}"
-                         FontSize="14" HeightRequest="34"
-                         BackgroundColor="#007bff"
-                         CornerRadius="8" />
+                        Command="{Binding ImportDataCommand}"
+                        FontSize="13"
+                        HeightRequest="34"/>
             </HorizontalStackLayout>
 
-            <Frame CornerRadius="14" BorderColor="#e0e3e9" Padding="14" HeightRequest ="80" BackgroundColor="White">
+            <!-- Patient info card -->
+            <Border Style="{StaticResource TableCard}" HeightRequest="80">
                 <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="Auto">
                     <VerticalStackLayout Grid.Column="0">
-                        <Label Text="Nr. card" TextColor="Black" FontAttributes="Bold"/>
-                        <Entry Placeholder="Card nr." Text="{Binding CardNumber}" />
+                        <Label Text="Nr. card" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Card nr." Text="{Binding CardNumber}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="Pacient" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Pacient" Text="{Binding PatientName}" />
+                        <Label Text="Pacient" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Pacient" Text="{Binding PatientName}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2">
-                        <Label Text="CNP/CID pacient" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="CNP/CID pacient" Text="{Binding PatientCnp}" />
+                        <Label Text="CNP/CID pacient" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="CNP/CID pacient" Text="{Binding PatientCnp}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="3">
-                        <Label Text="Aparținător" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Aparținător" Text="{Binding CaregiverName}" />
+                        <Label Text="Aparținător" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Aparținător" Text="{Binding CaregiverName}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="4">
-                        <Label Text="CNP/CID aparținător" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="CNP/CID aparținător" Text="{Binding CaregiverCnp}" />
+                        <Label Text="CNP/CID aparținător" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="CNP/CID aparținător" Text="{Binding CaregiverCnp}"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
+            <Label Text="Diagnostic menționat de pacient/aparținător" Style="{StaticResource FieldLabel}"/>
+            <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}"/>
 
-            <Label Text="Diagnostic menționat de pacient/aparținător" TextColor="Black" FontAttributes="Bold"/>
-            <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}" />
-
-            <VerticalStackLayout Padding="5">
-                <Label Text="Medicamente utilizate de pacient"
-           TextColor="Black"
-           FontAttributes="Bold"/>
-
-                <Entry Text="{Binding SearchText}" 
+            <!-- Medication search -->
+            <VerticalStackLayout Padding="0,4">
+                <Label Text="Medicamente utilizate de pacient" Style="{StaticResource FieldLabel}"/>
+                <Entry Text="{Binding SearchText}"
                        x:Name="SearchEntry"
-                       Placeholder="Caută medicament..." 
+                       Placeholder="Caută medicament..."
                        TextChanged="OnSearchTextChanged"/>
-
-                <CollectionView ItemsSource="{Binding Suggestions}" 
-                    SelectionMode="Single"
-                    MaximumHeightRequest="100"
-                    VerticalScrollBarVisibility="Always"
-                    IsVisible="{Binding HasSuggestions}">
+                <CollectionView ItemsSource="{Binding Suggestions}"
+                                SelectionMode="Single"
+                                MaximumHeightRequest="100"
+                                VerticalScrollBarVisibility="Always"
+                                IsVisible="{Binding HasSuggestions}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="5">
                                 <Label.GestureRecognizers>
-                                    <TapGestureRecognizer 
-    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddSuggestionCommand}" 
-    CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddSuggestionCommand}"
+                                        CommandParameter="{Binding .}"/>
                                 </Label.GestureRecognizers>
                             </Label>
                         </DataTemplate>
@@ -88,287 +127,211 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-
-            <Frame CornerRadius="12" BorderColor="#e0e3e9" Padding="16" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}" HeightRequest ="90" >
-                <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" BackgroundColor="White" ColumnSpacing="16">
-                    <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
-                        <Label Text="Parafă medic" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Parafă medic" Text="{Binding DoctorStamp}" />
+            <!-- Prescription info -->
+            <Border Style="{StaticResource TableCard}" IsVisible="{Binding ShowWithPrescription}" HeightRequest="90">
+                <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="Parafă medic" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Parafă medic" Text="{Binding DoctorStamp}"/>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
-                        <Label Text="Seria" TextColor="Black"  FontAttributes="Bold"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Seria" Style="{StaticResource FieldLabel}"/>
                         <Entry Placeholder="Seria" Text="{Binding PrescriptionSeries}"/>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
-                        <Label Text="Număr" TextColor="Black"  FontAttributes="Bold"/>
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Număr" Style="{StaticResource FieldLabel}"/>
                         <Entry Placeholder="Număr" Text="{Binding PrescriptionNumber}"/>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="3" Spacing="4" BackgroundColor="White">
-                        <Label Text="Diagnostic" TextColor="Black"  FontAttributes="Bold"/>
+                    <VerticalStackLayout Grid.Column="3" Spacing="4">
+                        <Label Text="Diagnostic" Style="{StaticResource FieldLabel}"/>
                         <Entry Placeholder="Diagnostic" Text="{Binding PrescriptionDiagnosis}"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <Frame CornerRadius="10" BorderColor="#ececec" Padding="12" BackgroundColor="White" HeightRequest ="80" >
-                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16" BackgroundColor="White">
-                    <VerticalStackLayout Grid.Column="0" Spacing="4" BackgroundColor="White">
-                        <Label Text="Simptomatologie" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Simptomatologie" 
-                   Text="{Binding Symptoms}" 
-                   BackgroundColor="White"/>
+            <!-- Clinical observations -->
+            <Border Style="{StaticResource TableCard}" HeightRequest="80">
+                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="Simptomatologie" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Simptomatologie" Text="{Binding Symptoms}"/>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="4" BackgroundColor="White">
-                        <Label Text="Suspiciune" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Suspiciune" 
-                   Text="{Binding Suspicion}" 
-                   BackgroundColor="White" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Suspiciune" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Suspiciune" Text="{Binding Suspicion}"/>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="2" Spacing="4" BackgroundColor="White">
-                        <Label Text="Constatările farmacistului" TextColor="Black"  FontAttributes="Bold"/>
-                        <Entry Placeholder="Constatările farmacistului" 
-                   Text="{Binding PharmacistObservations}" 
-                   BackgroundColor="White"/>
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Constatările farmacistului" Style="{StaticResource FieldLabel}"/>
+                        <Entry Placeholder="Constatările farmacistului" Text="{Binding PharmacistObservations}"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <!-- Medications With Prescription -->
-            <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="5"
-             IsVisible="{Binding ShowWithPrescription}">
+            <!-- Medications with prescription -->
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center"
+                                   IsVisible="{Binding ShowWithPrescription}">
                 <Label Text="Medicamente eliberate cu rețetă"
-           FontAttributes="Bold"
-           Margin="0,4"
-           TextColor="#222"/>
-
+                       Style="{StaticResource SectionTitle}"
+                       VerticalOptions="Center"/>
                 <Button Text="+"
-        Command="{Binding AddMedicationWithPrescriptionCommand}"
-        IsVisible="{Binding ShowWithPrescription}" 
-        FontSize="16"
-        HeightRequest="20"
-        WidthRequest="20"
-        MinimumHeightRequest="28"
-        MinimumWidthRequest="28"
-        CornerRadius="9"
-        BackgroundColor="#ece8fa"
-        TextColor="#34495E"
-        Padding="0"
-        VerticalOptions="Center" />
+                        Command="{Binding AddMedicationWithPrescriptionCommand}"
+                        IsVisible="{Binding ShowWithPrescription}"
+                        Style="{StaticResource AddRowButton}"
+                        VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
-            </StackLayout>
-
-            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White" IsVisible="{Binding ShowWithPrescription}">
-                <VerticalStackLayout Spacing="6">
+            <Border Style="{StaticResource TableCard}" IsVisible="{Binding ShowWithPrescription}">
+                <VerticalStackLayout Spacing="4">
                     <CollectionView ItemsSource="{Binding MedicationsWithPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60">
-                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="2" Text="CANTITATE TOTALĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="3" Text="ZILE TRATAM." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="4" Text="DIMINEAȚĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="5" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="6" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="7" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Text=" " />
+                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2,0">
+                                <Label Grid.Column="0" Text="NR." Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="1" Text="MEDICAMENT" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="2" Text="CANT. TOTALĂ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="3" Text="ZILE TRATAM." Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="4" Text="DIMINEAȚĂ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="5" Text="PRÂNZ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="6" Text="SEARA" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="7" Text="NOAPTEA" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" Style="{StaticResource ColumnHeader}"/>
                             </Grid>
                         </CollectionView.Header>
-
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2">
-                                    <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-
+                                    <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center"/>
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
-                                        <Button Text="🔍"
-                                    WidthRequest="36"
-                                    HeightRequest="36"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="Transparent"
-                                    BorderWidth="0"
-                                    Padding="0"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
-                                    CommandParameter="{Binding .}"/>
+                                        <Button Text="🔍" WidthRequest="36" HeightRequest="36"
+                                                BackgroundColor="Transparent" BorderColor="Transparent" BorderWidth="0" Padding="0"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
+                                                CommandParameter="{Binding .}"/>
                                     </StackLayout>
-
-                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-
+                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric"/>
                                     <Picker Grid.Column="8"
-                                TitleColor="LightGray"
-                                ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
-                                ItemDisplayBinding="{Binding Name}"
-                                SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
-
-                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="3">
-                                        <Button Text="🗑"
-                                    TextColor="Red"
-                                    Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
-                                    CommandParameter="{Binding .}"
-                                    HeightRequest="20"
-                                    WidthRequest="22"
-                                    FontSize="13"
-                                    BackgroundColor="#faf6f6"
-                                    ToolTipProperties.Text="Șterge medicament"/>
-                                    </StackLayout>
+                                            ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            SelectedItem="{Binding AdministrationMode, Mode=TwoWay}"/>
+                                    <Button Grid.Column="9" Text="🗑" Style="{StaticResource DeleteRowButton}"
+                                            Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                            CommandParameter="{Binding .}"
+                                            ToolTipProperties.Text="Șterge medicament"/>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
-
-            <!-- Medications Without Prescription -->
-            <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="5"
-             IsVisible="{Binding ShowWithoutPrescription}">
-                <Label Text="Medicamente eliberate fără rețetă" FontAttributes="Bold" Margin="0,8,0,0" TextColor="#222" IsVisible="{Binding ShowWithoutPrescription}"/>
+            <!-- Medications without prescription -->
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center"
+                                   IsVisible="{Binding ShowWithoutPrescription}">
+                <Label Text="Medicamente eliberate fără rețetă"
+                       Style="{StaticResource SectionTitle}"
+                       VerticalOptions="Center"/>
                 <Button Text="+"
-            Command="{Binding AddMedicationWithoutPrescriptionCommand}"
-            IsVisible="{Binding ShowWithoutPrescription}"
-            FontSize="16"
-            HeightRequest="20"
-            WidthRequest="20"
-            MinimumHeightRequest="28"
-            MinimumWidthRequest="28"
-            CornerRadius="9"
-            BackgroundColor="#ece8fa"
-            TextColor="#34495E"
-            Padding="0"
-            VerticalOptions="Center" />
-            </StackLayout>
+                        Command="{Binding AddMedicationWithoutPrescriptionCommand}"
+                        IsVisible="{Binding ShowWithoutPrescription}"
+                        Style="{StaticResource AddRowButton}"
+                        VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
-            <Frame CornerRadius="8" BorderColor="#e8eaf1" Padding="6" BackgroundColor="White" IsVisible="{Binding ShowWithoutPrescription}">
-                <VerticalStackLayout Spacing="6">
-                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}" BackgroundColor="White">
+            <Border Style="{StaticResource TableCard}" IsVisible="{Binding ShowWithoutPrescription}">
+                <VerticalStackLayout Spacing="4">
+                    <CollectionView ItemsSource="{Binding MedicationsWithoutPrescription}">
                         <CollectionView.Header>
-                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60">
-                                <Label Grid.Column="0" Text="NR. CRT." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="1" Text="MEDICAMENT" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="2" Text="CANTITATE TOTALĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="3" Text="ZILE TRATAM." FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="4" Text="DIMINEAȚĂ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="5" Text="PRÂNZ" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="6" Text="SEARA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="7" Text="NOAPTEA" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" FontAttributes="Bold" FontSize="12" TextColor="#34495E"/>
-                                <Label Text=" " />
+                            <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2,0">
+                                <Label Grid.Column="0" Text="NR." Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="1" Text="MEDICAMENT" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="2" Text="CANT. TOTALĂ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="3" Text="ZILE TRATAM." Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="4" Text="DIMINEAȚĂ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="5" Text="PRÂNZ" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="6" Text="SEARA" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="7" Text="NOAPTEA" Style="{StaticResource ColumnHeader}"/>
+                                <Label Grid.Column="8" Text="MOD ADMINISTRARE" Style="{StaticResource ColumnHeader}"/>
                             </Grid>
                         </CollectionView.Header>
-
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="36,*,100,100,110,110,110,110,160,60" Padding="2">
-                                    <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-
+                                    <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center"/>
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
-                                        <Button Text="🔍"
-                                    WidthRequest="36"
-                                    HeightRequest="36"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="Transparent"
-                                    BorderWidth="0"
-                                    Padding="0"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
-                                    CommandParameter="{Binding .}"/>
+                                        <Button Text="🔍" WidthRequest="36" HeightRequest="36"
+                                                BackgroundColor="Transparent" BorderColor="Transparent" BorderWidth="0" Padding="0"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
+                                                CommandParameter="{Binding .}"/>
                                     </StackLayout>
-
-                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black"/>
-                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric" BackgroundColor="White"/>
-
+                                    <Entry Grid.Column="2" Text="{Binding TotalQuantity, Mode=TwoWay}" Placeholder="Total" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                    <Entry Grid.Column="3" Text="{Binding TotalDays, Mode=TwoWay}" Placeholder="Nr. zile" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                    <Entry Grid.Column="4" Text="{Binding Morning}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="5" Text="{Binding Noon}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="6" Text="{Binding Evening}" Placeholder="Cantitate" Keyboard="Numeric"/>
+                                    <Entry Grid.Column="7" Text="{Binding Night}" Placeholder="Cantitate" Keyboard="Numeric"/>
                                     <Picker Grid.Column="8"
-                                TitleColor="LightGray"
-                                ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
-                                ItemDisplayBinding="{Binding Name}"
-                                SelectedItem="{Binding AdministrationMode, Mode=TwoWay}" />
-
-                                    <StackLayout Grid.Column="9" Orientation="Horizontal" Spacing="4">
-                                        <Button Text="🗑️"
-    TextColor="Red"
-    Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
-    CommandParameter="{Binding .}"
-    HeightRequest="20"
-    WidthRequest="20"
-    FontSize="13"
-    BackgroundColor="#faf6f6"
-    ToolTipProperties.Text="Șterge medicament"/>
-                                    </StackLayout>
+                                            ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            SelectedItem="{Binding AdministrationMode, Mode=TwoWay}"/>
+                                    <Button Grid.Column="9" Text="🗑" Style="{StaticResource DeleteRowButton}"
+                                            Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
+                                            CommandParameter="{Binding .}"
+                                            ToolTipProperties.Text="Șterge medicament"/>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </VerticalStackLayout>
-            </Frame>
-
+            </Border>
 
             <Editor Placeholder="Stimate coleg, cu privire la pacientul/pacienta care s-a prezentat în farmacie vă supun atenției următoarele:"
-                    Text="{Binding NotesToDoctor}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />
+                    Text="{Binding NotesToDoctor}" AutoSize="TextChanges" HeightRequest="56"/>
 
             <Editor Placeholder="Recomandarea farmacistului (medicamentele sunt destinate doar persoanei pentru care au fost eliberate):"
-                    Text="{Binding PharmacistRecommendation}" AutoSize="TextChanges" HeightRequest="56" BackgroundColor="White" />
+                    Text="{Binding PharmacistRecommendation}" AutoSize="TextChanges" HeightRequest="56"/>
 
             <HorizontalStackLayout Spacing="0" VerticalOptions="Center">
                 <Image Source="down_arrow.png" Margin="0,10,0,7" WidthRequest="20" HeightRequest="20" VerticalOptions="End"/>
                 <Picker Title="Serviciu farmaceutic"
-            ItemsSource="{Binding PharmaceuticalServices}"
-            SelectedItem="{Binding SelectedPharmaceuticalService}" 
-            WidthRequest="420"
-            />
+                        ItemsSource="{Binding PharmaceuticalServices}"
+                        SelectedItem="{Binding SelectedPharmaceuticalService}"
+                        WidthRequest="420"/>
             </HorizontalStackLayout>
 
-            <Grid Padding="0,8,0,0" VerticalOptions="Center" ColumnDefinitions="Auto, *, Auto">
-
-                <!-- Coloana 0: Entry + Trimite Mail -->
-                <HorizontalStackLayout Spacing="10" Grid.Column="0" VerticalOptions="Center">
+            <!-- Bottom action bar -->
+            <Grid Padding="0,8,0,4" VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto">
+                <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
                     <Entry Placeholder="Email pacient"
-               Text="{Binding PatientEmail}"
-               FontSize="14"
-               WidthRequest="280"
-               VerticalOptions="Center"/>
+                           Text="{Binding PatientEmail}"
+                           FontSize="14"
+                           WidthRequest="280"
+                           VerticalOptions="Center"/>
                     <Button Text="Trimite Mail"
-                Command="{Binding SendEmailCommand}"
-                FontSize="12"
-                HeightRequest="34"
-                CornerRadius="8"
-                BackgroundColor="#007bff"
-                TextColor="White"/>
+                            Command="{Binding SendEmailCommand}"
+                            FontSize="12"
+                            HeightRequest="34"/>
                 </HorizontalStackLayout>
 
-                <!-- Coloana 1: spacer gol ocup tot restul spaiului -->
                 <BoxView Grid.Column="1" Color="Transparent"/>
 
-                <!-- Coloana 2: Printeaz + Salveaz -->
-                <HorizontalStackLayout Spacing="10" Grid.Column="2" VerticalOptions="Center" Margin="0,0,20,10">
+                <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center" Margin="0,0,8,0">
                     <Button Text="Tipărește"
-                Command="{Binding PrintCommand}"
-                FontSize="14"
-                HeightRequest="34"
-                CornerRadius="8"
-                BackgroundColor="#f4f4f6"
-                TextColor="#36317f"/>
+                            Command="{Binding PrintCommand}"
+                            Style="{StaticResource OutlineButton}"
+                            FontSize="13"
+                            HeightRequest="34"/>
                     <Button Text="Salvează"
-                Command="{Binding SaveCommand}"
-                FontSize="14"
-                HeightRequest="34"
-                CornerRadius="8"
-                BackgroundColor="Green"
-                TextColor="White"
-                IsVisible="{Binding IsSaveButtonVisible}" />
+                            Command="{Binding SaveCommand}"
+                            FontSize="13"
+                            HeightRequest="34"
+                            IsVisible="{Binding IsSaveButtonVisible}"/>
                 </HorizontalStackLayout>
-
             </Grid>
-
 
         </VerticalStackLayout>
     </ScrollView>

@@ -109,6 +109,20 @@ namespace PharmacistRecommendation.ViewModels
         }
 
         [RelayCommand]
+        private void ShowLogin()
+        {
+            IsLoginMode = true;
+            ClearAllErrors();
+        }
+
+        [RelayCommand]
+        private void ShowAddUser()
+        {
+            IsLoginMode = false;
+            ClearAllErrors();
+        }
+
+        [RelayCommand]
         private async Task LoginAsync()
         {
             if (IsLoginLoading) return;
