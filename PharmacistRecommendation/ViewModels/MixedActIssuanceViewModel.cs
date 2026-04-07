@@ -209,17 +209,21 @@ namespace PharmacistRecommendation.ViewModels
         partial void OnPrescriptionIdChanged(int value)
         {
             if (value == 0) return;
+            if (string.IsNullOrWhiteSpace(Mode)) return;
 
-            if (string.IsNullOrWhiteSpace(Mode))
-                return;
-
-            _ = LoadPrescriptionAsync(value);
+            _ = SafeRunAsync(() => LoadPrescriptionAsync(value));
         }
 
         partial void OnCardNumberChanged(string value)
         {
             if (IsReportViewMode) return;
-            _ = LoadPatientByCard(value);
+            _ = SafeRunAsync(() => LoadPatientByCard(value));
+        }
+
+        private static async Task SafeRunAsync(Func<Task> action)
+        {
+            try { await action(); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[SafeRunAsync] {ex}"); }
         }
 
         private async Task LoadPatientByCard(string cardNumber)
@@ -310,7 +314,7 @@ namespace PharmacistRecommendation.ViewModels
 
             Suggestions.Clear();
 
-            Task.Run(async () =>
+            _ = SafeRunAsync(async () =>
             {
                 await Task.Delay(50);
                 MainThread.BeginInvokeOnMainThread(() => SearchEntryReference?.Focus());

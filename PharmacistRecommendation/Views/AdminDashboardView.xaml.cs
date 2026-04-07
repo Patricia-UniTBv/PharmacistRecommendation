@@ -1,3 +1,4 @@
+using PharmacistRecommendation.Helpers;
 using PharmacistRecommendation.ViewModels;
 
 namespace PharmacistRecommendation.Views
@@ -8,6 +9,17 @@ namespace PharmacistRecommendation.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
+        }
+
+        protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+
+            if (SessionManager.CurrentUser?.Role?.ToLower() != "admin")
+            {
+                await DisplayAlert("Acces interzis", "Nu aveți permisiunea de a accesa această pagină.", "OK");
+                await Shell.Current.GoToAsync("//login");
+            }
         }
     }
 }
