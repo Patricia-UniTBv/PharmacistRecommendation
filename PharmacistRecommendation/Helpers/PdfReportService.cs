@@ -356,7 +356,7 @@ public class PdfReportService : IPdfReportService
             else
             {
                 effectivePharmacist = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
-                assistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+                assistantName = $"{SessionManager.CurrentUser?.FirstName ?? "-"} {SessionManager.CurrentUser?.LastName ?? "-"}";
             }
 
             string footerPharmacist = $"{effectivePharmacist?.FirstName ?? "-"} {effectivePharmacist?.LastName ?? "-"}";

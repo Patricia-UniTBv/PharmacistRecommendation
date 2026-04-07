@@ -39,11 +39,12 @@ namespace Entities.Services
             }
             else
             {
-                patient.FirstName = string.IsNullOrWhiteSpace(dto.FirstName) ? patient.FirstName : dto.FirstName;
-                patient.LastName = string.IsNullOrWhiteSpace(dto.LastName) ? patient.LastName : dto.LastName;
-                patient.Gender = string.IsNullOrWhiteSpace(dto.Gender) ? patient.Gender : dto.Gender;
-                patient.Email = dto.Email ?? patient.Email;
-                patient.Phone = dto.Phone ?? patient.Phone;
+                // Treat "-" as "not provided" so placeholder values don't overwrite real data
+                patient.FirstName = (string.IsNullOrWhiteSpace(dto.FirstName) || dto.FirstName == "-") ? patient.FirstName : dto.FirstName;
+                patient.LastName  = (string.IsNullOrWhiteSpace(dto.LastName)  || dto.LastName  == "-") ? patient.LastName  : dto.LastName;
+                patient.Gender    = string.IsNullOrWhiteSpace(dto.Gender)    ? patient.Gender    : dto.Gender;
+                patient.Email     = dto.Email     ?? patient.Email;
+                patient.Phone     = dto.Phone     ?? patient.Phone;
                 patient.Birthdate = dto.Birthdate ?? patient.Birthdate;
 
                 await _repository.UpdateAsync(patient);

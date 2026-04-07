@@ -242,8 +242,8 @@ namespace PharmacistRecommendation.ViewModels
             else
             {
                 var effectivePharmacist = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
-                PharmacistNameEffective = $"{effectivePharmacist.FirstName} {effectivePharmacist.LastName} {effectivePharmacist.Ncm}";
-                AssistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+                PharmacistNameEffective = $"{effectivePharmacist?.FirstName ?? "-"} {effectivePharmacist?.LastName ?? "-"} {effectivePharmacist?.Ncm ?? ""}".Trim();
+                AssistantName = $"{SessionManager.CurrentUser?.FirstName ?? "-"} {SessionManager.CurrentUser?.LastName ?? "-"}";
             }
         }
 

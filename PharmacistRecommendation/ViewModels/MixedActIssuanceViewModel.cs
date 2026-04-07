@@ -762,7 +762,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 // current user e asistent => afișăm primul farmacist + asistent
                 printDoc.PharmacistNameEffective = $"{pharmacistUser?.FirstName ?? "-"} {pharmacistUser?.LastName ?? "-"}";
-                printDoc.AssistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+                printDoc.AssistantName = $"{SessionManager.CurrentUser?.FirstName ?? "-"} {SessionManager.CurrentUser?.LastName ?? "-"}";
             }
 
 
