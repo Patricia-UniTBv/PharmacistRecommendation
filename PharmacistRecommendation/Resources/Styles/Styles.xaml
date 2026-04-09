@@ -52,7 +52,7 @@
                     </VisualState>
                     <VisualState x:Name="PointerOver">
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLight}"/>
+                            <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -71,6 +71,18 @@
         <Setter Property="CornerRadius"        Value="6"/>
         <Setter Property="Padding"             Value="16,9"/>
         <Setter Property="MinimumHeightRequest" Value="36"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal"/>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryContainer}"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <!-- Danger button -->
@@ -82,6 +94,18 @@
         <Setter Property="CornerRadius"        Value="6"/>
         <Setter Property="Padding"             Value="16,9"/>
         <Setter Property="MinimumHeightRequest" Value="36"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal"/>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#E53E3E"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <!-- Ghost button (no background) -->
@@ -94,6 +118,39 @@
         <Setter Property="CornerRadius"        Value="6"/>
         <Setter Property="Padding"             Value="12,9"/>
         <Setter Property="MinimumHeightRequest" Value="36"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal"/>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryContainer}"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- TitleBar button: transparent on dark navy nav bar -->
+    <Style x:Key="TitleBarButton" TargetType="Button">
+        <Setter Property="TextColor"           Value="White"/>
+        <Setter Property="BackgroundColor"     Value="Transparent"/>
+        <Setter Property="BorderWidth"         Value="0"/>
+        <Setter Property="FontSize"            Value="12"/>
+        <Setter Property="Padding"             Value="12,6"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal"/>
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#26FFFFFF"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <!-- ── CheckBox ───────────────────────────────────────────────────── -->
@@ -252,7 +309,7 @@
     <Style TargetType="Picker">
         <Setter Property="TextColor"            Value="{StaticResource TextPrimary}"/>
         <Setter Property="TitleColor"           Value="{StaticResource TextPlaceholder}"/>
-        <Setter Property="BackgroundColor"      Value="{StaticResource Surface}"/>
+        <Setter Property="BackgroundColor"      Value="{StaticResource PrimaryContainer}"/>
         <Setter Property="FontFamily"           Value="OpenSansRegular"/>
         <Setter Property="FontSize"             Value="13"/>
         <Setter Property="MinimumHeightRequest" Value="34"/>

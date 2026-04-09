@@ -52,6 +52,15 @@ namespace PharmacistRecommendation
             builder.UseMauiCommunityToolkit();
 
 #if WINDOWS
+            // Remove WinUI3's focus rectangle that bleeds outside MAUI Border wrappers
+            Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("NoFocusVisual", (handler, _) =>
+            {
+                if (handler.PlatformView is Microsoft.UI.Xaml.Controls.TextBox tb)
+                    tb.UseSystemFocusVisuals = false;
+            });
+#endif
+
+#if WINDOWS
             builder.ConfigureLifecycleEvents(events =>
             {
                 events.AddWindows(windows =>

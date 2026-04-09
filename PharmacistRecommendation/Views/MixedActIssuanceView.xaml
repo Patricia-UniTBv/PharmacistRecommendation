@@ -202,8 +202,8 @@
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center"/>
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
-                                        <Button Text="🔍" WidthRequest="36" HeightRequest="36"
-                                                BackgroundColor="Transparent" BorderColor="Transparent" BorderWidth="0" Padding="0"
+                                        <Button Text="Caută" WidthRequest="60" HeightRequest="36"
+                                                Style="{StaticResource OutlineButton}" FontSize="11" Padding="4,0"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupCommand}"
                                                 CommandParameter="{Binding .}"/>
                                     </StackLayout>
@@ -217,7 +217,7 @@
                                             ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
                                             ItemDisplayBinding="{Binding Name}"
                                             SelectedItem="{Binding AdministrationMode, Mode=TwoWay}"/>
-                                    <Button Grid.Column="9" Text="🗑" Style="{StaticResource DeleteRowButton}"
+                                    <Button Grid.Column="9" Text="×" Style="{StaticResource DeleteRowButton}"
                                             Command="{Binding BindingContext.DeleteMedicationWithPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
                                             CommandParameter="{Binding .}"
                                             ToolTipProperties.Text="Șterge medicament"/>
@@ -263,8 +263,8 @@
                                     <Label Grid.Column="0" Text="{Binding Index}" VerticalOptions="Center" HorizontalOptions="Center"/>
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4">
                                         <Entry Text="{Binding Name}" Placeholder="Nume medicament" HorizontalOptions="FillAndExpand"/>
-                                        <Button Text="🔍" WidthRequest="36" HeightRequest="36"
-                                                BackgroundColor="Transparent" BorderColor="Transparent" BorderWidth="0" Padding="0"
+                                        <Button Text="Caută" WidthRequest="60" HeightRequest="36"
+                                                Style="{StaticResource OutlineButton}" FontSize="11" Padding="4,0"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMedicationPopupReceiptCommand}"
                                                 CommandParameter="{Binding .}"/>
                                     </StackLayout>
@@ -278,7 +278,7 @@
                                             ItemsSource="{Binding BindingContext.AdministrationModes, Source={x:Reference MixedActIssuance}}"
                                             ItemDisplayBinding="{Binding Name}"
                                             SelectedItem="{Binding AdministrationMode, Mode=TwoWay}"/>
-                                    <Button Grid.Column="9" Text="🗑" Style="{StaticResource DeleteRowButton}"
+                                    <Button Grid.Column="9" Text="×" Style="{StaticResource DeleteRowButton}"
                                             Command="{Binding BindingContext.DeleteMedicationWithoutPrescriptionCommand, Source={x:Reference MixedActIssuance}}"
                                             CommandParameter="{Binding .}"
                                             ToolTipProperties.Text="Șterge medicament"/>

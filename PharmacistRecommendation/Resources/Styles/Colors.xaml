@@ -55,6 +55,8 @@
     <Color x:Key="Gray900">#1A1F36</Color>
     <Color x:Key="Gray950">#0D1827</Color>
 
+    <Color x:Key="ButtonHover">#2D6CB0</Color>
+
     <!-- ── BRUSHES ────────────────────────────────────────────────────── -->
     <SolidColorBrush x:Key="PrimaryBrush"          Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="PrimaryDarkBrush"      Color="{StaticResource PrimaryDark}"/>

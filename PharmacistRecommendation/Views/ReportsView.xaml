@@ -14,7 +14,7 @@
                    FontAttributes="Bold" 
                    HorizontalOptions="Center"/>
 
-            <Frame BackgroundColor="WhiteSmoke" Padding="15" HasShadow="True">
+            <Frame BackgroundColor="{StaticResource SurfaceVariant}" Padding="15" HasShadow="False">
                 <StackLayout Spacing="10">
                     <Label Text="Perioada raport:" FontAttributes="Bold"/>
 
@@ -38,16 +38,13 @@
 
                     <Grid ColumnDefinitions="180,180" ColumnSpacing="8">
                         <Button Grid.Column="0"
-                                Text="Resetare filtre" 
+                                Text="Resetare filtre"
                                 Command="{Binding ResetFiltersCommand}"
-                                BackgroundColor="Gray"
-                                TextColor="White"/>
+                                Style="{StaticResource OutlineButton}"/>
 
                         <Button Grid.Column="1"
-                                Text="Actualizare date" 
-                                Command="{Binding RefreshDataCommand}"
-                                BackgroundColor="#2ECC71"
-                                TextColor="White"/>
+                                Text="Actualizare date"
+                                Command="{Binding RefreshDataCommand}"/>
                     </Grid>
                 </StackLayout>
             </Frame>
@@ -78,15 +75,13 @@
                                                FontSize="16"/>
                                         <Label Text="{Binding Description}" 
                                                FontSize="12" 
-                                               TextColor="Gray"/>
+                                               TextColor="{StaticResource TextSecondary}"/>
                                     </StackLayout>
 
                                     <Button Grid.Column="2" 
                                             Text="Incarcare date"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ReportsViewModel}}, Path=SelectReportTypeCommand}"
                                             CommandParameter="{Binding .}"
-                                            BackgroundColor="#3498db"
-                                            TextColor="White"
                                             FontSize="12"
                                             VerticalOptions="Center"/>
                                 </Grid>
@@ -98,7 +93,7 @@
 
             <ActivityIndicator IsVisible="{Binding IsLoadingData}" 
                               IsRunning="{Binding IsLoadingData}"
-                              Color="#3498db"/>
+                              />
 
             <Label Text="Se incarca datele..." 
                    IsVisible="{Binding IsLoadingData}"
@@ -132,7 +127,7 @@
                            TextColor="#2C3E50"/>
 
                     <Frame IsVisible="{Binding IsPrescriptionReport}"
-       BackgroundColor="#F8F9FA"
+       BackgroundColor="{StaticResource SurfaceVariant}"
        Padding="10">
                         <StackLayout>
                             <Label Text="Date gasite:" FontAttributes="Bold" Margin="0,0,0,10"/>
@@ -149,7 +144,7 @@
                                     <Grid Padding="5"
                       ColumnDefinitions="120,*,180,180,100,180"
                       ColumnSpacing="10"
-                      BackgroundColor="#34495E">
+                      BackgroundColor="{StaticResource NavyHeader}">
                                         <Label Grid.Column="0"
                            Text="Data"
                            FontAttributes="Bold"
@@ -279,24 +274,21 @@
                                                 <Button Text="Vizualizare"
                                                          Grid.Column="0"
                                                          FontSize="12"
-                                                         BackgroundColor="#3498DB"
-                                                         TextColor="White"
                                                          CornerRadius="5"
                                                          VerticalOptions="Fill"
                                                          HorizontalOptions="Fill"
-                                                         Padding="0,1,0,14" 
+                                                         Padding="0,1,0,14"
                                     Command="{Binding Source={x:Reference PrescriptionCollectionView}, Path=BindingContext.OpenPrescriptionCommand}"
                                     CommandParameter="{Binding .}"/>
                                                 
                                                 <Button Text="Șterge"
                                                          Grid.Column="1"
                                                          FontSize="12"
-                                                         BackgroundColor="#E74C3C"
-                                                         TextColor="White"
+                                                         Style="{StaticResource DangerButton}"
                                                          CornerRadius="5"
                                                          VerticalOptions="Fill"
                                                          HorizontalOptions="Fill"
-                                                         Padding="0,1,0,14" 
+                                                         Padding="0,1,0,14"
                                     Command="{Binding Source={x:Reference PrescriptionCollectionView}, Path=BindingContext.DeletePrescriptionCommand}"
                                     CommandParameter="{Binding .}"/>
                                             </Grid>
@@ -311,7 +303,7 @@
 
 
                     <Frame IsVisible="{Binding IsMonitoringReport}"
-       BackgroundColor="#F8F9FA"
+       BackgroundColor="{StaticResource SurfaceVariant}"
        Padding="10">
 
                         <StackLayout>
@@ -332,7 +324,7 @@
                                     <Grid Padding="5"
                       ColumnDefinitions="120,*,180,180,180,180"
                       ColumnSpacing="10"
-                      BackgroundColor="#34495E">
+                      BackgroundColor="{StaticResource NavyHeader}">
 
                                         <Label Text="Data"
                            TextColor="White"
@@ -461,24 +453,20 @@
                                                 <Button Text="Vizualizare"
             Grid.Column="0"
             FontSize="12"
-            BackgroundColor="#3498DB"
-            TextColor="White"
             CornerRadius="5"
             VerticalOptions="Fill"
             HorizontalOptions="Fill"
-            Padding="0,1,0,14" 
+            Padding="0,1,0,14"
             Command="{Binding Source={x:Reference CollectionViewReference}, Path=BindingContext.OpenMonitoringCommand}"
             CommandParameter="{Binding .}"/>
-                                                
+
                                                 <Button Text="Șterge"
             Grid.Column="1"
-            FontSize="12"
-            BackgroundColor="#E74C3C"
-            TextColor="White"
+            Style="{StaticResource DangerButton}"
             CornerRadius="5"
             VerticalOptions="Fill"
             HorizontalOptions="Fill"
-            Padding="0,1,0,14" 
+            Padding="0,1,0,14"
             Command="{Binding Source={x:Reference CollectionViewReference}, Path=BindingContext.DeleteMonitoringCommand}"
             CommandParameter="{Binding .}"/>
                                             </Grid>
@@ -497,7 +485,7 @@
                     <Label IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"
                            Text="Nu au fost gasite date pentru criteriile selectate."
                            FontSize="16"
-                           TextColor="Gray"
+                           TextColor="{StaticResource TextSecondary}"
                            HorizontalTextAlignment="Center"
                            Margin="20"/>
                 </StackLayout>
@@ -505,13 +493,13 @@
 
             <ActivityIndicator IsVisible="{Binding IsGeneratingReport}" 
                               IsRunning="{Binding IsGeneratingReport}"
-                              Color="#E74C3C"/>
+                              />
 
-            <Label Text="Se genereaza PDF-ul..." 
+            <Label Text="Se genereaza PDF-ul..."
                    IsVisible="{Binding IsGeneratingReport}"
                    HorizontalOptions="Center"
                    FontAttributes="Italic"
-                   TextColor="#E74C3C"/>
+                   TextColor="{StaticResource TextSecondary}"/>
 
         </StackLayout>
     </ScrollView>

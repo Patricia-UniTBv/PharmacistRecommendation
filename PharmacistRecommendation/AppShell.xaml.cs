@@ -11,7 +11,6 @@ namespace PharmacistRecommendation
     public partial class AppShell : Shell
     {
         private readonly IAuthenticationService _authService;
-        private List<MenuBarItem> _savedMenuBarItems = new();
 
         public AppShell()
         {
@@ -44,7 +43,52 @@ namespace PharmacistRecommendation
 
             // Subscribe to authentication changes
             _authService.AuthenticationStateChanged += OnAuthenticationStateChanged;
+
+            // Attach WinUI3 flyouts to dropdown buttons
+            AttachDropdownMenus();
         }
+
+        private void AttachDropdownMenus()
+        {
+#if WINDOWS
+            BtnMonitorizare.Loaded += (_, _) => AttachFlyout(BtnMonitorizare,
+                ("Monitorizare pacient",              (EventHandler)OnMonitClicked),
+                ("Listă Monitorizări",                (EventHandler)OnMonitoringListReportClicked));
+
+            BtnEmitere.Loaded += (_, _) => AttachFlyout(BtnEmitere,
+                ("Emitere act consecutiv prescripției", (EventHandler)OnPrescriptionOnlyClicked),
+                ("Emitere act farmaceutic",              (EventHandler)OnWithoutPrescriptionClicked));
+
+            BtnRapoarte.Loaded += (_, _) => AttachFlyout(BtnRapoarte,
+                ("Raport Acte Proprii",     (EventHandler)OnOwnActsReportClicked),
+                ("Raport Acte Consecutive", (EventHandler)OnConsecutiveActsReportClicked),
+                ("Centru Rapoarte",         (EventHandler)OnReportsClicked));
+
+            BtnConfigurari.Loaded += (_, _) => AttachFlyout(BtnConfigurari,
+                ("Medicamente",                  (EventHandler)OnMedicationsClicked),
+                ("Moduri administrare",          (EventHandler)OnAdministrationModesClicked),
+                ("Configurare email",            (EventHandler)OnEmailConfigClicked),
+                ("Configurare importuri",        (EventHandler)OnImportConfigClicked),
+                ("Document GDPR",                (EventHandler)OnGdprConfigClicked),
+                ("Configurare conexiune server", (EventHandler)OnServerConfigClicked));
+#endif
+        }
+
+#if WINDOWS
+        private static void AttachFlyout(Button button, params (string text, EventHandler handler)[] items)
+        {
+            if (button.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.Button nativeBtn)
+                return;
+            var flyout = new Microsoft.UI.Xaml.Controls.MenuFlyout();
+            foreach (var (text, handler) in items)
+            {
+                var item = new Microsoft.UI.Xaml.Controls.MenuFlyoutItem { Text = text };
+                item.Click += (_, _) => handler(null, EventArgs.Empty);
+                flyout.Items.Add(item);
+            }
+            nativeBtn.Flyout = flyout;
+        }
+#endif
 
         private async void OnAuthenticationStateChanged(object sender, Entities.Services.Interfaces.AuthResult e)
         {
@@ -66,24 +110,7 @@ namespace PharmacistRecommendation
         protected override void OnNavigated(ShellNavigatedEventArgs args)
         {
             base.OnNavigated(args);
-
-            if (IsAdmin())
-            {
-                if (MenuBarItems.Count > 0)
-                {
-                    _savedMenuBarItems = MenuBarItems.ToList();
-                    MenuBarItems.Clear();
-                }
-            }
-            else
-            {
-                if (_savedMenuBarItems.Count > 0 && MenuBarItems.Count == 0)
-                {
-                    foreach (var item in _savedMenuBarItems)
-                        MenuBarItems.Add(item);
-                    _savedMenuBarItems.Clear();
-                }
-            }
+            TitleBar.IsVisible = !IsAdmin();
         }
 
         private bool IsAdmin() => SessionManager.CurrentUser?.Role?.ToLower() == "admin";
@@ -205,6 +232,30 @@ namespace PharmacistRecommendation
         {
             if (IsAdmin()) return;
             await GoToAsync("server_configuration");
+        }
+
+        private async void OnNavigateBackClicked(object sender, EventArgs e)
+        {
+            if (Shell.Current.Navigation.NavigationStack.Count > 1)
+                await Shell.Current.GoToAsync("..");
+        }
+
+        private void OnCloseAppClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                // Dispose the DI service provider — closes all DbContext connections
+                // and releases any held SQL Server ports/resources cleanly
+                if (Application.Current?.Handler?.MauiContext?.Services is IDisposable services)
+                    services.Dispose();
+            }
+            catch { /* best-effort */ }
+
+            Application.Current?.Quit();
+
+            // Force-exit the process so the OS reclaims all network ports immediately,
+            // preventing dynamic-port conflicts with the database on next launch
+            Environment.Exit(0);
         }
 
         private async Task<bool> CheckAuthenticationOrPrompt()

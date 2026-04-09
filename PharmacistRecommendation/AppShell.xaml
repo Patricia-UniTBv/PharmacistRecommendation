@@ -1,49 +1,25 @@
-﻿<Shell
+<Shell
     x:Class="PharmacistRecommendation.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:PharmacistRecommendation.Views">
 
-    <Shell.MenuBarItems>
-        <MenuBarItem Text="Acasă" >
-            <MenuFlyoutItem Text="Pagina principală" Clicked="OnTestMainPageClicked"/>
-        </MenuBarItem>
-        <MenuBarItem Text="Card" >
-            <MenuFlyoutItem Text="Card Nou" Clicked="OnNewCardClicked"/>
-        </MenuBarItem>
-
-        <MenuBarItem Text="Monitorizare" >
-            <MenuFlyoutItem Text="Monitorizare pacient" Clicked="OnMonitClicked" />
-        </MenuBarItem>
-
-        <MenuBarItem Text="Emitere Documente">
-            <!--<MenuFlyoutItem Text="Emitere act mixt"  Clicked="OnMixedIssuanceClicked" />-->
-            <MenuFlyoutItem Text="Emitere act consecutiv prescripției" Clicked="OnPrescriptionOnlyClicked" />
-            <MenuFlyoutItem Text="Emitere act farmaceutic" Clicked="OnWithoutPrescriptionClicked" />
-        </MenuBarItem>
-
-        <MenuBarItem Text="Rapoarte">
-            <!--<MenuFlyoutItem Text="Raport Acte Mixte" Clicked="OnMixedActsReportClicked" />-->
-            <MenuFlyoutItem Text="Raport Acte Proprii" Clicked="OnOwnActsReportClicked" />
-            <MenuFlyoutItem Text="Raport Acte Consecutive" Clicked="OnConsecutiveActsReportClicked" />
-            <MenuFlyoutItem Text="Listă Monitorizări" Clicked="OnMonitoringListReportClicked" />
-            <MenuFlyoutItem Text="Centru Rapoarte" Clicked="OnReportsClicked" />
-        </MenuBarItem>
-
-        <MenuBarItem Text="Configurări">
-            <!--<MenuFlyoutItem Text="Adăugare utilizator" Clicked="OnAddPharmacistClicked"/>-->
-            <MenuFlyoutItem Text="Medicamente" Clicked="OnMedicationsClicked"/>
-            <MenuFlyoutItem Text="Moduri administrare" Clicked="OnAdministrationModesClicked"/>
-            <MenuFlyoutItem Text="Listă utilizatori" Clicked="OnUsersManagementClicked"/>
-            <MenuFlyoutItem Text="Configurare email" Clicked="OnEmailConfigClicked"/>
-            <MenuFlyoutItem Text="Configurare importuri" Clicked="OnImportConfigClicked"/>
-            <MenuFlyoutItem Text="Document GDPR" Clicked="OnGdprConfigClicked"/>
-            <MenuFlyoutItem Text="Configurare conexiune server" Clicked="OnServerConfigClicked"/>
-            <!--<MenuFlyoutItem Text="Adăugare farmacie" Clicked="OnAddPharmacyClicked"/>-->
-        </MenuBarItem>
-     
-
-    </Shell.MenuBarItems>
+    <Shell.TitleView>
+        <Grid x:Name="TitleBar" HorizontalOptions="FillAndExpand" BackgroundColor="Transparent">
+            <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Center" Spacing="0">
+                <Button Text="Acasă"              Style="{StaticResource TitleBarButton}" Clicked="OnTestMainPageClicked"/>
+                <Button Text="Card"               Style="{StaticResource TitleBarButton}" Clicked="OnNewCardClicked"/>
+                <Button x:Name="BtnMonitorizare"  Style="{StaticResource TitleBarButton}" Text="Monitorizare ▾"/>
+                <Button x:Name="BtnEmitere"       Style="{StaticResource TitleBarButton}" Text="Emitere Documente ▾"/>
+                <Button x:Name="BtnRapoarte"      Style="{StaticResource TitleBarButton}" Text="Rapoarte ▾"/>
+                <Button x:Name="BtnConfigurari"   Style="{StaticResource TitleBarButton}" Text="Configurări ▾"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center" Spacing="0">
+                <Button Text="← Înapoi"           Style="{StaticResource TitleBarButton}" Clicked="OnNavigateBackClicked"/>
+                <Button Text="✕ Ieșire"           Style="{StaticResource TitleBarButton}" Clicked="OnCloseAppClicked"/>
+            </HorizontalStackLayout>
+        </Grid>
+    </Shell.TitleView>
 
     <ShellContent Style="{StaticResource MyPageStyle}" ContentTemplate="{DataTemplate views:LoginAddUserView}"/>
 

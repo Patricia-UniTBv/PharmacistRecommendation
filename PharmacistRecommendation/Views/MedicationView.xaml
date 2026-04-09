@@ -1,44 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="PharmacistRecommendation.Views.MedicationView"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
              x:DataType="viewmodels:MedicationViewModel"
-             Title="Configurari Medicamente"
-             BackgroundColor="White">
+             BackgroundColor="{StaticResource Background}">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <!-- Simple Color Palette -->
-            <Color x:Key="HeaderGray">#D3D3D3</Color>
-            <Color x:Key="BorderGray">#CCCCCC</Color>
-            <Color x:Key="TextGray">#333333</Color>
-            <Color x:Key="LightGray">#F5F5F5</Color>
-            <Color x:Key="ButtonGray">#E0E0E0</Color>
-
-            <!-- Simple Button Style -->
-            <Style x:Key="SimpleButton" TargetType="Button">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="{StaticResource ButtonGray}"/>
-                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
-                <Setter Property="CornerRadius" Value="3"/>
-                <Setter Property="HeightRequest" Value="32"/>
-                <Setter Property="Padding" Value="12,6"/>
-                <Setter Property="Margin" Value="2"/>
-            </Style>
-
-            <!-- Simple Entry Style -->
-            <Style x:Key="SimpleEntry" TargetType="Entry">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="White"/>
-                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
-                <Setter Property="HeightRequest" Value="32"/>
-                <Setter Property="Margin" Value="2"/>
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <Grid BackgroundColor="White">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -46,11 +14,11 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" 
-                Stroke="{StaticResource BorderGray}" 
+        <Border Grid.Row="0"
+                Stroke="{StaticResource BorderDefault}"
                 StrokeThickness="1"
-                BackgroundColor="{StaticResource HeaderGray}"
-                Padding="8">
+                BackgroundColor="{StaticResource NavyHeader}"
+                Padding="12,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -59,35 +27,50 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="0" 
-                       Text="Lista Medicamente" 
-                       FontSize="14" 
-                       FontAttributes="Bold" 
-                       TextColor="{StaticResource TextGray}"
+                <Label Grid.Column="0"
+                       Text="Lista Medicamente"
+                       FontSize="15"
+                       FontFamily="OpenSansSemiBold"
+                       TextColor="{StaticResource TextOnPrimary}"
                        VerticalOptions="Center"/>
 
-                <Button Grid.Column="1" 
-                        Text="Adauga" 
+                <Button Grid.Column="1"
+                        Text="Adaugă"
                         Command="{Binding AddMedicationCommand}"
-                        Style="{StaticResource SimpleButton}"/>
+                        FontSize="12"
+                        HeightRequest="32"
+                        Padding="12,4"
+                        Margin="4,0"/>
 
-                <Button Grid.Column="2" 
-                        Text="Import Nomenclator ANM" 
+                <Button Grid.Column="2"
+                        Text="Import ANM"
                         Command="{Binding ImportCsvCommand}"
-                        Style="{StaticResource SimpleButton}"/>
+                        Style="{StaticResource OutlineButton}"
+                        FontSize="12"
+                        HeightRequest="32"
+                        Padding="12,4"
+                        Margin="4,0"
+                        TextColor="{StaticResource TextOnPrimary}"
+                        BorderColor="{StaticResource TextOnPrimary}"/>
 
-                <Button Grid.Column="3" 
-                        Text="Import Nomenclator Propriu" 
+                <Button Grid.Column="3"
+                        Text="Import Nomenclator Propriu"
                         Command="{Binding ImportCustomNomenclatorCommand}"
-                        Style="{StaticResource SimpleButton}"/>
+                        Style="{StaticResource OutlineButton}"
+                        FontSize="12"
+                        HeightRequest="32"
+                        Padding="12,4"
+                        Margin="4,0"
+                        TextColor="{StaticResource TextOnPrimary}"
+                        BorderColor="{StaticResource TextOnPrimary}"/>
             </Grid>
         </Border>
 
         <!-- Search -->
-        <Border Grid.Row="1" 
-                Stroke="{StaticResource BorderGray}" 
+        <Border Grid.Row="1"
+                Stroke="{StaticResource BorderDefault}"
                 StrokeThickness="1"
-                BackgroundColor="{StaticResource LightGray}"
+                BackgroundColor="{StaticResource Surface}"
                 Padding="8">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -99,38 +82,37 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="0" 
-                       Text="Nume:" 
-                       FontSize="12"
-                       TextColor="{StaticResource TextGray}"
-                       VerticalOptions="Center" 
+                <Label Grid.Column="0"
+                       Text="Nume:"
+                       Style="{StaticResource FieldLabel}"
+                       VerticalOptions="Center"
                        Margin="0,0,4,0"/>
 
-                <Entry Grid.Column="1" 
-                       Text="{Binding SearchText}" 
-                       Placeholder="Caut medicament..." 
-                       Style="{StaticResource SimpleEntry}"/>
-
-                <Label Grid.Column="2" 
-                       Text="Cod:" 
+                <Entry Grid.Column="1"
+                       Text="{Binding SearchText}"
+                       Placeholder="Caută medicament..."
                        FontSize="12"
-                       TextColor="{StaticResource TextGray}"
-                       VerticalOptions="Center" 
+                       HeightRequest="32"
+                       Margin="2"/>
+
+                <Label Grid.Column="2"
+                       Text="Cod:"
+                       Style="{StaticResource FieldLabel}"
+                       VerticalOptions="Center"
                        Margin="8,0,4,0"/>
 
-                <Entry Grid.Column="3" 
-                       Text="{Binding SearchCode}" 
-                       Placeholder="Caut cod..." 
-                       Style="{StaticResource SimpleEntry}"/>
+                <Entry Grid.Column="3"
+                       Text="{Binding SearchCode}"
+                       Placeholder="Caută cod..."
+                       FontSize="12"
+                       HeightRequest="32"
+                       Margin="2"/>
 
-                <!-- Filter moved to the left of Cauta button -->
                 <Picker Grid.Column="4"
                         SelectedIndex="{Binding SelectedFilter}"
                         FontSize="12"
-                        BackgroundColor="{StaticResource ButtonGray}"
-                        TextColor="{StaticResource TextGray}"
                         HeightRequest="32"
-                        WidthRequest="120"
+                        WidthRequest="130"
                         Margin="4,2,0,2">
                     <Picker.Items>
                         <x:String>Toate</x:String>
@@ -142,73 +124,58 @@
                     </Picker.Items>
                 </Picker>
 
-                <Button Grid.Column="5" 
-                        Text="Caut" 
+                <Button Grid.Column="5"
+                        Text="Caută"
                         Command="{Binding SearchCommand}"
-                        Style="{StaticResource SimpleButton}"
+                        FontSize="12"
+                        HeightRequest="32"
+                        Padding="12,4"
                         Margin="4,2,0,2"/>
             </Grid>
         </Border>
 
         <!-- Data Table -->
-        <Grid Grid.Row="2" BackgroundColor="White">
+        <Grid Grid.Row="2" BackgroundColor="{StaticResource Background}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Table Header -->
-            <Border Grid.Row="0" 
-                    Stroke="{StaticResource BorderGray}" 
+            <Border Grid.Row="0"
+                    Stroke="{StaticResource BorderDefault}"
                     StrokeThickness="1"
-                    BackgroundColor="{StaticResource HeaderGray}">
-                <Grid Padding="8,12">
+                    BackgroundColor="{StaticResource PrimaryContainer}">
+                <Grid Padding="8,10">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="130"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Column="0" 
-                           Text="Cod CIM" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"/>
-
-                    <Label Grid.Column="1" 
-                           Text="Nume" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"/>
-
-                    <Label Grid.Column="2" 
-                           Text="Cod ATC" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"/>
-
-                    <Label Grid.Column="3" 
-                           Text="Status" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"
+                    <Label Grid.Column="0" Text="Cod CIM"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"/>
+                    <Label Grid.Column="1" Text="Nume"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"/>
+                    <Label Grid.Column="2" Text="Cod ATC"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"/>
+                    <Label Grid.Column="3" Text="Status"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"
                            HorizontalOptions="Center"/>
-
-                    <Label Grid.Column="4" 
-                           Text="Sursa" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"
+                    <Label Grid.Column="4" Text="Sursă"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"
                            HorizontalOptions="Center"/>
-
-                    <Label Grid.Column="5" 
-                           Text="Aciuni" 
-                           FontSize="12" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextGray}"
+                    <Label Grid.Column="5" Text="Acțiuni"
+                           FontFamily="OpenSansSemiBold" FontSize="12"
+                           TextColor="{StaticResource TextPrimary}"
                            HorizontalOptions="Center"/>
                 </Grid>
             </Border>
@@ -216,46 +183,45 @@
             <!-- Data List -->
             <CollectionView Grid.Row="1" ItemsSource="{Binding Medications}">
                 <CollectionView.ItemTemplate>
-                    <!-- Enhanced DataTemplate with clickable status -->
                     <DataTemplate x:DataType="viewmodels:MedicationDisplayItem">
-                        <Border Stroke="{StaticResource BorderGray}" 
+                        <Border Stroke="{StaticResource Separator}"
                                 StrokeThickness="1"
-                                BackgroundColor="White"
+                                BackgroundColor="{StaticResource Surface}"
                                 Margin="0,1">
-                            <Grid Padding="8,10">
+                            <Grid Padding="8,8">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="110"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="110"/>
                                     <ColumnDefinition Width="80"/>
                                     <ColumnDefinition Width="80"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="130"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Label Grid.Column="0" 
-                                       Text="{Binding CodCIM}" 
+                                <Label Grid.Column="0"
+                                       Text="{Binding CodCIM}"
                                        FontSize="11"
-                                       TextColor="{StaticResource TextGray}"
+                                       TextColor="{StaticResource TextPrimary}"
                                        VerticalOptions="Center"/>
 
                                 <StackLayout Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding Denumire}" 
+                                    <Label Text="{Binding Denumire}"
                                            FontSize="11"
-                                           TextColor="{StaticResource TextGray}"/>
-                                    <Label Text="{Binding DCI}" 
+                                           TextColor="{StaticResource TextPrimary}"/>
+                                    <Label Text="{Binding DCI}"
                                            FontSize="10"
-                                           TextColor="#6C757D"
+                                           TextColor="{StaticResource TextSecondary}"
                                            Margin="0,2,0,0"/>
                                 </StackLayout>
 
-                                <Label Grid.Column="2" 
-                                       Text="{Binding CodATC}" 
+                                <Label Grid.Column="2"
+                                       Text="{Binding CodATC}"
                                        FontSize="11"
-                                       TextColor="{StaticResource TextGray}"
+                                       TextColor="{StaticResource TextPrimary}"
                                        VerticalOptions="Center"/>
 
                                 <!-- Clickable Status -->
-                                <Button Grid.Column="3" 
+                                <Button Grid.Column="3"
                                         Text="{Binding StatusText}"
                                         FontSize="10"
                                         FontAttributes="Bold"
@@ -269,7 +235,7 @@
                                         Padding="4,2"/>
 
                                 <!-- Source Display -->
-                                <Label Grid.Column="4" 
+                                <Label Grid.Column="4"
                                        Text="{Binding SourceText}"
                                        FontSize="10"
                                        FontAttributes="Bold"
@@ -277,27 +243,22 @@
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center"/>
 
-                                <StackLayout Grid.Column="5" 
-                                             Orientation="Horizontal" 
+                                <StackLayout Grid.Column="5"
+                                             Orientation="Horizontal"
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center">
-                                    <Button Text="Editeaz" 
+                                    <Button Text="Editează"
                                             FontSize="10"
-                                            BackgroundColor="{StaticResource ButtonGray}"
-                                            TextColor="{StaticResource TextGray}"
-                                            CornerRadius="2"
                                             HeightRequest="28"
-                                            Padding="8,4"
+                                            Padding="8,2"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MedicationViewModel}}, Path=EditMedicationCommand}"
                                             CommandParameter="{Binding .}"
                                             Margin="2,0"/>
-                                    <Button Text="terge" 
+                                    <Button Text="Șterge"
                                             FontSize="10"
-                                            BackgroundColor="{StaticResource ButtonGray}"
-                                            TextColor="{StaticResource TextGray}"
-                                            CornerRadius="2"
                                             HeightRequest="28"
-                                            Padding="8,4"
+                                            Padding="8,2"
+                                            Style="{StaticResource DangerButton}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MedicationViewModel}}, Path=DeleteMedicationCommand}"
                                             CommandParameter="{Binding .}"
                                             Margin="2,0"/>
@@ -310,18 +271,16 @@
         </Grid>
 
         <!-- Loading Indicator -->
-        <Grid Grid.Row="0" 
+        <Grid Grid.Row="0"
               Grid.RowSpan="3"
               BackgroundColor="#80FFFFFF"
               IsVisible="{Binding IsLoading}">
             <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                <ActivityIndicator IsRunning="{Binding IsLoading}" 
-                                   Color="{StaticResource TextGray}"
-                                   WidthRequest="40" 
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   WidthRequest="40"
                                    HeightRequest="40"/>
-                <Label Text="Se ncarc..." 
-                       TextColor="{StaticResource TextGray}"
-                       FontSize="12"
+                <Label Text="Se încarcă..."
+                       Style="{StaticResource CaptionLabel}"
                        HorizontalOptions="Center"
                        Margin="0,8,0,0"/>
             </StackLayout>

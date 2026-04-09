@@ -3,6 +3,7 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
              x:DataType="vm:LoginAddUserViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource NavyHeader}">
@@ -136,7 +137,11 @@
                                        Placeholder="Introduceți username-ul"
                                        BackgroundColor="Transparent"
                                        VerticalOptions="Center"
-                                       ReturnType="Next"/>
+                                       ReturnType="Next">
+                                    <Entry.Behaviors>
+                                        <helpers:FocusBorderBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
                             </Border>
                         </VerticalStackLayout>
 
@@ -155,7 +160,11 @@
                                        BackgroundColor="Transparent"
                                        VerticalOptions="Center"
                                        ReturnType="Done"
-                                       ReturnCommand="{Binding LoginCommand}"/>
+                                       ReturnCommand="{Binding LoginCommand}">
+                                    <Entry.Behaviors>
+                                        <helpers:FocusBorderBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
                             </Border>
                         </VerticalStackLayout>
 
@@ -220,13 +229,17 @@
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="PRENUME" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding FirstName}" Placeholder="Prenume" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding FirstName}" Placeholder="Prenume" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
                                 <Label Text="NUME" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding LastName}" Placeholder="Nume" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding LastName}" Placeholder="Nume" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
@@ -235,7 +248,9 @@
                         <VerticalStackLayout Spacing="4">
                             <Label Text="EMAIL" Style="{StaticResource FieldLabel}"/>
                             <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                <Entry Text="{Binding Email}" Placeholder="email@farmacie.ro" Keyboard="Email" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                <Entry Text="{Binding Email}" Placeholder="email@farmacie.ro" Keyboard="Email" BackgroundColor="Transparent" VerticalOptions="Center">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
                             </Border>
                         </VerticalStackLayout>
 
@@ -244,13 +259,17 @@
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="TELEFON" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding Phone}" Placeholder="07xx xxx xxx" Keyboard="Telephone" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding Phone}" Placeholder="07xx xxx xxx" Keyboard="Telephone" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
                                 <Label Text="NCM" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding Ncm}" Placeholder="NCM" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding Ncm}" Placeholder="NCM" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
@@ -260,7 +279,9 @@
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="USERNAME" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding Username}" Placeholder="username" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding Username}" Placeholder="username" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -279,13 +300,17 @@
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="PAROLĂ" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Minim 6 caractere" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Minim 6 caractere" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
                                 <Label Text="CONFIRMARE PAROLĂ" Style="{StaticResource FieldLabel}"/>
                                 <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
-                                    <Entry Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repetați parola" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                    <Entry Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repetați parola" BackgroundColor="Transparent" VerticalOptions="Center">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>

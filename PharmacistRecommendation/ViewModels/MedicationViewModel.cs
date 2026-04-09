@@ -800,10 +800,10 @@ namespace PharmacistRecommendation.ViewModels
         
         public string SourceColor => Medication.DataSource switch
         {
-            "Manual" => "Blue",
-            "CSV_Import" => "Green",
-            "Custom_Nomenclator" => "Purple",
-            _ => "Gray"
+            "Manual" => "#64748B",
+            "CSV_Import" => "#1A3A5C",
+            "Custom_Nomenclator" => "#7C3AED",
+            _ => "#64748B"
         };
 
         public ICommand ToggleStatusCommand => _viewModel.ToggleActiveStatusCommand;

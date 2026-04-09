@@ -1,92 +1,89 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
-             x:Class="PharmacistRecommendation.Views.UsersManagementView">
-    
+             x:Class="PharmacistRecommendation.Views.UsersManagementView"
+             BackgroundColor="{StaticResource Background}">
+
     <VerticalStackLayout Padding="10" Spacing="10">
         <Label Text="Vizualizare farmaciști/asistenți"
-       FontSize="20"
-       HorizontalTextAlignment="Center"
-       TextColor="Black"
-       Margin="0,10,0,10"/>
-        <HorizontalStackLayout Spacing="3"
-                       VerticalOptions="Center"
-                       Padding="5"
-                       HorizontalOptions="Start">
+               Style="{StaticResource PageTitle}"
+               HorizontalTextAlignment="Center"
+               Margin="0,10,0,10"/>
+
+        <HorizontalStackLayout Spacing="8"
+                               VerticalOptions="Center"
+                               Padding="5"
+                               HorizontalOptions="Start">
             <Image Source="filter.png"
-           WidthRequest="20"
-           HeightRequest="20"
-           Aspect="AspectFit"
-           VerticalOptions="Center" />
+                   WidthRequest="20"
+                   HeightRequest="20"
+                   Aspect="AspectFit"
+                   VerticalOptions="Center"/>
 
             <Picker ItemsSource="{Binding AvailableRoles}"
-        ItemDisplayBinding="{Binding Name}"
-        SelectedItem="{Binding SelectedRole}"
-        WidthRequest="150"
-        Title=""
-        FontSize="14" />
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedRole}"
+                    WidthRequest="150"
+                    Title=""
+                    FontSize="14"/>
         </HorizontalStackLayout>
-
-
 
         <CollectionView ItemsSource="{Binding FilteredUsers}" SelectionMode="None">
 
             <CollectionView.Header>
                 <Grid ColumnDefinitions="2*,2*,2*,2*,2*"
-              Padding="10"
-              HeightRequest="40"
-              BackgroundColor="#e0e0e0"
-              VerticalOptions="Center">
-                    <Label Text="Nume"     Grid.Column="0" FontAttributes="Bold" VerticalTextAlignment="Center"/>
-                    <Label Text="Prenume"  Grid.Column="1" FontAttributes="Bold" VerticalTextAlignment="Center"/>
-                    <Label Text="Username"  Grid.Column="2" FontAttributes="Bold" VerticalTextAlignment="Center"/>
-                    <Label Text="Email"    Grid.Column="3" FontAttributes="Bold" VerticalTextAlignment="Center"/>
-                    <Label Text="Telefon"    Grid.Column="4" FontAttributes="Bold" VerticalTextAlignment="Center"/>
+                      Padding="10"
+                      HeightRequest="40"
+                      BackgroundColor="{StaticResource PrimaryContainer}"
+                      VerticalOptions="Center">
+                    <Label Text="Nume"    Grid.Column="0" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                    <Label Text="Prenume" Grid.Column="1" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                    <Label Text="Username" Grid.Column="2" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                    <Label Text="Email"   Grid.Column="3" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                    <Label Text="Telefon" Grid.Column="4" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
                 </Grid>
             </CollectionView.Header>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="2*,2*,2*,2*,2*,Auto,Auto"
-      Padding="10"
-      HeightRequest="65"
-      VerticalOptions="Center">
+                          Padding="10"
+                          HeightRequest="65"
+                          VerticalOptions="Center">
 
-                        <Label Text="{Binding LastName}"   Grid.Column="0" VerticalTextAlignment="Center"/>
-                        <Label Text="{Binding FirstName}"  Grid.Column="1" VerticalTextAlignment="Center"/>
-                        <Label Text="{Binding Username}"   Grid.Column="2" VerticalTextAlignment="Center"/>
-                        <Label Text="{Binding Email}"      Grid.Column="3" VerticalTextAlignment="Center"/>
-                        <Label Text="{Binding Phone}"      Grid.Column="4" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding LastName}"  Grid.Column="0" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding FirstName}" Grid.Column="1" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding Username}"  Grid.Column="2" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding Email}"     Grid.Column="3" VerticalTextAlignment="Center"/>
+                        <Label Text="{Binding Phone}"     Grid.Column="4" VerticalTextAlignment="Center"/>
 
                         <HorizontalStackLayout Grid.Column="5" Spacing="10" HorizontalOptions="End" VerticalOptions="Center">
                             <Image Source="pen.png"
-               WidthRequest="20"
-               HeightRequest="20"
-               Aspect="AspectFit">
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   Aspect="AspectFit">
                                 <Image.GestureRecognizers>
                                     <TapGestureRecognizer
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersManagementViewModel}}, Path=EditUserCommand}"
-                    CommandParameter="{Binding}" />
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersManagementViewModel}}, Path=EditUserCommand}"
+                                        CommandParameter="{Binding}"/>
                                 </Image.GestureRecognizers>
                             </Image>
 
-                            <Button Text="🗑️"
-        TextColor="Red"
-        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersManagementViewModel}}, Path=DeleteUserCommand}"
-        CommandParameter="{Binding}" 
-        HeightRequest="26"
-        WidthRequest="26"
-        BackgroundColor="#faf6f6"
-        ToolTipProperties.Text="Șterge utilizator"/>
+                            <Button Text="Șterge"
+                                    Style="{StaticResource DangerButton}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersManagementViewModel}}, Path=DeleteUserCommand}"
+                                    CommandParameter="{Binding}"
+                                    HeightRequest="30"
+                                    FontSize="12"
+                                    Padding="10,2"
+                                    ToolTipProperties.Text="Șterge utilizator"/>
                         </HorizontalStackLayout>
-                        
-                    </Grid>
 
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
 
     </VerticalStackLayout>
 </ContentPage>

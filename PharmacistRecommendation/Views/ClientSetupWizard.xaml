@@ -1,273 +1,193 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage 
+<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
     x:Class="PharmacistRecommendation.Views.ClientSetupWizard"
     x:DataType="viewmodels:ClientSetupWizardViewModel"
     Title="Configurare Client"
-    BackgroundColor="#F8F9FA">
+    BackgroundColor="{StaticResource Background}">
 
     <ScrollView>
-<Grid Padding="40,60,40,40"
-  RowDefinitions="Auto,*,Auto"
-     RowSpacing="32"
-           MaximumWidthRequest="700"
-  HorizontalOptions="Center">
+        <Grid Padding="40,60,40,40"
+              RowDefinitions="Auto,*,Auto"
+              RowSpacing="32"
+              MaximumWidthRequest="700"
+              HorizontalOptions="Center">
 
-       <!-- Header Section -->
-        <StackLayout Grid.Row="0" Spacing="16">
-       <Label 
-Text="Bine a?i venit!"
-         FontSize="32"
-FontAttributes="Bold"
-       TextColor="#1A1A1A"
-       HorizontalOptions="Center" />
-   
-       <Label 
-      Text="Configurare Client Farmacie"
-      FontSize="20"
-     TextColor="#424242"
-  HorizontalOptions="Center" />
- 
-       <BoxView 
-           HeightRequest="3"
- WidthRequest="100"
-    BackgroundColor="#1565C0"
-   HorizontalOptions="Center"
-CornerRadius="2"
-    Margin="0,8,0,0" />
-       </StackLayout>
+            <!-- Header Section -->
+            <StackLayout Grid.Row="0" Spacing="16">
+                <Label Text="Bine ați venit!"
+                       Style="{StaticResource Headline}"
+                       FontSize="32"/>
+                <Label Text="Configurare Client Farmacie"
+                       Style="{StaticResource SubHeadline}"
+                       FontSize="20"/>
+                <BoxView HeightRequest="3"
+                         WidthRequest="100"
+                         BackgroundColor="{StaticResource Primary}"
+                         HorizontalOptions="Center"
+                         CornerRadius="2"
+                         Margin="0,8,0,0"/>
+            </StackLayout>
 
-      <!-- Main Content Section -->
-   <Border Grid.Row="1"
-   Stroke="#E8EAED"
-    StrokeThickness="1"
-     StrokeShape="RoundRectangle 20"
-         BackgroundColor="White"
-  Padding="40">
-   <Border.Shadow>
-           <Shadow Brush="Black" Opacity="0.1" Radius="12" Offset="0,4" />
-   </Border.Shadow>
+            <!-- Main Content Section -->
+            <Border Grid.Row="1"
+                    Stroke="{StaticResource BorderDefault}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 20"
+                    BackgroundColor="{StaticResource Surface}"
+                    Padding="40">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.08" Radius="12" Offset="0,4" />
+                </Border.Shadow>
 
- <VerticalStackLayout Spacing="24">
+                <VerticalStackLayout Spacing="24">
 
-      <!-- Welcome Message -->
-     <StackLayout Spacing="12">
-   <Label 
-  Text="Conectare la Serverul Farmaciei"
-        FontSize="18"
-   FontAttributes="Bold"
-        TextColor="#1565C0" />
-          
-      <Label 
-          FontSize="15"
-   TextColor="#424242"
-  LineHeight="1.5">
-          <Label.FormattedText>
-   <FormattedString>
-    <Span Text="Pentru a conecta acest client la serverul farmaciei, v? rug?m s? introduce?i informa?iile de mai jos.&#x0a;&#x0a;" />
-       <Span Text="Aceste informa?ii sunt furnizate de administratorul serverului." FontAttributes="Italic" TextColor="#666666" />
-     </FormattedString>
- </Label.FormattedText>
-      </Label>
-   </StackLayout>
+                    <StackLayout Spacing="12">
+                        <Label Text="Conectare la Serverul Farmaciei"
+                               FontFamily="OpenSansSemiBold"
+                               FontSize="18"
+                               TextColor="{StaticResource Primary}"/>
+                        <Label FontSize="15"
+                               TextColor="{StaticResource TextPrimary}"
+                               LineHeight="1.5">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Pentru a conecta acest client la serverul farmaciei, vă rugăm să introduceți informațiile de mai jos.&#x0a;&#x0a;" />
+                                    <Span Text="Aceste informații sunt furnizate de administratorul serverului." FontAttributes="Italic" TextColor="{StaticResource TextSecondary}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </StackLayout>
 
-    <BoxView HeightRequest="1" BackgroundColor="#E8EAED" />
+                    <BoxView HeightRequest="1" BackgroundColor="{StaticResource Separator}"/>
 
-      <!-- Input Fields -->
-         <StackLayout Spacing="20">
-          
-      <!-- Server Address Field -->
-      <StackLayout Spacing="8">
-     <Label 
-    Text="Adresa Server"
-  FontSize="14"
-       FontAttributes="Bold"
-     TextColor="#424242" />
-    <Label 
-      Text="Exemplu: 192.168.1.100 sau PHARMACY-SERVER"
-       FontSize="12"
-     TextColor="#666666"
-      Margin="0,0,0,4" />
-      <Border 
-      Stroke="#D1D5DB"
-  StrokeThickness="1"
-      StrokeShape="RoundRectangle 8"
-   BackgroundColor="#FAFBFC">
-      <Entry 
-Text="{Binding ServerAddress}"
-           Placeholder="Introduce?i adresa serverului"
-  FontSize="15"
-     TextColor="#1F2937"
-        PlaceholderColor="#9CA3AF"
-BackgroundColor="Transparent"
-      Margin="12,8" />
- </Border>
-  </StackLayout>
+                    <!-- Input Fields -->
+                    <StackLayout Spacing="20">
 
-            <!-- Password Field -->
-   <StackLayout Spacing="8">
-   <Label 
-       Text="Parol? pentru utilizator appuser"
-        FontSize="14"
-     FontAttributes="Bold"
-     TextColor="#424242" />
-          <Label 
-   Text="Parola SQL pentru utilizatorul appuser"
-     FontSize="12"
-      TextColor="#666666"
-    Margin="0,0,0,4" />
-    <Border 
-   Stroke="#D1D5DB"
-        StrokeThickness="1"
-  StrokeShape="RoundRectangle 8"
- BackgroundColor="#FAFBFC">
-      <Entry 
-   Text="{Binding AppUserPassword}"
-      Placeholder="Introduce?i parola"
-      IsPassword="True"
-     FontSize="15"
-  TextColor="#1F2937"
-          PlaceholderColor="#9CA3AF"
- BackgroundColor="Transparent"
-   Margin="12,8" />
-   </Border>
-  </StackLayout>
+                        <!-- Server Address Field -->
+                        <StackLayout Spacing="8">
+                            <Label Text="Adresa Server" Style="{StaticResource FieldLabel}"/>
+                            <Label Text="Exemplu: 192.168.1.100 sau PHARMACY-SERVER"
+                                   Style="{StaticResource CaptionLabel}"
+                                   Margin="0,0,0,4"/>
+                            <Border Stroke="{StaticResource BorderDefault}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="{StaticResource SurfaceVariant}">
+                                <Entry Text="{Binding ServerAddress}"
+                                       Placeholder="Introduceți adresa serverului"
+                                       BackgroundColor="Transparent"
+                                       Margin="12,8"/>
+                            </Border>
+                        </StackLayout>
 
-        </StackLayout>
+                        <!-- Password Field -->
+                        <StackLayout Spacing="8">
+                            <Label Text="Parolă pentru utilizator appuser" Style="{StaticResource FieldLabel}"/>
+                            <Label Text="Parola SQL pentru utilizatorul appuser"
+                                   Style="{StaticResource CaptionLabel}"
+                                   Margin="0,0,0,4"/>
+                            <Border Stroke="{StaticResource BorderDefault}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="{StaticResource SurfaceVariant}">
+                                <Entry Text="{Binding AppUserPassword}"
+                                       Placeholder="Introduceți parola"
+                                       IsPassword="True"
+                                       BackgroundColor="Transparent"
+                                       Margin="12,8"/>
+                            </Border>
+                        </StackLayout>
 
-         <BoxView HeightRequest="1" BackgroundColor="#E8EAED" />
+                    </StackLayout>
 
-       <!-- Test Connection Button -->
-  <Button 
-         Text="Testeaz? Conexiunea"
-       FontSize="16"
-FontAttributes="Bold"
-         Command="{Binding TestConnectionCommand}"
-        BackgroundColor="#1565C0"
- TextColor="White"
-     CornerRadius="12"
- HeightRequest="56"
-     IsEnabled="{Binding IsTesting, Converter={StaticResource InvertedBoolConverter}}">
-   <Button.Shadow>
-        <Shadow Brush="#1565C0" Opacity="0.3" Radius="12" Offset="0,4" />
-          </Button.Shadow>
-     <Button.Triggers>
-     <DataTrigger TargetType="Button"
-  Binding="{Binding IsTesting}"
-   Value="True">
-      <Setter Property="BackgroundColor" Value="#90CAF9" />
-    </DataTrigger>
-         </Button.Triggers>
-    </Button>
+                    <BoxView HeightRequest="1" BackgroundColor="{StaticResource Separator}"/>
 
-        <!-- Progress Section -->
-  <StackLayout Spacing="16"
-      IsVisible="{Binding IsTesting}">
-     
-        <ActivityIndicator 
-IsRunning="{Binding IsTesting}"
-     Color="#1565C0"
-        HeightRequest="40"
- WidthRequest="40"
-     HorizontalOptions="Center" />
-    
-    <Label 
-     Text="{Binding ProgressMessage}"
-  FontSize="14"
-      TextColor="#424242"
-  HorizontalTextAlignment="Center"
-    FontAttributes="Italic" />
-  </StackLayout>
+                    <!-- Test Connection Button -->
+                    <Button Text="Testează Conexiunea"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Command="{Binding TestConnectionCommand}"
+                            HeightRequest="52"
+                            IsEnabled="{Binding IsTesting, Converter={StaticResource InvertedBoolConverter}}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsTesting}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLight}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
 
-       <!-- Status Message Section -->
- <Border 
-       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-     Padding="20"
-StrokeShape="RoundRectangle 12"
-         Margin="0,8,0,0">
-     
- <Border.Triggers>
-     <DataTrigger TargetType="Border"
-       Binding="{Binding HasError}"
-  Value="True">
-  <Setter Property="BackgroundColor" Value="#FFEBEE" />
-   <Setter Property="Stroke" Value="#EF5350" />
-  <Setter Property="StrokeThickness" Value="2" />
-            </DataTrigger>
-          <DataTrigger TargetType="Border"
-  Binding="{Binding IsConnectionSuccessful}"
-   Value="True">
- <Setter Property="BackgroundColor" Value="#E8F5E9" />
-          <Setter Property="Stroke" Value="#66BB6A" />
- <Setter Property="StrokeThickness" Value="2" />
-  </DataTrigger>
-        </Border.Triggers>
+                    <!-- Progress Section -->
+                    <StackLayout Spacing="16" IsVisible="{Binding IsTesting}">
+                        <ActivityIndicator IsRunning="{Binding IsTesting}"
+                                           HeightRequest="40" WidthRequest="40"
+                                           HorizontalOptions="Center"/>
+                        <Label Text="{Binding ProgressMessage}"
+                               FontSize="14"
+                               TextColor="{StaticResource TextSecondary}"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Italic"/>
+                    </StackLayout>
 
-      <Label 
-      Text="{Binding StatusMessage}"
-   FontSize="14"
-     LineHeight="1.6">
-          <Label.Triggers>
-     <DataTrigger TargetType="Label"
-      Binding="{Binding HasError}"
-     Value="True">
-    <Setter Property="TextColor" Value="#C62828" />
-  </DataTrigger>
-     <DataTrigger TargetType="Label"
-      Binding="{Binding IsConnectionSuccessful}"
-     Value="True">
-       <Setter Property="TextColor" Value="#2E7D32" />
-        <Setter Property="FontAttributes" Value="Bold" />
-    </DataTrigger>
-       </Label.Triggers>
-   </Label>
-   </Border>
+                    <!-- Status Message Section -->
+                    <Border IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            Padding="20"
+                            StrokeShape="RoundRectangle 12"
+                            Margin="0,8,0,0">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding HasError}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource ErrorLight}"/>
+                                <Setter Property="Stroke" Value="{StaticResource Error}"/>
+                                <Setter Property="StrokeThickness" Value="2"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsConnectionSuccessful}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource SuccessLight}"/>
+                                <Setter Property="Stroke" Value="{StaticResource Success}"/>
+                                <Setter Property="StrokeThickness" Value="2"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{Binding StatusMessage}" FontSize="14" LineHeight="1.6">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding HasError}" Value="True">
+                                    <Setter Property="TextColor" Value="{StaticResource Error}"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsConnectionSuccessful}" Value="True">
+                                    <Setter Property="TextColor" Value="{StaticResource Success}"/>
+                                    <Setter Property="FontAttributes" Value="Bold"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
 
- </VerticalStackLayout>
-       </Border>
+                </VerticalStackLayout>
+            </Border>
 
-   <!-- Action Buttons -->
-        <HorizontalStackLayout 
-       Grid.Row="2"
-   Spacing="16"
-    HorizontalOptions="Center"
- Margin="0,16,0,0">
+            <!-- Action Buttons -->
+            <HorizontalStackLayout Grid.Row="2"
+                                   Spacing="16"
+                                   HorizontalOptions="Center"
+                                   Margin="0,16,0,0">
 
-        <!-- Cancel Button -->
-       <Button 
-   Text="Anulare"
-       FontSize="15"
-         Command="{Binding CancelCommand}"
-   BackgroundColor="#F5F5F5"
-      TextColor="#424242"
-        CornerRadius="10"
-      WidthRequest="140"
-       HeightRequest="48"
-       IsVisible="{Binding IsConnectionSuccessful, Converter={StaticResource InvertedBoolConverter}}"
-     IsEnabled="{Binding IsTesting, Converter={StaticResource InvertedBoolConverter}}" />
+                <Button Text="Anulare"
+                        Command="{Binding CancelCommand}"
+                        Style="{StaticResource OutlineButton}"
+                        WidthRequest="140"
+                        HeightRequest="48"
+                        IsVisible="{Binding IsConnectionSuccessful, Converter={StaticResource InvertedBoolConverter}}"
+                        IsEnabled="{Binding IsTesting, Converter={StaticResource InvertedBoolConverter}}"/>
 
-       <!-- Finish Button -->
-  <Button 
-   Text="Finalizare"
-   FontSize="15"
-        FontAttributes="Bold"
-       Command="{Binding FinishCommand}"
-    BackgroundColor="#2E7D32"
-   TextColor="White"
-    CornerRadius="10"
-  WidthRequest="140"
-HeightRequest="48"
-       IsVisible="{Binding IsConnectionSuccessful}">
-      <Button.Shadow>
-   <Shadow Brush="#2E7D32" Opacity="0.3" Radius="12" Offset="0,4" />
-      </Button.Shadow>
-     </Button>
+                <Button Text="Finalizare"
+                        FontAttributes="Bold"
+                        Command="{Binding FinishCommand}"
+                        WidthRequest="140"
+                        HeightRequest="48"
+                        IsVisible="{Binding IsConnectionSuccessful}"/>
 
-        </HorizontalStackLayout>
+            </HorizontalStackLayout>
 
-     </Grid>
+        </Grid>
     </ScrollView>
 
 </ContentPage>
