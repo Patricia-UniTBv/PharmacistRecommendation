@@ -1,33 +1,73 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PharmacistRecommendation.Views.AdministrationModesView"
-             x:Name="administration_modes_page">
-    <VerticalStackLayout Padding="14">
-        <Label Text="Configurare moduri de administrare" FontAttributes="Bold" FontSize="20"/>
-        <HorizontalStackLayout Spacing="8" Margin="0,30,0,8">
-            <Entry Placeholder="Cautare dupa nume..." Text="{Binding SearchText}" WidthRequest="180"/>
-            <Button Text="Caut" Command="{Binding SearchCommand}" BackgroundColor="#34495E"/>
-            <Button Text="Adaug nou" Command="{Binding AddCommand}" BackgroundColor="Green" />
+             x:Name="administration_modes_page"
+             BackgroundColor="{StaticResource Background}">
+
+    <VerticalStackLayout Padding="14" Spacing="10">
+        <Label Text="Configurare moduri de administrare"
+               Style="{StaticResource PageTitle}"
+               Margin="0,10,0,10"/>
+
+        <HorizontalStackLayout Spacing="8">
+            <Border Stroke="{StaticResource BorderDefault}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 6"
+                    Background="{StaticResource SurfaceBrush}"
+                    Padding="10,0"
+                    HeightRequest="36">
+                <Entry Placeholder="Căutare după nume..."
+                       Text="{Binding SearchText}"
+                       BackgroundColor="Transparent"
+                       VerticalOptions="Center"
+                       WidthRequest="200"/>
+            </Border>
+            <Button Text="Caută"   Command="{Binding SearchCommand}"/>
+            <Button Text="Adaugă nou" Command="{Binding AddCommand}"/>
         </HorizontalStackLayout>
-        <CollectionView ItemsSource="{Binding Modes}" SelectionMode="Single" SelectedItem="{Binding SelectedMode}">
+
+        <CollectionView ItemsSource="{Binding Modes}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedMode}">
+
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="3*,60,160,110"
+                      Padding="10"
+                      HeightRequest="36"
+                      BackgroundColor="{StaticResource PrimaryContainer}">
+                    <Label Grid.Column="0" Text="Nume" FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                    <Label Grid.Column="1" Text="Activ"  FontFamily="OpenSansSemiBold" TextColor="{StaticResource TextPrimary}" VerticalTextAlignment="Center"/>
+                </Grid>
+            </CollectionView.Header>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="3*,50,150,100" Padding="1" Margin="20,2,20,2" VerticalOptions="Center">
-                        <Entry Grid.Column="0" Text="{Binding Name, Mode=TwoWay}" Placeholder="Nume mod administrare" VerticalOptions="Center"/>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}" VerticalOptions="Center" Color="#5E89AD"/>
-                        <Button Grid.Column="2" Text="Adauga/Editeaza" BackgroundColor="#34495E"
-                        Command="{Binding BindingContext.EditCommand, Source={x:Reference administration_modes_page}}"
-                        CommandParameter="{Binding .}"
-                        Margin="5,0"/>
-                        <Button Grid.Column="3" Text="Sterge" BackgroundColor="#8E0621"
-                        Command="{Binding BindingContext.DeleteCommand, Source={x:Reference administration_modes_page}}"
-                        CommandParameter="{Binding .}"
-                        Margin="5,0"/>
+                    <Grid ColumnDefinitions="3*,60,160,110"
+                          Padding="10,4"
+                          HeightRequest="52"
+                          VerticalOptions="Center">
+                        <Entry Grid.Column="0"
+                               Text="{Binding Name, Mode=TwoWay}"
+                               Placeholder="Nume mod administrare"
+                               VerticalOptions="Center"/>
+                        <CheckBox Grid.Column="1"
+                                  IsChecked="{Binding IsActive, Mode=TwoWay}"
+                                  VerticalOptions="Center"/>
+                        <Button Grid.Column="2"
+                                Text="Salvează"
+                                Command="{Binding BindingContext.EditCommand, Source={x:Reference administration_modes_page}}"
+                                CommandParameter="{Binding .}"
+                                FontSize="12" Padding="8,4" HeightRequest="32" Margin="4,0"/>
+                        <Button Grid.Column="3"
+                                Text="Șterge"
+                                Style="{StaticResource DangerButton}"
+                                Command="{Binding BindingContext.DeleteCommand, Source={x:Reference administration_modes_page}}"
+                                CommandParameter="{Binding .}"
+                                FontSize="12" Padding="8,4" HeightRequest="32" Margin="4,0"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
     </VerticalStackLayout>
 </ContentPage>

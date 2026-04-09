@@ -1,154 +1,90 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="PharmacistRecommendation.Views.LoginView"
-         xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
- x:DataType="viewmodels:LoginViewModel"
-     Title="Autentificare"
-       Shell.NavBarIsVisible="False"
-             BackgroundColor="#F5F5F5">
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
+             xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             x:DataType="viewmodels:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource NavyHeader}">
 
-    <Grid RowDefinitions="Auto, *">
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Padding="24,48">
 
-        <!-- Top Navigation Bar -->
-   <Border Grid.Row="0"
-                BackgroundColor="#34495E"
-           Padding="15,10">
-      <Label Text="Recomandarea Farmacistului"
-     FontSize="18"
-         FontAttributes="Bold"
-         TextColor="White"
-      HorizontalOptions="Center" />
-     </Border>
+            <Border StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12"
+                    Background="{StaticResource SurfaceBrush}"
+                    WidthRequest="400"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="14" Padding="28,24">
 
-        <!-- Main Content -->
-        <ScrollView Grid.Row="1">
-            <Grid RowDefinitions="Auto, *, Auto" 
-       Padding="20,15,20,10" 
-      RowSpacing="15"
-         VerticalOptions="Center">
+                    <Label Text="Autentificare"
+                           FontFamily="OpenSansSemiBold"
+                           FontSize="20"
+                           TextColor="{StaticResource TextPrimary}"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Sistemul de recomandări pentru farmacii"
+                           FontSize="13"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,8"/>
 
-     <!-- Header Section -->
-         <StackLayout Grid.Row="0" Spacing="6">
-     <Label Text="Autentificare"
-  FontSize="22"
-             FontAttributes="Bold"
-      TextColor="#2C3E50"
-  HorizontalOptions="Center" />
-    <Label Text="Sistemul de recomandări pentru farmacii"
-         FontSize="13"
-        TextColor="#7F8C8D"
-    HorizontalOptions="Center" />
-   </StackLayout>
+                    <Label Text="NUME UTILIZATOR" Style="{StaticResource FieldLabel}"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="12,0" HeightRequest="40">
+                        <Entry Text="{Binding Username}"
+                               Placeholder="Introduceți numele de utilizator"
+                               BackgroundColor="Transparent"
+                               VerticalOptions="Center"
+                               ReturnType="Next">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
 
-          <!-- Login Form -->
-    <Border Grid.Row="1"
-           StrokeThickness="1"
-         Stroke="#DDDDDD"
- BackgroundColor="White"
-    StrokeShape="RoundRectangle 10,10,10,10"
-        Padding="25,20"
- VerticalOptions="Center"
-     MaximumWidthRequest="400">
+                    <Label Text="PAROLĂ" Style="{StaticResource FieldLabel}"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="12,0" HeightRequest="40">
+                        <Entry Text="{Binding Password}"
+                               Placeholder="Introduceți parola"
+                               IsPassword="True"
+                               BackgroundColor="Transparent"
+                               VerticalOptions="Center"
+                               ReturnType="Done"
+                               ReturnCommand="{Binding LoginCommand}">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
 
-          <StackLayout Spacing="12">
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource Error}"
+                           FontSize="12"
+                           IsVisible="{Binding HasError}"
+                           HorizontalOptions="Center"/>
 
-  <!-- Username Entry -->
-     <StackLayout Spacing="4">
-          <Label Text="Nume utilizator" 
-     FontSize="13" 
-        TextColor="#7F8C8D" />
-             <Border StrokeThickness="1" 
-     Stroke="#BDC3C7" 
-   BackgroundColor="#FAFAFA" 
-             StrokeShape="RoundRectangle 6,6,6,6"
-      Padding="12,0" 
-HeightRequest="40">
-  <Entry Text="{Binding Username}"
-      Placeholder="Introduceți numele de utilizator"
-        FontSize="14"
-        BackgroundColor="Transparent"
-              TextColor="#2C3E50"
-    PlaceholderColor="#7F8C8D"
-            VerticalOptions="Center"
-   ReturnType="Next" />
-                  </Border>
-           </StackLayout>
+                    <Button Text="Autentificare"
+                            Command="{Binding LoginCommand}"
+                            IsEnabled="{Binding IsNotLoading}"
+                            HeightRequest="42"
+                            Margin="0,6,0,0"/>
 
-           <!-- Password Entry -->
-    <StackLayout Spacing="4">
-  <Label Text="Parolă" 
-             FontSize="13" 
-  TextColor="#7F8C8D" />
-                <Border StrokeThickness="1" 
-           Stroke="#BDC3C7" 
-         BackgroundColor="#FAFAFA" 
-   StrokeShape="RoundRectangle 6,6,6,6"
-          Padding="12,0" 
-  HeightRequest="40">
-     <Entry Text="{Binding Password}"
-        Placeholder="Introduceți parola"
-                FontSize="14"
-   BackgroundColor="Transparent"
-       TextColor="#2C3E50"
-         PlaceholderColor="#7F8C8D"
-                VerticalOptions="Center"
-    IsPassword="True"
-           ReturnType="Done"
-             ReturnCommand="{Binding LoginCommand}" />
-    </Border>
-            </StackLayout>
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       IsVisible="{Binding IsLoading}"
+                                       Color="{StaticResource Primary}"
+                                       HorizontalOptions="Center"/>
 
-                <!-- Error Message -->
-  <Label Text="{Binding ErrorMessage}"
-         TextColor="#E74C3C"
-           FontSize="12"
-   HorizontalOptions="Center"
-         IsVisible="{Binding HasError}"
-     Margin="0,5" />
+                    <Button Text="Ai uitat parola?"
+                            Command="{Binding ForgotPasswordCommand}"
+                            Style="{StaticResource GhostButton}"
+                            HorizontalOptions="Center"
+                            FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
 
-   <!-- Login Button -->
-            <Button Text="Autentificare"
-               Command="{Binding LoginCommand}"
-      BackgroundColor="#2ECC71"
-     TextColor="White"
-         FontSize="14"
-    FontAttributes="Bold"
-              CornerRadius="6"
-         HeightRequest="38"
-             IsEnabled="{Binding IsNotLoading}"
-       Margin="0,10,0,5" />
-
-        <!-- Loading Indicator -->
-       <ActivityIndicator IsRunning="{Binding IsLoading}"
-   IsVisible="{Binding IsLoading}"
-                   Color="#2ECC71"
-       HorizontalOptions="Center" />
-
-            <!-- Forgot Password -->
-        <Button Text="Ai uitat parola?"
-   Command="{Binding ForgotPasswordCommand}"
-  BackgroundColor="Transparent"
-   TextColor="#95A5A6"
-   FontSize="12"
-  HorizontalOptions="Center"
-          HeightRequest="30" />
-
-              </StackLayout>
-      </Border>
-
-                <!-- Footer -->
-          <StackLayout Grid.Row="2" 
-   VerticalOptions="End"
- Margin="0,5">
-           <Label Text="© 2025 PharmacistRecommendation"
-       TextColor="#95A5A6"
-               FontSize="10"
-       HorizontalOptions="Center" />
-         </StackLayout>
-
-    </Grid>
-        </ScrollView>
-
-    </Grid>
+            <Label Text="© 2025 Recomandarea Farmacistului"
+                   FontSize="11"
+                   TextColor="#475569"
+                   HorizontalOptions="Center"
+                   Margin="0,16,0,0"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

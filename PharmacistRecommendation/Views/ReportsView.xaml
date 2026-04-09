@@ -58,7 +58,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:ReportTypeModel">
                         <Grid Padding="0,5">
-                            <Frame BackgroundColor="White" 
+                            <Frame BackgroundColor="{StaticResource Surface}" 
                                    HasShadow="True" 
                                    Padding="15"
                                    CornerRadius="10">
@@ -101,7 +101,7 @@
                    FontAttributes="Italic"/>
 
             <Frame IsVisible="{Binding SelectedReportType, Converter={StaticResource NotNullToBoolConverter}}"
-                   BackgroundColor="White" 
+                   BackgroundColor="{StaticResource Surface}" 
                    HasShadow="True" 
                    Padding="15">
                 <StackLayout Spacing="15">
@@ -122,9 +122,9 @@
                                 VerticalOptions="Center"/>-->
                     </StackLayout>
 
-                    <Label Text="{Binding DataCount}" 
+                    <Label Text="{Binding DataCount}"
                            FontAttributes="Bold"
-                           TextColor="#2C3E50"/>
+                           TextColor="{StaticResource TextPrimary}"/>
 
                     <Frame IsVisible="{Binding IsPrescriptionReport}"
        BackgroundColor="{StaticResource SurfaceVariant}"
@@ -193,7 +193,7 @@
 
                                             <!-- DATA -->
                                             <Frame Grid.Column="0"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -207,7 +207,7 @@
 
                                             <!-- PACIENT -->
                                             <Frame Grid.Column="1"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -221,7 +221,7 @@
 
                                             <!-- CNP -->
                                             <Frame Grid.Column="2"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -235,7 +235,7 @@
 
                                             <!-- CARD -->
                                             <Frame Grid.Column="3"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -252,7 +252,7 @@
 
                                             <!-- SERIE/NR -->
                                             <Frame Grid.Column="4"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -371,7 +371,7 @@
 
                                             <!-- DATA -->
                                             <Frame Grid.Column="0"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -385,7 +385,7 @@
 
                                             <!-- PACIENT -->
                                             <Frame Grid.Column="1"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -405,7 +405,7 @@
 
                                             <!-- CNP -->
                                             <Frame Grid.Column="2"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -419,7 +419,7 @@
 
                                             <!-- CID -->
                                             <Frame Grid.Column="3"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"
@@ -434,7 +434,7 @@
 
                                             <!-- CARD -->
                                             <Frame Grid.Column="4"
-                               BackgroundColor="White"
+                               BackgroundColor="{StaticResource Surface}"
                                Padding="5"
                                CornerRadius="5"
                                HasShadow="False"

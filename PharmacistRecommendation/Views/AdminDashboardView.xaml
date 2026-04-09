@@ -7,7 +7,7 @@
              xmlns:dto="clr-namespace:DTO;assembly=DTO"
              x:Class="PharmacistRecommendation.Views.AdminDashboardView"
              x:DataType="vm:AdminDashboardViewModel"
-             BackgroundColor="White">
+             BackgroundColor="{StaticResource Surface}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -16,9 +16,9 @@
             <Color x:Key="BorderGray">#CCCCCC</Color>
             <Color x:Key="TextGray">#333333</Color>
             <Color x:Key="LightGray">#F5F5F5</Color>
-            <Color x:Key="ActiveTab">#4A90D9</Color>
+            <Color x:Key="ActiveTab">#2D6CB0</Color>
             <Color x:Key="ActiveTabText">White</Color>
-            <Color x:Key="InactiveTab">#E0E0E0</Color>
+            <Color x:Key="InactiveTab">#E8EDF5</Color>
             <Color x:Key="EditPanel">#F0F4FA</Color>
 
             <Style x:Key="TabButton" TargetType="Button">
@@ -44,7 +44,7 @@
 
             <Style x:Key="ActionBtn" TargetType="Button">
                 <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="#E0E0E0"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource Gray200}"/>
                 <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
                 <Setter Property="CornerRadius" Value="3"/>
                 <Setter Property="HeightRequest" Value="30"/>
@@ -54,7 +54,7 @@
 
             <Style x:Key="SaveBtn" TargetType="Button">
                 <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                 <Setter Property="TextColor" Value="White"/>
                 <Setter Property="CornerRadius" Value="3"/>
                 <Setter Property="HeightRequest" Value="32"/>
@@ -64,7 +64,7 @@
 
             <Style x:Key="CancelBtn" TargetType="Button">
                 <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="#E0E0E0"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource Gray200}"/>
                 <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
                 <Setter Property="CornerRadius" Value="3"/>
                 <Setter Property="HeightRequest" Value="32"/>
@@ -111,7 +111,7 @@
 
         <!-- TAB BAR -->
         <Border Grid.Row="1"
-                BackgroundColor="White"
+                BackgroundColor="{StaticResource Surface}"
                 Stroke="{StaticResource BorderGray}"
                 StrokeThickness="0,0,0,1"
                 Padding="8,6">
@@ -122,7 +122,7 @@
                         Style="{StaticResource TabButton}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding IsPatientsVisible}" Value="True">
-                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                             <Setter Property="TextColor" Value="White"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
@@ -134,7 +134,7 @@
                         Style="{StaticResource TabButton}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding IsUsersVisible}" Value="True">
-                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                             <Setter Property="TextColor" Value="White"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
@@ -146,7 +146,7 @@
                         Style="{StaticResource TabButton}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding IsPrescriptionsVisible}" Value="True">
-                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                             <Setter Property="TextColor" Value="White"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
@@ -158,7 +158,7 @@
                         Style="{StaticResource TabButton}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding IsMonitoringsVisible}" Value="True">
-                            <Setter Property="BackgroundColor" Value="#4A90D9"/>
+                            <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
                             <Setter Property="TextColor" Value="White"/>
                             <Setter Property="FontAttributes" Value="Bold"/>
                         </DataTrigger>
@@ -394,7 +394,7 @@
 
                 <!-- Patient edit -->
                 <VerticalStackLayout IsVisible="{Binding IsPatientEditVisible}" Spacing="4">
-                    <Label Text="Editare pacient" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Label Text="Editare pacient" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
@@ -435,7 +435,7 @@
 
                 <!-- User edit -->
                 <VerticalStackLayout IsVisible="{Binding IsUserEditVisible}" Spacing="4">
-                    <Label Text="Editare utilizator" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Label Text="Editare utilizator" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
@@ -478,7 +478,7 @@
 
                 <!-- Prescription edit -->
                 <VerticalStackLayout IsVisible="{Binding IsPrescriptionEditVisible}" Spacing="4">
-                    <Label Text="Editare rețetă / act" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Label Text="Editare rețetă / act" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="Diagnostic" Style="{StaticResource FieldLabel}"/>
@@ -501,7 +501,7 @@
 
                 <!-- Monitoring edit -->
                 <VerticalStackLayout IsVisible="{Binding IsMonitoringEditVisible}" Spacing="4">
-                    <Label Text="Editare monitorizare" FontSize="14" FontAttributes="Bold" TextColor="#4A90D9"/>
+                    <Label Text="Editare monitorizare" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="Înălțime (cm)" Style="{StaticResource FieldLabel}"/>

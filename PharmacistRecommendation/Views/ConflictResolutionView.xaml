@@ -4,86 +4,111 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
              x:DataType="viewmodels:ConflictResolutionViewModel"
-             Title="Resolve Import Conflicts">
+             BackgroundColor="{StaticResource Background}"
+             Title="Rezolvare conflicte import">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Header -->
-        <StackLayout Grid.Row="0" Padding="20" BackgroundColor="LightYellow">
-            <Label Text="Manual Medication Conflicts" FontSize="18" FontAttributes="Bold"/>
-            <Label Text="The following manually-entered medications have conflicts with imported data. Please choose how to resolve each conflict:" FontSize="14"/>
-        </StackLayout>
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource PrimaryContainer}"
+                StrokeThickness="0"
+                Padding="20,14">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Conflicte medicamente"
+                       Style="{StaticResource PageTitle}"/>
+                <Label Text="Medicamentele introduse manual au conflicte cu datele importate. Alegeți cum doriți să rezolvați fiecare conflict."
+                       TextColor="{StaticResource TextSecondary}"
+                       FontSize="13"/>
+            </VerticalStackLayout>
+        </Border>
 
-        <!-- Conflicts List -->
-        <ScrollView Grid.Row="1" Padding="10">
-            <StackLayout>
-                <CollectionView ItemsSource="{Binding Conflicts}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:ConflictViewModel">
-                            <Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10" BackgroundColor="White">
-                                <StackLayout>
-                                    <!-- Medication Info -->
-                                    <Label Text="{Binding MedicationDisplayName}" FontSize="16" FontAttributes="Bold" TextColor="DarkBlue"/>
-                                    <Label Text="{Binding ConflictSummary}" FontSize="12" TextColor="Gray"/>
+        <!-- Conflicts list -->
+        <ScrollView Grid.Row="1" Padding="12">
+            <CollectionView ItemsSource="{Binding Conflicts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:ConflictViewModel">
+                        <Border Stroke="{StaticResource BorderDefault}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="{StaticResource Surface}"
+                                Margin="0,0,0,10"
+                                Padding="16,12">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding MedicationDisplayName}"
+                                       FontSize="15"
+                                       FontFamily="OpenSansSemiBold"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                                <Label Text="{Binding ConflictSummary}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"/>
 
-                                    <!-- Conflicting Fields -->
-                                    <Label Text="Conflicting Fields:" FontSize="14" FontAttributes="Bold" Margin="0,10,0,5"/>
-                                    <CollectionView ItemsSource="{Binding ConflictDetails}">
-                                        <CollectionView.ItemTemplate>
-                                            <DataTemplate x:DataType="viewmodels:ConflictDetail">
-                                                <Grid Padding="5,2">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="2*"/>
-                                                        <ColumnDefinition Width="2*"/>
-                                                    </Grid.ColumnDefinitions>
+                                <Label Text="Câmpuri în conflict:"
+                                       FontFamily="OpenSansSemiBold"
+                                       FontSize="13"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       Margin="0,8,0,4"/>
+                                <CollectionView ItemsSource="{Binding ConflictDetails}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:ConflictDetail">
+                                            <Grid ColumnDefinitions="*,2*,2*" Padding="4,2">
+                                                <Label Grid.Column="0" Text="{Binding FieldName}"
+                                                       FontFamily="OpenSansSemiBold"
+                                                       TextColor="{StaticResource TextPrimary}"
+                                                       FontSize="12"/>
+                                                <Label Grid.Column="1" Text="{Binding ExistingValue}"
+                                                       TextColor="{StaticResource Error}"
+                                                       FontSize="12"/>
+                                                <Label Grid.Column="2" Text="{Binding ImportValue}"
+                                                       TextColor="{StaticResource Success}"
+                                                       FontSize="12"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
 
-                                                    <Label Grid.Column="0" Text="{Binding FieldName}" FontAttributes="Bold"/>
-                                                    <Label Grid.Column="1" Text="{Binding ExistingValue}" TextColor="Red" FontSize="12"/>
-                                                    <Label Grid.Column="2" Text="{Binding ImportValue}" TextColor="Green" FontSize="12"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </CollectionView.ItemTemplate>
-                                    </CollectionView>
-
-                                    <!-- Resolution Options -->
-                                    <Label Text="Resolution:" FontSize="14" FontAttributes="Bold" Margin="0,10,0,5"/>
-                                    <RadioButton GroupName="{Binding ConflictId}" Content="Keep existing (manual) data" 
-                                               IsChecked="{Binding KeepExisting}" />
-                                    <RadioButton GroupName="{Binding ConflictId}" Content="Update to imported data" 
-                                               IsChecked="{Binding UpdateToImport}" />
-                                    <RadioButton GroupName="{Binding ConflictId}" Content="Skip this medication" 
-                                               IsChecked="{Binding SkipMedication}" />
-                                </StackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
+                                <Label Text="Rezoluție:"
+                                       FontFamily="OpenSansSemiBold"
+                                       FontSize="13"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       Margin="0,8,0,4"/>
+                                <RadioButton GroupName="{Binding ConflictId}"
+                                             Content="Păstrează datele existente (manuale)"
+                                             IsChecked="{Binding KeepExisting}"/>
+                                <RadioButton GroupName="{Binding ConflictId}"
+                                             Content="Actualizează cu datele importate"
+                                             IsChecked="{Binding UpdateToImport}"/>
+                                <RadioButton GroupName="{Binding ConflictId}"
+                                             Content="Ignoră acest medicament"
+                                             IsChecked="{Binding SkipMedication}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </ScrollView>
 
-        <!-- Action Buttons -->
-        <Grid Grid.Row="2" Padding="20" BackgroundColor="LightGray">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- Action buttons -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource PrimaryContainer}"
+                StrokeThickness="0"
+                Padding="20,12">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="Păstrează tot"
+                        Command="{Binding KeepAllExistingCommand}"
+                        Style="{StaticResource OutlineButton}"/>
+                <Button Grid.Column="1" Text="Actualizează tot"
+                        Command="{Binding UpdateAllToImportCommand}"/>
+                <Button Grid.Column="2" Text="Aplică selecția"
+                        Command="{Binding ApplySelectionsCommand}"/>
+            </Grid>
+        </Border>
 
-            <Button Grid.Column="0" Text="Keep All Existing" Command="{Binding KeepAllExistingCommand}" 
-                    BackgroundColor="Orange" TextColor="White" Margin="5"/>
-            <Button Grid.Column="1" Text="Update All to Import" Command="{Binding UpdateAllToImportCommand}" 
-                    BackgroundColor="Green" TextColor="White" Margin="5"/>
-            <Button Grid.Column="2" Text="Apply Selections" Command="{Binding ApplySelectionsCommand}" 
-                    BackgroundColor="Blue" TextColor="White" Margin="5"/>
-        </Grid>
-
-        <ActivityIndicator IsVisible="{Binding IsLoading}" IsRunning="{Binding IsLoading}" 
-                         HorizontalOptions="Center" VerticalOptions="Center"/>
+        <ActivityIndicator Grid.RowSpan="3"
+                           IsVisible="{Binding IsLoading}"
+                           IsRunning="{Binding IsLoading}"
+                           Color="{StaticResource Primary}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
     </Grid>
 </ContentPage>

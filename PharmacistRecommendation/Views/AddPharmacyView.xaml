@@ -1,28 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PharmacistRecommendation.Views.AddPharmacyView">
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
+             x:Class="PharmacistRecommendation.Views.AddPharmacyView"
+             BackgroundColor="{StaticResource Background}">
     <ScrollView>
-    <VerticalStackLayout Padding="30" Spacing="10">
-        <Label Text="Adăugare farmacie" FontAttributes="Bold" FontSize="20" Margin="0,0,0,10"/>
-        <Label Text="Denumire farmacie"/>
-        <Entry Placeholder="Denumire" Text="{Binding Name}" />
-        <Label Text="Adresă"/>
-        <Entry Placeholder="Adresă" Text="{Binding Address}" />
-        <Label Text="CUI"/>
-        <Entry Placeholder="CUI" Text="{Binding Cui}" />
-        <Label Text="Email"/>
-        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
-        <Label Text="Telefon"/>
-        <Entry Placeholder="Telefon" Text="{Binding Phone}" Keyboard="Telephone" />
+        <VerticalStackLayout Padding="30" Spacing="10" MaximumWidthRequest="500" HorizontalOptions="Center">
+            <Label Text="Adăugare farmacie"
+                   Style="{StaticResource PageTitle}"
+                   Margin="0,0,0,10"/>
 
-        <Label Text="Siglă Farmacie"/>
-        <Image Source="{Binding Logo}" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Start"/>
-        <Button Text="Selectează siglă" Command="{Binding SelectLogoCommand}"  BackgroundColor="#f4f4f6"
- TextColor="#36317f" WidthRequest="150" HorizontalOptions="Start"/>
+            <Label Text="DENUMIRE FARMACIE" Style="{StaticResource FieldLabel}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="Denumire" Text="{Binding Name}" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
-        <Button Text="Salvează" Command="{Binding SavePharmacyCommand}" 
-            BackgroundColor="#28a745" TextColor="White" WidthRequest="150" HorizontalOptions="Start"/>
-    </VerticalStackLayout>
+            <Label Text="ADRESĂ" Style="{StaticResource FieldLabel}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="Adresă" Text="{Binding Address}" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
+
+            <Label Text="CUI" Style="{StaticResource FieldLabel}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="CUI" Text="{Binding Cui}" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
+
+            <Label Text="EMAIL" Style="{StaticResource FieldLabel}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
+
+            <Label Text="TELEFON" Style="{StaticResource FieldLabel}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="Telefon" Text="{Binding Phone}" Keyboard="Telephone" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
+
+            <Label Text="SIGLĂ FARMACIE" Style="{StaticResource FieldLabel}"/>
+            <Image Source="{Binding Logo}" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Start"/>
+            <Button Text="Selectează siglă"
+                    Command="{Binding SelectLogoCommand}"
+                    Style="{StaticResource OutlineButton}"
+                    HorizontalOptions="Start"/>
+
+            <Button Text="Salvează"
+                    Command="{Binding SavePharmacyCommand}"
+                    HorizontalOptions="Start"
+                    Margin="0,10,0,0"/>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

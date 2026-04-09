@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,75 +7,61 @@
     CanBeDismissedByTappingOutsideOfPopup="False"
     Color="#66000000">
 
-    <Frame BackgroundColor="White"
-           CornerRadius="12"
-           Padding="24,24,24,8"
-           WidthRequest="500"
-           HeightRequest="500"
-           HasShadow="True"
-           HorizontalOptions="Center"
-           VerticalOptions="Center">
+    <Border BackgroundColor="{StaticResource Surface}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 12"
+            Padding="24,24,24,16"
+            WidthRequest="500"
+            HeightRequest="520"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
 
-        <Grid RowDefinitions="Auto,* ,Auto">
+        <Grid RowDefinitions="Auto,*,Auto">
 
             <Label Grid.Row="0"
                    Text="Configurare farmacist/asistent"
-                   FontSize="20"
-                   FontAttributes="Bold"
+                   Style="{StaticResource PageTitle}"
                    HorizontalTextAlignment="Center"
-                   TextColor="Black"
                    Margin="0,0,0,16"/>
 
             <ScrollView Grid.Row="1">
-                <VerticalStackLayout Spacing="3">
-                    <Entry Placeholder="Nume"      Text="{Binding LastName}"      TextColor="Black"/>
-                    <Entry Placeholder="Prenume"   Text="{Binding FirstName}"   TextColor="Black"/>
-                    <Entry Placeholder="Username"   Text="{Binding Username}"   TextColor="Black"/>
-                    <Entry Placeholder="NCM (serie i numr)"       Text="{Binding Ncm}"       TextColor="Black"/>
-                    <Entry Placeholder="Email"     Text="{Binding Email}"     Keyboard="Email"      TextColor="Black"/>
-                    <Entry Placeholder="Telefon"   Text="{Binding PhoneNr}"   Keyboard="Telephone"  TextColor="Black"/>
-                    <HorizontalStackLayout Spacing="3" Margin="0,0,0,0">
-                        <CheckBox IsChecked="{Binding IsAssistant, Mode=TwoWay}" />
-                        <Label Text="Este asistent/a"
-                               VerticalOptions="Center"
-                               TextColor="Black" />
+                <VerticalStackLayout Spacing="6">
+                    <Entry Placeholder="Nume"                  Text="{Binding LastName}"/>
+                    <Entry Placeholder="Prenume"               Text="{Binding FirstName}"/>
+                    <Entry Placeholder="Username"              Text="{Binding Username}"/>
+                    <Entry Placeholder="NCM (serie și număr)"  Text="{Binding Ncm}"/>
+                    <Entry Placeholder="Email"                 Text="{Binding Email}"   Keyboard="Email"/>
+                    <Entry Placeholder="Telefon"               Text="{Binding PhoneNr}" Keyboard="Telephone"/>
+
+                    <HorizontalStackLayout Spacing="8">
+                        <CheckBox IsChecked="{Binding IsAssistant, Mode=TwoWay}"/>
+                        <Label Text="Este asistent/ă" VerticalOptions="Center" TextColor="{StaticResource TextPrimary}"/>
                     </HorizontalStackLayout>
 
-                    <HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="8">
                         <Entry x:Name="PasswordEntry"
                                Text="{Binding Password}"
                                IsPassword="{Binding IsPassword, Mode=TwoWay}"
-                               Placeholder="Parol"
-                               WidthRequest="250"
-                               TextColor="Black" />
-
+                               Placeholder="Parolă"
+                               WidthRequest="260"/>
                         <ImageButton Source="view.png"
                                      Clicked="OnShowPasswordClicked"
                                      BackgroundColor="Transparent"
-                                     WidthRequest="20"
-                                     HeightRequest="20"
+                                     WidthRequest="20" HeightRequest="20"
                                      Aspect="AspectFit"
-                                     Scale="0.5"
-                                     Padding="0"
-                                     HorizontalOptions="End"/>
+                                     Padding="0"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
 
             <HorizontalStackLayout Grid.Row="2"
-                                   Spacing="16"
-                                   Margin="0,0,0,0"
+                                   Spacing="12"
+                                   Margin="0,12,0,0"
                                    HorizontalOptions="End">
-                <Button Text="Salveaz"
-                        Command="{Binding SaveCommand}"
-                        BackgroundColor="Green"
-                        TextColor="White"/>
-                <Button Text="nchide"
-                        Command="{Binding CancelCommand}"
-                        BackgroundColor="Red"
-                        TextColor="White"/>
+                <Button Text="Salvează"  Command="{Binding SaveCommand}"/>
+                <Button Text="Închide"   Command="{Binding CancelCommand}" Style="{StaticResource OutlineButton}"/>
             </HorizontalStackLayout>
 
         </Grid>
-    </Frame>
+    </Border>
 </toolkit:Popup>
