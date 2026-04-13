@@ -153,7 +153,7 @@
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="160"/>
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0" Text="Cod CIM"
@@ -195,7 +195,7 @@
                                     <ColumnDefinition Width="110"/>
                                     <ColumnDefinition Width="80"/>
                                     <ColumnDefinition Width="80"/>
-                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="160"/>
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Column="0"

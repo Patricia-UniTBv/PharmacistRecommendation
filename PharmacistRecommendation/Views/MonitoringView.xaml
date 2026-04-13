@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
              x:Class="PharmacistRecommendation.Views.MonitoringView">
 
     <ContentPage.Resources>
@@ -47,19 +48,25 @@
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Număr card" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding CardNumber}" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding CardNumber}" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="CNP" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding Cnp}" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding Cnp}" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="CID" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding Cid}" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding Cid}" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
@@ -74,19 +81,25 @@
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding LastName}" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding LastName}" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="Prenume" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding FirstName}" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding FirstName}" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="Vârstă" Style="{StaticResource FieldLabel}"/>
                                 <Border Style="{StaticResource FieldBorder}">
-                                    <Entry Text="{Binding Age}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11"/>
+                                    <Entry Text="{Binding Age}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
                                 </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="3" Spacing="2">
@@ -116,11 +129,19 @@
                             </Grid.ColumnDefinitions>
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Greutate (kg)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding Weight}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding Weight}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="Înălțime (cm)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding Height}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding Height}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                         </Grid>
 
@@ -132,15 +153,27 @@
                             </Grid.ColumnDefinitions>
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="TA Sistolic" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding MaxBloodPressure}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding MaxBloodPressure}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="TA Diastolic" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding MinBloodPressure}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding MinBloodPressure}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="Puls (bpm)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding HeartRate}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding HeartRate}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                         </Grid>
 
@@ -152,15 +185,27 @@
                             </Grid.ColumnDefinitions>
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="Pulsoximetrie (%)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding PulseOximetry}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding PulseOximetry}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="Glicemie (mg/dL)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding BloodGlucose}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding BloodGlucose}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="2" Spacing="2">
                                 <Label Text="Temperatură (°C)" Style="{StaticResource FieldLabel}"/>
-                                <Entry Text="{Binding BodyTemperature}" Keyboard="Numeric" FontSize="11" HeightRequest="25"/>
+                                <Border Style="{StaticResource FieldBorder}">
+                                    <Entry Text="{Binding BodyTemperature}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="11">
+                                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
@@ -264,8 +309,13 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Label Text="Email pacient:" Grid.Column="0" VerticalOptions="Center" FontSize="12"/>
-                <Entry Text="{Binding PatientEmail}" Grid.Column="1"
-                       Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12" HeightRequest="35"/>
+                <Border Grid.Column="1" Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="35">
+                    <Entry Text="{Binding PatientEmail}"
+                           Placeholder="ex: ion.popescu@mail.com" Keyboard="Email" FontSize="12"
+                           BackgroundColor="Transparent" VerticalOptions="Center">
+                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                    </Entry>
+                </Border>
                 <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
                     <Button Text="Trimite Mail"  Command="{Binding SendEmailCommand}"
                             Style="{StaticResource OutlineButton}" FontSize="12" HeightRequest="34" WidthRequest="100"/>

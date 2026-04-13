@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
              xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
              x:DataType="viewmodels:ReportsViewModel">
 
     <ScrollView>
@@ -32,8 +33,14 @@
 
                     <StackLayout>
                         <Label Text="Filtru pacient (optional):"/>
-                        <Entry Text="{Binding PatientFilter}" 
-                               Placeholder="Nume pacient sau CNP"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                            <Entry Text="{Binding PatientFilter}"
+                                   Placeholder="Nume, CNP sau nr. card"
+                                   BackgroundColor="Transparent"
+                                   VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </StackLayout>
 
                     <Grid ColumnDefinitions="180,180" ColumnSpacing="8">

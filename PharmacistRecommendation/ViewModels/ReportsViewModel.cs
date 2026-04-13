@@ -237,15 +237,22 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await Task.Delay(500);
-                var reportTypeModel = GetReportTypeByString(value);
-                if (reportTypeModel != null)
+                try
                 {
-                    SelectedReportType = reportTypeModel;
-                    // Clear other report types and show only the selected one
-                    ReportTypes.Clear();
-                    ReportTypes.Add(reportTypeModel);
-                    await LoadReportDataAsync();
+                    await Task.Delay(500);
+                    var reportTypeModel = GetReportTypeByString(value);
+                    if (reportTypeModel != null)
+                    {
+                        SelectedReportType = reportTypeModel;
+                        // Clear other report types and show only the selected one
+                        ReportTypes.Clear();
+                        ReportTypes.Add(reportTypeModel);
+                        await LoadReportDataAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error loading report data: {ex.Message}");
                 }
             });
         }
@@ -382,7 +389,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-            .Where(p => !p.PrescriptionMedications.Any() || p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
+            .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
             .OrderBy(p => p.IssueDate)
             .ToList();
 
@@ -409,7 +416,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
                         (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                         (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                         (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-            .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true)) 
+            .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == true))
             .OrderBy(p => p.IssueDate)
             .ToList();
 

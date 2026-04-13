@@ -3,6 +3,7 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:PharmacistRecommendation.ViewModels"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
              x:DataType="viewmodels:AddEditMedicationViewModel"
              Title="{Binding PageTitle}"
              BackgroundColor="{StaticResource Background}">
@@ -20,31 +21,55 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                     <Label Text="COD CIM *" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding CodCIM}" Placeholder="W12345" MaxLength="50"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding CodCIM}" Placeholder="W12345" MaxLength="50" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                     <Label Text="{Binding CodCIMError}" TextColor="{StaticResource Error}"
                            FontSize="10" IsVisible="{Binding HasCodCIMError}"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Spacing="2">
                     <Label Text="COD ATC" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding CodATC}" Placeholder="A01AB02" MaxLength="7"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding CodATC}" Placeholder="A01AB02" MaxLength="7" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                     <Label Text="{Binding CodATCError}" TextColor="{StaticResource Error}"
                            FontSize="10" IsVisible="{Binding HasCodATCError}"/>
                 </VerticalStackLayout>
             </Grid>
 
             <Label Text="DENUMIRE COMERCIALĂ *" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding Denumire}" Placeholder="Aspirin 100mg"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding Denumire}" Placeholder="Aspirin 100mg" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
             <Label Text="{Binding DenumireError}" TextColor="{StaticResource Error}"
                    FontSize="10" IsVisible="{Binding HasDenumireError}"/>
 
             <Label Text="DCI" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding DCI}" Placeholder="Acetylsalicylic acid"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding DCI}" Placeholder="Acetylsalicylic acid" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <Label Text="ACȚIUNE TERAPEUTICĂ" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding ActiuneTerapeutica}" Placeholder="Antiinflamator, analgezic"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding ActiuneTerapeutica}" Placeholder="Antiinflamator, analgezic" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <Label Text="PRESCRIPȚIE" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding Prescriptie}" Placeholder="Cu prescripție medicală"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding Prescriptie}" Placeholder="Cu prescripție medicală" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <!-- Company information -->
             <Label Text="Informații Producător"
@@ -54,10 +79,18 @@
                    Padding="10,6" Margin="0,12,0,6"/>
 
             <Label Text="FIRMA PRODUCĂTOARE" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding FirmaProducatoare}" Placeholder="Bayer AG"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding FirmaProducatoare}" Placeholder="Bayer AG" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <Label Text="FIRMA DEȚINĂTOARE" Style="{StaticResource FieldLabel}"/>
-            <Entry Text="{Binding FirmaDetinatoare}" Placeholder="Bayer Romania"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Text="{Binding FirmaDetinatoare}" Placeholder="Bayer Romania" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <!-- Packaging information -->
             <Label Text="Informații Ambalaj"
@@ -69,22 +102,38 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                     <Label Text="NR/DATA AMBALAJ" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding NrData}" Placeholder="123/2024"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding NrData}" Placeholder="123/2024" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Spacing="2">
                     <Label Text="VOLUM AMBALAJ" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding VolumAmbalaj}" Placeholder="30 comprimate"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding VolumAmbalaj}" Placeholder="30 comprimate" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                 </VerticalStackLayout>
             </Grid>
 
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                     <Label Text="AMBALAJ" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding Ambalaj}" Placeholder="Blister"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding Ambalaj}" Placeholder="Blister" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Spacing="2">
                     <Label Text="VALABILITATE" Style="{StaticResource FieldLabel}"/>
-                    <Entry Text="{Binding Valabilitate}" Placeholder="24 luni"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                        <Entry Text="{Binding Valabilitate}" Placeholder="24 luni" BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                 </VerticalStackLayout>
             </Grid>
 

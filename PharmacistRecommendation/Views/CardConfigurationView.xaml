@@ -2,6 +2,7 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
     x:Class="PharmacistRecommendation.Views.CardConfigurationView"
     Padding="24,20,24,24"
     BackgroundColor="{StaticResource Background}">
@@ -41,7 +42,9 @@
                             <Entry Placeholder="Introduceți nr. card"
                                    Text="{Binding CardNumber}"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -54,7 +57,9 @@
                             <Entry Placeholder="Nume de familie"
                                    Text="{Binding LastName}"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -67,7 +72,9 @@
                             <Entry Placeholder="Prenume"
                                    Text="{Binding FirstName}"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -81,7 +88,9 @@
                                    Text="{Binding Cnp}"
                                    Keyboard="Numeric"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -95,7 +104,9 @@
                                    Text="{Binding Cid}"
                                    IsReadOnly="False"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -109,7 +120,9 @@
                                    Text="{Binding Phone}"
                                    Keyboard="Telephone"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -123,7 +136,9 @@
                                    Text="{Binding Email}"
                                    Keyboard="Email"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 
@@ -136,7 +151,9 @@
                             <Entry Text="{Binding BirthdateString}"
                                    Placeholder="dd/mm/yyyy"
                                    BackgroundColor="Transparent"
-                                   Margin="12,8"/>
+                                   Margin="12,8">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
                         </Border>
                     </StackLayout>
 

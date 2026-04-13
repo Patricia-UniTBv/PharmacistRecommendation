@@ -38,15 +38,22 @@ namespace PharmacistRecommendation.ViewModels
             _editUserVm = editUserVm;
 
             SelectedRole = AvailableRoles.FirstOrDefault(r => r.Value == "Assistant");
-            Task.Run(async () => await LoadUsersAsync());
+            _ = LoadUsersAsync();
         }
 
         [RelayCommand]
         private async Task LoadUsersAsync()
         {
-            var users = await _userService.GetAllUsersAsync();
-            var filtered = users.Where(u => u.Role == SelectedRole?.Value);
-            FilteredUsers = new ObservableCollection<UserDTO>(filtered);
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                var filtered = users.Where(u => u.Role == SelectedRole?.Value);
+                FilteredUsers = new ObservableCollection<UserDTO>(filtered);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load users: {ex.Message}");
+            }
         }
 
         partial void OnSelectedRoleChanged(RoleOption value)

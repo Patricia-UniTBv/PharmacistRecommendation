@@ -28,7 +28,18 @@ namespace PharmacistRecommendation
         protected override void OnStart()
         {
        base.OnStart();
-       
+
+            // Keep SessionManager in sync: clear it whenever auth state signals a logout
+            var authService = ServiceHelper.GetService<IAuthenticationService>();
+            if (authService != null)
+            {
+                authService.AuthenticationStateChanged += (_, result) =>
+                {
+                    if (!result.IsSuccess)
+                        SessionManager.SetCurrentUser(null);
+                };
+            }
+
           // Now it's safe to do async initialization
             MainThread.BeginInvokeOnMainThread(async () =>
   {

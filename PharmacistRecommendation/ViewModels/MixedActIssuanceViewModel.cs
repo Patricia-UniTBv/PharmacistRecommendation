@@ -486,6 +486,8 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
+            try
+            {
             if (string.IsNullOrWhiteSpace(PatientName) && string.IsNullOrWhiteSpace(CaregiverName))
             {
                 await ShowAlert("Completează numele pacientului/aparținătorului!");
@@ -577,53 +579,11 @@ namespace PharmacistRecommendation.ViewModels
 
             IsPrintButtonEnabled = true;
             await ShowAlert("Rețeta a fost salvată cu succes!");
-
-            var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
-
-            var exportDto = new PrescriptionExportDto
-            {
-                PharmacyName = pharmacy.Name,
-                PharmacyAdress = pharmacy.Address,
-                PharmacyCUI = pharmacy.CUI,
-                PharmacyPhone = pharmacy.Phone,
-                PharmacyEmail = pharmacy.Email,
-                PacientCard = CardNumber,
-                CardAderenta = "",
-                RetetaType = showWithPrescription ? "Compensată" : "Necompensată",
-                Note = pharmacistObservations,
-                ConfirmareAdresareMedic = "Da",
-                ConfirmareRidicareReteta = "Nu",
-                MedicParafa = doctorStamp,
-                MedicEmail = "",
-                SerieReteta = prescriptionSeries,
-                NrReteta = prescriptionNumber,
-                Reteta = new List<MedicationExportDto>()
-            };
-
-            if (showWithPrescription)
-            {
-                exportDto.Reteta = MedicationsWithPrescription.Select(m => new MedicationExportDto
-                {
-                    MedicineName = m.Name,
-                    MedicineMorning = m.Morning,
-                    MedicineLunch = m.Noon,
-                    MedicineEvening = m.Evening,
-                    MedicineNight = m.Night,
-                    MedicineAdministration = administrationModes
-                        .FirstOrDefault(x => x.Id == m.AdministrationModeId)?.Name
-                }).ToList();
             }
-            else
+            catch (Exception ex)
             {
-                exportDto.Reteta = MedicationsWithoutPrescription.Select(m => new MedicationExportDto
-                {
-                    MedicineName = m.Name,
-                    MedicineMorning = m.Morning,
-                    MedicineLunch = m.Noon,
-                    MedicineEvening = m.Evening,
-                    MedicineNight = m.Night,
-                    MedicineAdministration = m.AdministrationMode?.ToString() ?? "Null"
-                }).ToList();
+                System.Diagnostics.Debug.WriteLine($"[SaveAsync] {ex}");
+                await ShowAlert($"Eroare la salvare: {ex.Message}");
             }
         }
 
@@ -698,7 +658,14 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task PrintAsync()
         {
+            try
+            {
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+            if (_pharmacy == null)
+            {
+                await ShowAlert("Farmacia nu a fost găsită.");
+                return;
+            }
 
             var medsWithPrescription = MedicationsWithPrescription.Select(m => new ActPrintDocument.MedicationLine
             {
@@ -776,12 +743,20 @@ namespace PharmacistRecommendation.ViewModels
             {
                 printDoc.Print();
             }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[PrintAsync] {ex}");
+                await ShowAlert($"Eroare la tipărire: {ex.Message}");
+            }
         }
 
         [RelayCommand]
         private async Task<byte[]> CreatePrescriptionPdf()
         {
             var _pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+            if (_pharmacy == null)
+                throw new InvalidOperationException("Farmacia nu a fost găsită.");
 
             var medsWithPrescription = MedicationsWithPrescription.Select(m => new ActPdfDocument.MedicationLine
             {
@@ -805,9 +780,9 @@ namespace PharmacistRecommendation.ViewModels
 
             var pdfDoc = new ActPdfDocument
             {
-                PharmacyName = _pharmacy!.Name,
-                PharmacyAddress = _pharmacy.Address!,
-                PharmacyPhone = _pharmacy!.Phone!,
+                PharmacyName = _pharmacy.Name,
+                PharmacyAddress = _pharmacy.Address ?? string.Empty,
+                PharmacyPhone = _pharmacy.Phone ?? string.Empty,
                 Series = this.PrescriptionSeries!,
                 Number = this.PrescriptionNumber!,
                 IssueDate = DateTime.Now,
@@ -871,6 +846,11 @@ namespace PharmacistRecommendation.ViewModels
             }
 
             var pharmacy = await _pharmacyService.GetByIdAsync(pharmacyId);
+            if (pharmacy == null)
+            {
+                await Shell.Current.DisplayAlert("Eroare", "Farmacia nu a fost găsită.", "OK");
+                return;
+            }
 
             byte[] pdfBytes = await CreatePrescriptionPdf();
 

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Entities.Services.Interfaces;
+using PharmacistRecommendation.Helpers;
 
 namespace PharmacistRecommendation.ViewModels
 {
@@ -55,6 +56,7 @@ namespace PharmacistRecommendation.ViewModels
 
                 if (result.IsSuccess)
                 {
+                    SessionManager.SetCurrentUser(result.User);
                     await Shell.Current.GoToAsync("test_main");
                 }
                 else

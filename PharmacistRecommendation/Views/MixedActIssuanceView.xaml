@@ -4,6 +4,7 @@
     xmlns:local="clr-namespace:PharmacistRecommendation.ViewModels"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:PharmacistRecommendation.ViewModels"
+    xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
     x:Class="PharmacistRecommendation.Views.MixedActIssuanceView"
     x:Name="MixedActIssuance">
 
@@ -73,41 +74,71 @@
             </HorizontalStackLayout>
 
             <!-- Patient info card -->
-            <Border Style="{StaticResource TableCard}" HeightRequest="80">
+            <Border Style="{StaticResource TableCard}">
                 <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="Auto">
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="Nr. card" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Card nr." Text="{Binding CardNumber}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Card nr." Text="{Binding CardNumber}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="Pacient" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Pacient" Text="{Binding PatientName}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Pacient" Text="{Binding PatientName}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2">
                         <Label Text="CNP/CID pacient" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="CNP/CID pacient" Text="{Binding PatientCnp}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="CNP/CID pacient" Text="{Binding PatientCnp}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="3">
                         <Label Text="Aparținător" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Aparținător" Text="{Binding CaregiverName}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Aparținător" Text="{Binding CaregiverName}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="4">
                         <Label Text="CNP/CID aparținător" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="CNP/CID aparținător" Text="{Binding CaregiverCnp}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="CNP/CID aparținător" Text="{Binding CaregiverCnp}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
             <Label Text="Diagnostic menționat de pacient/aparținător" Style="{StaticResource FieldLabel}"/>
-            <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}"/>
+            <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                <Entry Placeholder="Diagnostic menționat de pacient/aparținător" Text="{Binding PatientDiagnosis}" BackgroundColor="Transparent" VerticalOptions="Center">
+                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                </Entry>
+            </Border>
 
             <!-- Medication search -->
             <VerticalStackLayout Padding="0,4">
                 <Label Text="Medicamente utilizate de pacient" Style="{StaticResource FieldLabel}"/>
-                <Entry Text="{Binding SearchText}"
-                       x:Name="SearchEntry"
-                       Placeholder="Caută medicament..."
-                       TextChanged="OnSearchTextChanged"/>
+                <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38">
+                    <Entry Text="{Binding SearchText}"
+                           x:Name="SearchEntry"
+                           Placeholder="Caută medicament..."
+                           TextChanged="OnSearchTextChanged"
+                           BackgroundColor="Transparent"
+                           VerticalOptions="Center">
+                        <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                    </Entry>
+                </Border>
                 <CollectionView ItemsSource="{Binding Suggestions}"
                                 SelectionMode="Single"
                                 MaximumHeightRequest="100"
@@ -128,41 +159,69 @@
             </VerticalStackLayout>
 
             <!-- Prescription info -->
-            <Border Style="{StaticResource TableCard}" IsVisible="{Binding ShowWithPrescription}" HeightRequest="90">
+            <Border Style="{StaticResource TableCard}" IsVisible="{Binding ShowWithPrescription}">
                 <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto" ColumnSpacing="16">
                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                         <Label Text="Parafă medic" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Parafă medic" Text="{Binding DoctorStamp}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Parafă medic" Text="{Binding DoctorStamp}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="4">
                         <Label Text="Seria" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Seria" Text="{Binding PrescriptionSeries}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Seria" Text="{Binding PrescriptionSeries}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2" Spacing="4">
                         <Label Text="Număr" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Număr" Text="{Binding PrescriptionNumber}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Număr" Text="{Binding PrescriptionNumber}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="3" Spacing="4">
                         <Label Text="Diagnostic" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Diagnostic" Text="{Binding PrescriptionDiagnosis}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Diagnostic" Text="{Binding PrescriptionDiagnosis}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
             <!-- Clinical observations -->
-            <Border Style="{StaticResource TableCard}" HeightRequest="80">
+            <Border Style="{StaticResource TableCard}">
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto" ColumnSpacing="16">
                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                         <Label Text="Simptomatologie" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Simptomatologie" Text="{Binding Symptoms}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Simptomatologie" Text="{Binding Symptoms}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="4">
                         <Label Text="Suspiciune" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Suspiciune" Text="{Binding Suspicion}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Suspiciune" Text="{Binding Suspicion}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2" Spacing="4">
                         <Label Text="Constatările farmacistului" Style="{StaticResource FieldLabel}"/>
-                        <Entry Placeholder="Constatările farmacistului" Text="{Binding PharmacistObservations}"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="34">
+                            <Entry Placeholder="Constatările farmacistului" Text="{Binding PharmacistObservations}" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
@@ -306,11 +365,15 @@
             <!-- Bottom action bar -->
             <Grid Padding="0,8,0,4" VerticalOptions="Center" ColumnDefinitions="Auto,*,Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
-                    <Entry Placeholder="Email pacient"
-                           Text="{Binding PatientEmail}"
-                           FontSize="14"
-                           WidthRequest="280"
-                           VerticalOptions="Center"/>
+                    <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="10,0" HeightRequest="38" WidthRequest="280">
+                        <Entry Placeholder="Email pacient"
+                               Text="{Binding PatientEmail}"
+                               FontSize="14"
+                               BackgroundColor="Transparent"
+                               VerticalOptions="Center">
+                            <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                        </Entry>
+                    </Border>
                     <Button Text="Trimite Mail"
                             Command="{Binding SendEmailCommand}"
                             FontSize="12"

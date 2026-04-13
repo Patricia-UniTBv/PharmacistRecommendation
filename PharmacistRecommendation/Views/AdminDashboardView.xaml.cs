@@ -18,6 +18,7 @@ namespace PharmacistRecommendation.Views
             if (SessionManager.CurrentUser?.Role?.ToLower() != "admin")
             {
                 await DisplayAlert("Acces interzis", "Nu aveți permisiunea de a accesa această pagină.", "OK");
+                SessionManager.SetCurrentUser(null);
                 await Shell.Current.GoToAsync("//login");
             }
         }

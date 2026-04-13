@@ -433,6 +433,8 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
     //Reports methods
     private async Task LoadMonitoringAsync(int id)
     {
+        try
+        {
         var monitoring = await _monitoringService.GetMonitoringByIdAsync(id);
         if (monitoring == null)
             return;
@@ -453,17 +455,29 @@ public partial class MonitoringViewModel : ObservableObject, IDisposable
 
         if (!string.IsNullOrWhiteSpace(monitoring.ParametersJson))
         {
-            var p = JsonSerializer.Deserialize<MonitoringParameters>(monitoring.ParametersJson);
+            try
+            {
+                var p = JsonSerializer.Deserialize<MonitoringParameters>(monitoring.ParametersJson);
 
-            MaxBloodPressure = p?.MaxBloodPressure;
-            MinBloodPressure = p?.MinBloodPressure;
-            HeartRate = p?.HeartRate;
-            PulseOximetry = p?.PulseOximetry;
-            BloodGlucose = p?.BloodGlucose;
-            BodyTemperature = p?.BodyTemperature;
+                MaxBloodPressure = p?.MaxBloodPressure;
+                MinBloodPressure = p?.MinBloodPressure;
+                HeartRate = p?.HeartRate;
+                PulseOximetry = p?.PulseOximetry;
+                BloodGlucose = p?.BloodGlucose;
+                BodyTemperature = p?.BodyTemperature;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to deserialize monitoring parameters for id {monitoring.Id}: {ex.Message}");
+            }
         }
 
         await LoadHistoryForPatientAsync(PatientId);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to load monitoring {id}: {ex.Message}");
+        }
     }
 
     private async Task LoadHistoryForPatientAsync(int patientId)

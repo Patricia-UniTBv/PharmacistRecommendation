@@ -92,8 +92,15 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task LoadPatientsAsync()
         {
-            _allPatients = await _patientService.GetAllPatientsAsync();
-            FilterPatients();
+            try
+            {
+                _allPatients = await _patientService.GetAllPatientsAsync();
+                FilterPatients();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load patients: {ex.Message}");
+            }
         }
 
         private void FilterPatients()
@@ -187,8 +194,15 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task LoadUsersAsync()
         {
-            _allUsers = (await _userService.GetAllUsersAsync()).ToList();
-            FilterUsers();
+            try
+            {
+                _allUsers = (await _userService.GetAllUsersAsync()).ToList();
+                FilterUsers();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load users: {ex.Message}");
+            }
         }
 
         private void FilterUsers()
@@ -299,8 +313,15 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task LoadPrescriptionsAsync()
         {
-            _allPrescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
-            FilterPrescriptions();
+            try
+            {
+                _allPrescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
+                FilterPrescriptions();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load prescriptions: {ex.Message}");
+            }
         }
 
         private void FilterPrescriptions()
@@ -376,8 +397,15 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task LoadMonitoringsAsync()
         {
-            _allMonitorings = await _monitoringService.GetAllMonitoringsAsync();
-            FilterMonitorings();
+            try
+            {
+                _allMonitorings = await _monitoringService.GetAllMonitoringsAsync();
+                FilterMonitorings();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load monitorings: {ex.Message}");
+            }
         }
 
         private void FilterMonitorings()

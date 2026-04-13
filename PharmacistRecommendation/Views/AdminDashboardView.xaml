@@ -5,6 +5,7 @@
              xmlns:conv="clr-namespace:PharmacistRecommendation.Converters"
              xmlns:models="clr-namespace:Entities.Models;assembly=Entities"
              xmlns:dto="clr-namespace:DTO;assembly=DTO"
+             xmlns:helpers="clr-namespace:PharmacistRecommendation.Helpers"
              x:Class="PharmacistRecommendation.Views.AdminDashboardView"
              x:DataType="vm:AdminDashboardViewModel"
              BackgroundColor="{StaticResource Surface}">
@@ -179,11 +180,11 @@
                         Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Entry Placeholder="Nume, CNP sau nr. card"
-                               Text="{Binding PatientSearchText}"
-                               WidthRequest="280"
-                               HeightRequest="32"
-                               FontSize="13"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="280">
+                            <Entry Placeholder="Nume, CNP sau nr. card" Text="{Binding PatientSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </HorizontalStackLayout>
                 </Border>
 
@@ -236,9 +237,11 @@
                                 SelectedItem="{Binding SelectedUserRoleFilter}"
                                 WidthRequest="140" FontSize="13"/>
                         <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Entry Placeholder="Nume sau username"
-                               Text="{Binding UserSearchText}"
-                               WidthRequest="220" HeightRequest="32" FontSize="13"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="220">
+                            <Entry Placeholder="Nume sau username" Text="{Binding UserSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </HorizontalStackLayout>
                 </Border>
 
@@ -288,9 +291,11 @@
                         <Label Text="Până la:" VerticalOptions="Center" FontSize="13"/>
                         <DatePicker Date="{Binding PrescriptionToDate}" FontSize="13"/>
                         <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Entry Placeholder="Pacient, serie sau nr."
-                               Text="{Binding PrescriptionSearchText}"
-                               WidthRequest="200" HeightRequest="32" FontSize="13"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="200">
+                            <Entry Placeholder="Pacient, serie sau nr." Text="{Binding PrescriptionSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </HorizontalStackLayout>
                 </Border>
 
@@ -342,9 +347,11 @@
                                 SelectedItem="{Binding SelectedMonitoringTypeFilter}"
                                 WidthRequest="130" FontSize="13"/>
                         <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Entry Placeholder="Pacient sau CNP"
-                               Text="{Binding MonitoringSearchText}"
-                               WidthRequest="180" HeightRequest="32" FontSize="13"/>
+                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="180">
+                            <Entry Placeholder="Pacient sau CNP" Text="{Binding MonitoringSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
+                                <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                            </Entry>
+                        </Border>
                     </HorizontalStackLayout>
                 </Border>
 

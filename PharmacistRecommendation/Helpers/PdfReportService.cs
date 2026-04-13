@@ -169,7 +169,7 @@ public class PdfReportService : IPdfReportService
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-                .Where(p => !p.PrescriptionMedications.Any() || p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
+                .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
 
@@ -197,7 +197,7 @@ public class PdfReportService : IPdfReportService
                            (p.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.PatientCnp?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                            (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-                .Where(p => p.PrescriptionMedications.Any(m => m.IsWithPrescription == true))
+                .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == true))
                 .OrderBy(p => p.IssueDate)
                 .ToList();
 
@@ -509,7 +509,7 @@ public class PdfReportService : IPdfReportService
         else
         {
             effectivePharmacist = await _userService.GetEffectivePharmacistAsync(SessionManager.CurrentUser);
-            assistantName = $"{SessionManager.CurrentUser.FirstName} {SessionManager.CurrentUser.LastName}";
+            assistantName = $"{SessionManager.CurrentUser?.FirstName} {SessionManager.CurrentUser?.LastName}".Trim();
         }
 
         string footerPharmacist = $"{effectivePharmacist?.FirstName ?? "-"} {effectivePharmacist?.LastName ?? "-"}";

@@ -35,11 +35,18 @@ namespace PharmacistRecommendation.ViewModels
 
         private async void LoadEmailConfiguration()
         {
-            var config = await _emailService.GetByPharmacyIdAsync(_pharmacyId);
-            if (config != null)
+            try
             {
-                Email = config.Username ?? string.Empty;
-                AppPassword = config.Password ?? string.Empty;
+                var config = await _emailService.GetByPharmacyIdAsync(_pharmacyId);
+                if (config != null)
+                {
+                    Email = config.Username ?? string.Empty;
+                    AppPassword = config.Password ?? string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load email configuration: {ex.Message}");
             }
         }
 
