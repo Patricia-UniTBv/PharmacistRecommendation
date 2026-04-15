@@ -61,12 +61,12 @@ namespace PharmacistRecommendation.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = result.ErrorMessage ?? "Autentificare e?uat?";
+                    ErrorMessage = result.ErrorMessage ?? "Autentificare eșuată";
                 }
             }
             catch (System.Exception ex)
             {
-                ErrorMessage = $"A ap?rut o eroare: {ex.Message}";
+                ErrorMessage = $"A apărut o eroare: {ex.Message}";
             }
             finally
             {
@@ -88,7 +88,7 @@ namespace PharmacistRecommendation.ViewModels
             {
                 if (Application.Current?.MainPage != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Info", "V? rug?m s? contacta?i administratorul pentru a reseta parola.", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Info", "Vă rugăm să contactați administratorul pentru a reseta parola.", "OK");
                 }
             }
             catch (Exception ex)

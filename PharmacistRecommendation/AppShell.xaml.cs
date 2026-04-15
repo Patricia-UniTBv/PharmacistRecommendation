@@ -117,68 +117,68 @@ namespace PharmacistRecommendation
 
         private async void OnNewCardClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("new_card");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("new_card"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnMonitClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("monitoring");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("monitoring"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnMixedIssuanceClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("mixed_issuance?mode=mixed");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("mixed_issuance?mode=mixed"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnPrescriptionOnlyClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("mixed_issuance?mode=withprescription"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnWithoutPrescriptionClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("mixed_issuance?mode=withoutprescription"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnTestMainPageClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("test_main");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("test_main"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnReportsClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("reports");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("reports"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnMixedActsReportClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("reports?type=mixed");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("reports?type=mixed"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnOwnActsReportClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("reports?type=own");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("reports?type=own"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnConsecutiveActsReportClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("reports?type=consecutive");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("reports?type=consecutive"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnMonitoringListReportClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("reports?type=monitoring");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("reports?type=monitoring"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         //private async void OnAddPharmacistClicked(object sender, EventArgs e)
@@ -188,50 +188,50 @@ namespace PharmacistRecommendation
 
         private async void OnUsersManagementClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("users_management");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("users_management"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnGdprConfigClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("gdpr_configuration");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("gdpr_configuration"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnAdministrationModesClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("administration_modes");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("administration_modes"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnImportConfigClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("import_configuration");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("import_configuration"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnMedicationsClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await Shell.Current.GoToAsync("medications");
+            try { if (IsAdmin()) return; await Shell.Current.GoToAsync("medications"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnEmailConfigClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await GoToAsync("email_configuration");
+            try { if (IsAdmin()) return; await GoToAsync("email_configuration"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnAddPharmacyClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await GoToAsync("add_pharmacy");
+            try { if (IsAdmin()) return; await GoToAsync("add_pharmacy"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnServerConfigClicked(object sender, EventArgs e)
         {
-            if (IsAdmin()) return;
-            await GoToAsync("server_configuration");
+            try { if (IsAdmin()) return; await GoToAsync("server_configuration"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Nav error: {ex.Message}"); }
         }
 
         private async void OnNavigateBackClicked(object sender, EventArgs e)

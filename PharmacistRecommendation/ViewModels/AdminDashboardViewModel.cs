@@ -78,7 +78,9 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] ObservableCollection<Patient> patients = new();
         [ObservableProperty] string patientSearchText = string.Empty;
 
-        [ObservableProperty] bool isPatientEditVisible;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsAnyEditVisible))]
+        bool isPatientEditVisible;
         private Patient? _editingPatient;
         [ObservableProperty] string editPatientFirstName = string.Empty;
         [ObservableProperty] string editPatientLastName  = string.Empty;
@@ -89,6 +91,8 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] string editPatientGender    = string.Empty;
 
         public string[] GenderOptions { get; } = { "", "Masculin", "Feminin" };
+
+        public bool IsAnyEditVisible => IsPatientEditVisible || IsUserEditVisible || IsPrescriptionEditVisible || IsMonitoringEditVisible;
 
         private async Task LoadPatientsAsync()
         {
@@ -129,7 +133,8 @@ namespace PharmacistRecommendation.ViewModels
             EditPatientCid       = patient.Cid       ?? string.Empty;
             EditPatientEmail     = patient.Email      ?? string.Empty;
             EditPatientPhone     = patient.Phone      ?? string.Empty;
-            EditPatientGender    = patient.Gender     ?? string.Empty;
+            var rawGender = patient.Gender ?? string.Empty;
+            EditPatientGender = GenderOptions.Contains(rawGender) ? rawGender : string.Empty;
             IsPatientEditVisible = true;
         }
 
@@ -181,7 +186,9 @@ namespace PharmacistRecommendation.ViewModels
 
         public string[] UserRoleFilters { get; } = { "Toți", "Pharmacist", "Assistant", "Admin" };
 
-        [ObservableProperty] bool isUserEditVisible;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsAnyEditVisible))]
+        bool isUserEditVisible;
         private UserDTO? _editingUser;
         [ObservableProperty] string editUserFirstName       = string.Empty;
         [ObservableProperty] string editUserLastName        = string.Empty;
@@ -305,7 +312,9 @@ namespace PharmacistRecommendation.ViewModels
         [ObservableProperty] DateTime prescriptionFromDate;
         [ObservableProperty] DateTime prescriptionToDate;
 
-        [ObservableProperty] bool isPrescriptionEditVisible;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsAnyEditVisible))]
+        bool isPrescriptionEditVisible;
         private Prescription? _editingPrescription;
         [ObservableProperty] string editPrescriptionDiagnosis      = string.Empty;
         [ObservableProperty] string editPrescriptionObservations   = string.Empty;
@@ -389,7 +398,9 @@ namespace PharmacistRecommendation.ViewModels
 
         public string[] MonitoringTypeFilters { get; } = { "Toate", "cardio", "diabetes", "temperature" };
 
-        [ObservableProperty] bool     isMonitoringEditVisible;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsAnyEditVisible))]
+        bool isMonitoringEditVisible;
         private Monitoring? _editingMonitoring;
         [ObservableProperty] string   editMonitoringNotes  = string.Empty;
         [ObservableProperty] decimal? editMonitoringHeight;

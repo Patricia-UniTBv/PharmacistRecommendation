@@ -27,6 +27,7 @@ namespace PharmacistRecommendation.ViewModels
             NavigateToMixedActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=mixed"));
             NavigateToOwnActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=own"));
             NavigateToConsecutiveActsReportCommand = new Command(async () => await Shell.Current.GoToAsync("reports?type=consecutive"));
+            NavigateToServerConfigCommand = new Command(async () => await NavigateToServerConfigAsync());
         }
 
         public ICommand NavigateToMedicationsCommand { get; }
@@ -45,6 +46,7 @@ namespace PharmacistRecommendation.ViewModels
         public ICommand NavigateToMixedActsReportCommand { get; }
         public ICommand NavigateToOwnActsReportCommand { get; }
         public ICommand NavigateToConsecutiveActsReportCommand { get; }
+        public ICommand NavigateToServerConfigCommand { get; }
 
         private async Task NavigateToMedicationsAsync()
         {
@@ -186,10 +188,26 @@ namespace PharmacistRecommendation.ViewModels
 
         private async Task NavigateToReportsAsync()
         {
-            await Application.Current.MainPage.DisplayAlert(
-                "În curs de dezvoltare",
-                "Funcționalitatea de rapoarte va fi disponibilă în curând.",
-                "OK");
+            try
+            {
+                await Shell.Current.GoToAsync("reports");
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorAsync("Eroare Navigare", $"Nu s-a putut accesa pagina de rapoarte: {ex.Message}");
+            }
+        }
+
+        private async Task NavigateToServerConfigAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("server_configuration");
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorAsync("Eroare Navigare", $"Nu s-a putut accesa configurarea serverului: {ex.Message}");
+            }
         }
 
         private async Task NavigateToEmailAsync()

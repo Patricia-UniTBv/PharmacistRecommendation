@@ -407,6 +407,7 @@
 
         <!-- EDIT PANEL -->
         <Border Grid.Row="3"
+                IsVisible="{Binding IsAnyEditVisible}"
                 BackgroundColor="{StaticResource EditPanel}"
                 Stroke="{StaticResource ActiveTab}"
                 StrokeThickness="0,2,0,0"

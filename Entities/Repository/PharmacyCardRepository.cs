@@ -31,18 +31,12 @@ namespace Entities.Repository
       
         public async Task<PharmacyCard> AddCardWithPatientAsync(PharmacyCard card, Patient patient)
         {
-            if (patient.Id == 0)
-            {
-                _context.Patients.Add(patient);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                _context.Patients.Update(patient);
-                await _context.SaveChangesAsync();
-            }
-
+            // Patient is always already saved by the caller (via PatientRepository on a separate
+            // DbContext). We must NOT call Update/Add here — doing so on a detached entity from
+            // another DbContext instance causes tracking conflicts and double-writes.
+            // Simply set the FK and add the card.
             card.PatientId = patient.Id;
+            card.Patient = null; // clear nav property to prevent EF from re-tracking the patient
             _context.PharmacyCards.Add(card);
             await _context.SaveChangesAsync();
 
