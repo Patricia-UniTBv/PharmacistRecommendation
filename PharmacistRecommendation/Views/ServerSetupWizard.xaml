@@ -17,13 +17,11 @@
 
             <StackLayout Grid.Row="0" Spacing="16">
                 <Label Text="Bine ați venit!"
-                       Style="{StaticResource Headline}"
-                       FontSize="32"/>
+                       Style="{StaticResource Headline}"/>
                 <Label Text="Configurare Server Farmacie"
-                       Style="{StaticResource SubHeadline}"
-                       FontSize="20"/>
+                       Style="{StaticResource SubHeadline}"/>
                 <BoxView HeightRequest="3"
-                         WidthRequest="100"
+                         WidthRequest="60"
                          BackgroundColor="{StaticResource Primary}"
                          HorizontalOptions="Center"
                          CornerRadius="2"
@@ -31,14 +29,15 @@
             </StackLayout>
 
             <Border Grid.Row="1"
-                    Stroke="{StaticResource BorderDefault}"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
                     BackgroundColor="{StaticResource Surface}"
                     Padding="40">
                 <Border.Shadow>
-                    <Shadow Brush="Black" Opacity="0.08" Radius="12" Offset="0,4"/>
+                    <Shadow Brush="{StaticResource BorderDefault}" Offset="0,2" Radius="8" Opacity="0.15"/>
                 </Border.Shadow>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
 
                 <VerticalStackLayout Spacing="24">
 

@@ -51,26 +51,25 @@ namespace PharmacistRecommendation.ViewModels
         private void LoadConfiguration()
         {
             var config = ConfigurationManager.LoadConfiguration();
-            
+
             IsClientMode = config.DeploymentMode == "Client";
-            
+
             if (IsClientMode)
             {
-                ModeDescription = "Mod Client - Conectare la Server �n Re?ea";
-                ModeInfo = "Configura?i adresa serverului central pentru a v? conecta la baza de date.";
+                ModeDescription = "Mod Client - Conectare la Server în Rețea";
+                ModeInfo = "Configurați adresa serverului central pentru a vă conecta la baza de date.";
             }
             else
             {
                 ModeDescription = "Mod Server - Server Central";
-                ModeInfo = "Aceast? instalare este configurat? ca server central cu conexiune local?.";
+                ModeInfo = "Această instalare este configurată ca server central cu conexiune locală.";
                 ServerAddress = "localhost";
             }
 
             var dbSettings = config.DatabaseSettings;
-            
+
             if (!string.IsNullOrWhiteSpace(dbSettings.Server))
             {
-                // Parse server address and instance
                 var parts = dbSettings.Server.Split('\\');
                 ServerAddress = parts[0];
                 if (parts.Length > 1)
@@ -78,7 +77,7 @@ namespace PharmacistRecommendation.ViewModels
                     InstanceName = parts[1];
                 }
             }
-            
+
             DatabaseName = dbSettings.Database;
             Username = dbSettings.Username;
             Password = dbSettings.Password;
@@ -87,57 +86,51 @@ namespace PharmacistRecommendation.ViewModels
         [RelayCommand]
         private async Task TestConnection()
         {
-            StatusMessage = "Se testeaz? conexiunea...";
+            StatusMessage = "Se testează conexiunea...";
             StatusColor = Colors.Blue;
             HasStatusMessage = true;
 
-            await Task.Delay(100); // Allow UI to update
+            await Task.Delay(100);
 
             try
             {
                 string connectionString = BuildConnectionString();
-                
+
                 using var connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
-                
-                StatusMessage = "? Conexiune reu?it?! Baza de date este accesibil?.";
+
+                StatusMessage = "✓ Conexiune reușită! Baza de date este accesibilă.";
                 StatusColor = Colors.Green;
                 HasStatusMessage = true;
 
-                await Application.Current.MainPage.DisplayAlert(
-                    "Succes", 
-                    "Conexiunea la server a fost stabilit? cu succes!", 
+                await Shell.Current.DisplayAlert(
+                    "Succes",
+                    "Conexiunea la server a fost stabilită cu succes!",
                     "OK");
             }
             catch (SqlException ex)
             {
-                StatusMessage = $"? Eroare de conexiune: {ex.Message}";
+                StatusMessage = $"✗ Eroare de conexiune: {ex.Message}";
                 StatusColor = Colors.Red;
                 HasStatusMessage = true;
 
                 string errorDetails = ex.Number switch
                 {
-                    -1 => "Serverul nu poate fi g?sit sau nu este accesibil. Verifica?i adresa IP ?i conexiunea la re?ea.",
-                    18456 => "Autentificare e?uat?. Verifica?i utilizatorul ?i parola.",
-                    4060 => "Baza de date nu exist? sau nu ave?i acces la ea.",
+                    -1 => "Serverul nu poate fi găsit sau nu este accesibil. Verificați adresa IP și conexiunea la rețea.",
+                    18456 => "Autentificare eșuată. Verificați utilizatorul și parola.",
+                    4060 => "Baza de date nu există sau nu aveți acces la ea.",
                     _ => ex.Message
                 };
 
-                await Application.Current.MainPage.DisplayAlert(
-                    "Eroare de Conexiune", 
-                    errorDetails, 
-                    "OK");
+                await Shell.Current.DisplayAlert("Eroare de Conexiune", errorDetails, "OK");
             }
             catch (Exception ex)
             {
-                StatusMessage = $"? Eroare: {ex.Message}";
+                StatusMessage = $"✗ Eroare: {ex.Message}";
                 StatusColor = Colors.Red;
                 HasStatusMessage = true;
 
-                await Application.Current.MainPage.DisplayAlert(
-                    "Eroare", 
-                    $"A ap?rut o eroare: {ex.Message}", 
-                    "OK");
+                await Shell.Current.DisplayAlert("Eroare", $"A apărut o eroare: {ex.Message}", "OK");
             }
         }
 
@@ -146,19 +139,13 @@ namespace PharmacistRecommendation.ViewModels
         {
             if (IsClientMode && string.IsNullOrWhiteSpace(ServerAddress))
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Eroare de Validare", 
-                    "Adresa serverului este obligatorie.", 
-                    "OK");
+                await Shell.Current.DisplayAlert("Eroare de Validare", "Adresa serverului este obligatorie.", "OK");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(DatabaseName))
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Eroare de Validare", 
-                    "Numele bazei de date este obligatoriu.", 
-                    "OK");
+                await Shell.Current.DisplayAlert("Eroare de Validare", "Numele bazei de date este obligatoriu.", "OK");
                 return;
             }
 
@@ -166,19 +153,13 @@ namespace PharmacistRecommendation.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(Username))
                 {
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Eroare de Validare", 
-                        "Utilizatorul este obligatoriu.", 
-                        "OK");
+                    await Shell.Current.DisplayAlert("Eroare de Validare", "Utilizatorul este obligatoriu.", "OK");
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(Password))
                 {
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Eroare de Validare", 
-                        "Parola este obligatorie.", 
-                        "OK");
+                    await Shell.Current.DisplayAlert("Eroare de Validare", "Parola este obligatorie.", "OK");
                     return;
                 }
             }
@@ -186,8 +167,7 @@ namespace PharmacistRecommendation.ViewModels
             try
             {
                 var config = ConfigurationManager.LoadConfiguration();
-                
-                // Build server string with instance
+
                 string serverString = ServerAddress;
                 if (!string.IsNullOrWhiteSpace(InstanceName))
                 {
@@ -201,25 +181,22 @@ namespace PharmacistRecommendation.ViewModels
 
                 ConfigurationManager.SaveUserConfiguration(config.DatabaseSettings);
 
-                StatusMessage = "? Configurare salvat? cu succes!";
+                StatusMessage = "✓ Configurare salvată cu succes!";
                 StatusColor = Colors.Green;
                 HasStatusMessage = true;
 
-                await Application.Current.MainPage.DisplayAlert(
-                    "Succes", 
-                    "Configurarea a fost salvat?. V? rug?m s? reporni?i aplica?ia pentru a aplica modific?rile.", 
+                await Shell.Current.DisplayAlert(
+                    "Succes",
+                    "Configurarea a fost salvată. Vă rugăm să reporniți aplicația pentru a aplica modificările.",
                     "OK");
             }
             catch (Exception ex)
             {
-                StatusMessage = $"? Eroare la salvare: {ex.Message}";
+                StatusMessage = $"✗ Eroare la salvare: {ex.Message}";
                 StatusColor = Colors.Red;
                 HasStatusMessage = true;
 
-                await Application.Current.MainPage.DisplayAlert(
-                    "Eroare", 
-                    $"Nu s-a putut salva configurarea: {ex.Message}", 
-                    "OK");
+                await Shell.Current.DisplayAlert("Eroare", $"Nu s-a putut salva configurarea: {ex.Message}", "OK");
             }
         }
 

@@ -49,7 +49,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
     private ReportTypeModel? selectedReportType;
 
     [ObservableProperty]
-    private string currentReportTitle = string.Empty;
+    private string currentReportTitle = "Centru Rapoarte";
 
     [ObservableProperty]
     private bool hasData;
@@ -389,7 +389,7 @@ public partial class ReportsViewModel : ObservableObject, IDisposable
                        (p.PatientName?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.PatientCnp?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.Patient?.PharmacyCards.Any(c => c.Code?.Contains(PatientFilter, StringComparison.OrdinalIgnoreCase) == true) == true))
-            .Where(p => p.PrescriptionMedications.Any() && p.PrescriptionMedications.All(m => m.IsWithPrescription == false))
+            .Where(p => !p.PrescriptionMedications.Any() || !p.PrescriptionMedications.All(m => m.IsWithPrescription == true))
             .OrderBy(p => p.IssueDate)
             .ToList();
 

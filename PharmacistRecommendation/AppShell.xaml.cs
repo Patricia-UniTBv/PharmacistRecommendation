@@ -236,8 +236,15 @@ namespace PharmacistRecommendation
 
         private async void OnNavigateBackClicked(object sender, EventArgs e)
         {
-            if (Shell.Current.Navigation.NavigationStack.Count > 1)
-                await Shell.Current.GoToAsync("..");
+            try
+            {
+                if (Shell.Current.Navigation.NavigationStack.Count >= 1)
+                    await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Back navigation error: {ex.Message}");
+            }
         }
 
         private void OnCloseAppClicked(object sender, EventArgs e)

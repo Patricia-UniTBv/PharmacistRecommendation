@@ -500,7 +500,7 @@ namespace PharmacistRecommendation.ViewModels
             if (!string.IsNullOrWhiteSpace(CardNumber))
             {
                 var card = await _pharmacyCardService.CreateCardAsync(
-                    CardNumber, pharmacyId, PatientName ?? "-", "-", PatientCnp, null, PatientEmail, null, null, null);
+                    CardNumber, pharmacyId, "-", "-", PatientCnp, null, PatientEmail, null, null, null);
                 patient = card.Patient;
             }
             else if (!string.IsNullOrWhiteSpace(PatientName) || !string.IsNullOrWhiteSpace(PatientCnp))
@@ -542,7 +542,7 @@ namespace PharmacistRecommendation.ViewModels
                      Noon = m.Noon,
                      Evening = m.Evening,
                      Night = m.Night,
-                     AdministrationModeId = m.AdministrationMode?.Id ?? 1,
+                     AdministrationModeId = m.AdministrationMode?.Id,
                      IsWithPrescription = true
                  })
                  .Concat(
@@ -554,7 +554,7 @@ namespace PharmacistRecommendation.ViewModels
                              Noon = m.Noon,
                              Evening = m.Evening,
                              Night = m.Night,
-                             AdministrationModeId = m.AdministrationMode?.Id ?? 1,
+                             AdministrationModeId = m.AdministrationMode?.Id,
                              IsWithPrescription = false
                          })
                  )
@@ -583,7 +583,8 @@ namespace PharmacistRecommendation.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[SaveAsync] {ex}");
-                await ShowAlert($"Eroare la salvare: {ex.Message}");
+                var detail = ex.InnerException?.Message ?? ex.Message;
+                await ShowAlert($"Eroare la salvare: {detail}");
             }
         }
 
