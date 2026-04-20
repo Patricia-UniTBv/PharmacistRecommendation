@@ -1,3 +1,4 @@
+using ClosedXML.Excel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DTO;
@@ -474,6 +475,118 @@ namespace PharmacistRecommendation.ViewModels
         {
             IsMonitoringEditVisible = false;
             _editingMonitoring = null;
+        }
+
+        // ── EXPORT ────────────────────────────────────────────────────────────────
+
+        [RelayCommand]
+        private async Task ExportToExcelAsync()
+        {
+            try
+            {
+                var patients      = await _patientService.GetAllPatientsAsync();
+                var users         = (await _userService.GetAllUsersAsync()).ToList();
+                var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
+                var monitorings   = await _monitoringService.GetAllMonitoringsAsync();
+
+                using var workbook = new XLWorkbook();
+
+                // ── Sheet 1: Pacienți ─────────────────────────────────────────
+                var ws1 = workbook.Worksheets.Add("Pacienți");
+                string[] patientHeaders = { "Nume", "Prenume", "CNP", "CID", "Nr. Card", "Email", "Telefon", "Gen" };
+                for (int c = 0; c < patientHeaders.Length; c++)
+                    ws1.Cell(1, c + 1).Value = patientHeaders[c];
+                for (int i = 0; i < patients.Count; i++)
+                {
+                    var p = patients[i];
+                    ws1.Cell(i + 2, 1).Value = p.LastName;
+                    ws1.Cell(i + 2, 2).Value = p.FirstName;
+                    ws1.Cell(i + 2, 3).Value = p.Cnp;
+                    ws1.Cell(i + 2, 4).Value = p.Cid;
+                    ws1.Cell(i + 2, 5).Value = p.CardNumber;
+                    ws1.Cell(i + 2, 6).Value = p.Email;
+                    ws1.Cell(i + 2, 7).Value = p.Phone;
+                    ws1.Cell(i + 2, 8).Value = p.Gender;
+                }
+
+                // ── Sheet 2: Utilizatori ──────────────────────────────────────
+                var ws2 = workbook.Worksheets.Add("Utilizatori");
+                string[] userHeaders = { "Nume", "Prenume", "Username", "Email", "Telefon", "Rol", "NCM" };
+                for (int c = 0; c < userHeaders.Length; c++)
+                    ws2.Cell(1, c + 1).Value = userHeaders[c];
+                for (int i = 0; i < users.Count; i++)
+                {
+                    var u = users[i];
+                    ws2.Cell(i + 2, 1).Value = u.LastName;
+                    ws2.Cell(i + 2, 2).Value = u.FirstName;
+                    ws2.Cell(i + 2, 3).Value = u.Username;
+                    ws2.Cell(i + 2, 4).Value = u.Email;
+                    ws2.Cell(i + 2, 5).Value = u.Phone;
+                    ws2.Cell(i + 2, 6).Value = u.Role;
+                    ws2.Cell(i + 2, 7).Value = u.Ncm;
+                }
+
+                // ── Sheet 3: Rețete / Acte ────────────────────────────────────
+                var ws3 = workbook.Worksheets.Add("Rețete");
+                string[] prescriptionHeaders = { "Data", "Pacient", "CNP Pacient", "Serie", "Nr.", "Serviciu farmaceutic", "Diagnostic", "Observații farmacist", "Recomandare farmacist" };
+                for (int c = 0; c < prescriptionHeaders.Length; c++)
+                    ws3.Cell(1, c + 1).Value = prescriptionHeaders[c];
+                for (int i = 0; i < prescriptions.Count; i++)
+                {
+                    var pr = prescriptions[i];
+                    ws3.Cell(i + 2, 1).Value = pr.IssueDate.ToString("dd.MM.yyyy");
+                    ws3.Cell(i + 2, 2).Value = pr.PatientName;
+                    ws3.Cell(i + 2, 3).Value = pr.PatientCnp;
+                    ws3.Cell(i + 2, 4).Value = pr.Series;
+                    ws3.Cell(i + 2, 5).Value = pr.Number;
+                    ws3.Cell(i + 2, 6).Value = pr.PharmaceuticalService;
+                    ws3.Cell(i + 2, 7).Value = pr.Diagnostic;
+                    ws3.Cell(i + 2, 8).Value = pr.PharmacistObservations;
+                    ws3.Cell(i + 2, 9).Value = pr.PharmacistRecommendation;
+                }
+
+                // ── Sheet 4: Monitorizări ─────────────────────────────────────
+                var ws4 = workbook.Worksheets.Add("Monitorizări");
+                string[] monitoringHeaders = { "Data", "Pacient", "CNP", "Tip", "Înălțime (cm)", "Greutate (kg)", "Note" };
+                for (int c = 0; c < monitoringHeaders.Length; c++)
+                    ws4.Cell(1, c + 1).Value = monitoringHeaders[c];
+                for (int i = 0; i < monitorings.Count; i++)
+                {
+                    var m = monitorings[i];
+                    ws4.Cell(i + 2, 1).Value = m.MonitoringDate.ToString("dd.MM.yyyy");
+                    ws4.Cell(i + 2, 2).Value = $"{m.Patient?.LastName} {m.Patient?.FirstName}".Trim();
+                    ws4.Cell(i + 2, 3).Value = m.Patient?.Cnp;
+                    ws4.Cell(i + 2, 4).Value = GetMonitoringType(m);
+                    if (m.Height.HasValue) ws4.Cell(i + 2, 5).Value = (double)m.Height.Value;
+                    if (m.Weight.HasValue) ws4.Cell(i + 2, 6).Value = (double)m.Weight.Value;
+                    ws4.Cell(i + 2, 7).Value = m.Notes;
+                }
+
+                // ── Style header rows ─────────────────────────────────────────
+                foreach (var ws in workbook.Worksheets)
+                {
+                    var headerRow = ws.Row(1);
+                    headerRow.Style.Font.Bold = true;
+                    headerRow.Style.Fill.BackgroundColor = XLColor.FromHtml("#2D6CB0");
+                    headerRow.Style.Font.FontColor = XLColor.White;
+                    ws.Columns().AdjustToContents(1, patients.Count + 2);
+                }
+
+                var folder = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "RecomandareaFarmacistului");
+                Directory.CreateDirectory(folder);
+                var filePath = Path.Combine(folder, $"Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+                workbook.SaveAs(filePath);
+
+                await Shell.Current.DisplayAlert("Export reușit",
+                    $"Fișierul a fost salvat la:\n{filePath}", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Eroare",
+                    $"Exportul nu a putut fi efectuat: {ex.Message}", "OK");
+            }
         }
 
         // ── HELPERS ───────────────────────────────────────────────────────────────
