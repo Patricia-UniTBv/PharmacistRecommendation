@@ -228,9 +228,7 @@
                                 <Button Text="Caută"
                                         Command="{Binding LoadHistoryCommand}"
                                         FontSize="11"
-                                        Padding="10,4"
-                                        HeightRequest="30"
-                                        WidthRequest="68"/>
+                                        Padding="10,4"/>
                             </HorizontalStackLayout>
                         </Grid>
 
@@ -318,15 +316,15 @@
                 </Border>
                 <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
                     <Button Text="Trimite Mail"  Command="{Binding SendEmailCommand}"
-                            Style="{StaticResource OutlineButton}" FontSize="12" HeightRequest="34" WidthRequest="100"/>
+                            Style="{StaticResource OutlineButton}" FontSize="12"/>
                     <Button Text="Tipărește"     Command="{Binding GeneratePdfCommand}"
-                            Style="{StaticResource OutlineButton}" FontSize="12" HeightRequest="34" WidthRequest="80"/>
+                            Style="{StaticResource OutlineButton}" FontSize="12"/>
                     <Button Text="Resetează"     Command="{Binding ClearCommand}"
                             IsVisible="{Binding IsSaveButtonVisible}"
-                            Style="{StaticResource OutlineButton}" FontSize="12" HeightRequest="34" WidthRequest="80"/>
+                            Style="{StaticResource OutlineButton}" FontSize="12"/>
                     <Button Text="Salvează"      Command="{Binding SaveCommand}"
                             IsVisible="{Binding IsSaveButtonVisible}"
-                            FontSize="12" HeightRequest="34" WidthRequest="80"/>
+                            FontSize="12"/>
                 </HorizontalStackLayout>
             </Grid>
         </Border>

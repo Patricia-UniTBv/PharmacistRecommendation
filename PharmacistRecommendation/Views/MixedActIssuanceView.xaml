@@ -376,8 +376,7 @@
                     </Border>
                     <Button Text="Trimite Mail"
                             Command="{Binding SendEmailCommand}"
-                            FontSize="12"
-                            HeightRequest="34"/>
+                            FontSize="12"/>
                 </HorizontalStackLayout>
 
                 <BoxView Grid.Column="1" Color="Transparent"/>
@@ -386,12 +385,10 @@
                     <Button Text="Tipărește"
                             Command="{Binding PrintCommand}"
                             Style="{StaticResource OutlineButton}"
-                            FontSize="13"
-                            HeightRequest="34"/>
+                            FontSize="13"/>
                     <Button Text="Salvează"
                             Command="{Binding SaveCommand}"
                             FontSize="13"
-                            HeightRequest="34"
                             IsVisible="{Binding IsSaveButtonVisible}"/>
                 </HorizontalStackLayout>
             </Grid>

@@ -185,19 +185,13 @@
 
             <Button Text="Resetează"
                     Command="{Binding NewCardCommand}"
-                    Style="{StaticResource OutlineButton}"
-                    WidthRequest="120"
-                    HeightRequest="44"/>
+                    Style="{StaticResource OutlineButton}"/>
 
             <Button Text="Tipărește"
-                    Command="{Binding PrintCommand}"
-                    WidthRequest="120"
-                    HeightRequest="44"/>
+                    Command="{Binding PrintCommand}"/>
 
             <Button Text="Salvează"
-                    Command="{Binding SaveCommand}"
-                    WidthRequest="120"
-                    HeightRequest="44"/>
+                    Command="{Binding SaveCommand}"/>
 
             <Label Text="{Binding ValidationMessage}"
                    TextColor="{StaticResource TextPrimary}"

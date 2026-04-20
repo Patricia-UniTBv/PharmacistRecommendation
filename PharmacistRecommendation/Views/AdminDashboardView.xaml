@@ -53,44 +53,13 @@
                 <Setter Property="Margin" Value="2"/>
             </Style>
 
-            <Style x:Key="SaveBtn" TargetType="Button">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="{StaticResource ButtonHover}"/>
-                <Setter Property="TextColor" Value="White"/>
-                <Setter Property="CornerRadius" Value="3"/>
-                <Setter Property="HeightRequest" Value="32"/>
-                <Setter Property="Padding" Value="16,0"/>
-                <Setter Property="Margin" Value="4"/>
-            </Style>
-
-            <Style x:Key="CancelBtn" TargetType="Button">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="BackgroundColor" Value="{StaticResource Gray200}"/>
-                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
-                <Setter Property="CornerRadius" Value="3"/>
-                <Setter Property="HeightRequest" Value="32"/>
-                <Setter Property="Padding" Value="16,0"/>
-                <Setter Property="Margin" Value="4"/>
-            </Style>
-
-            <Style x:Key="FieldLabel" TargetType="Label">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="TextColor" Value="#666666"/>
-                <Setter Property="Margin" Value="0,4,0,1"/>
-            </Style>
-
-            <Style x:Key="FieldEntry" TargetType="Entry">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="BackgroundColor" Value="White"/>
-                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
-                <Setter Property="HeightRequest" Value="34"/>
-            </Style>
-
-            <Style x:Key="FieldEditor" TargetType="Editor">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="BackgroundColor" Value="White"/>
-                <Setter Property="TextColor" Value="{StaticResource TextGray}"/>
-                <Setter Property="HeightRequest" Value="60"/>
+            <Style x:Key="FieldBorderStyle" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="StrokeShape"     Value="RoundRectangle 4"/>
+                <Setter Property="Stroke"          Value="{StaticResource BorderDefault}"/>
+                <Setter Property="HeightRequest"   Value="34"/>
+                <Setter Property="Background"      Value="{StaticResource SurfaceBrush}"/>
+                <Setter Property="Padding"         Value="8,0"/>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -192,14 +161,14 @@
                 <!-- Filter bar -->
                 <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
                         Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
-                    <HorizontalStackLayout Spacing="10">
-                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="280">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Border Grid.Column="1" Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32">
                             <Entry Placeholder="Nume, CNP sau nr. card" Text="{Binding PatientSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
                                 <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
                             </Entry>
                         </Border>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </Border>
 
                 <!-- Column headers -->
@@ -245,18 +214,18 @@
 
                 <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
                         Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
-                    <HorizontalStackLayout Spacing="10">
-                        <Label Text="Rol:" VerticalOptions="Center" FontSize="13"/>
-                        <Picker ItemsSource="{Binding UserRoleFilters}"
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="Rol:" VerticalOptions="Center" FontSize="13"/>
+                        <Picker Grid.Column="1" ItemsSource="{Binding UserRoleFilters}"
                                 SelectedItem="{Binding SelectedUserRoleFilter}"
                                 WidthRequest="140" FontSize="13"/>
-                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="220">
+                        <Label Grid.Column="2" Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Border Grid.Column="3" Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32">
                             <Entry Placeholder="Nume sau username" Text="{Binding UserSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
                                 <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
                             </Entry>
                         </Border>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </Border>
 
                 <Grid Grid.Row="1" ColumnDefinitions="2*,2*,1.5*,2*,2*,1.5*,Auto"
@@ -299,18 +268,18 @@
 
                 <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
                         Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
-                    <HorizontalStackLayout Spacing="10">
-                        <Label Text="De la:" VerticalOptions="Center" FontSize="13"/>
-                        <DatePicker Date="{Binding PrescriptionFromDate}" FontSize="13"/>
-                        <Label Text="Până la:" VerticalOptions="Center" FontSize="13"/>
-                        <DatePicker Date="{Binding PrescriptionToDate}" FontSize="13"/>
-                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="200">
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="De la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Grid.Column="1" Date="{Binding PrescriptionFromDate}" FontSize="13"/>
+                        <Label Grid.Column="2" Text="Până la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Grid.Column="3" Date="{Binding PrescriptionToDate}" FontSize="13"/>
+                        <Label Grid.Column="4" Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Border Grid.Column="5" Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32">
                             <Entry Placeholder="Pacient, serie sau nr." Text="{Binding PrescriptionSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
                                 <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
                             </Entry>
                         </Border>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </Border>
 
                 <Grid Grid.Row="1" ColumnDefinitions="1.2*,2*,1.5*,1*,2*,Auto"
@@ -351,22 +320,22 @@
 
                 <Border Grid.Row="0" BackgroundColor="{StaticResource LightGray}" Padding="8,6"
                         Stroke="{StaticResource BorderGray}" StrokeThickness="0,0,0,1">
-                    <HorizontalStackLayout Spacing="10">
-                        <Label Text="De la:" VerticalOptions="Center" FontSize="13"/>
-                        <DatePicker Date="{Binding MonitoringFromDate}" FontSize="13"/>
-                        <Label Text="Până la:" VerticalOptions="Center" FontSize="13"/>
-                        <DatePicker Date="{Binding MonitoringToDate}" FontSize="13"/>
-                        <Label Text="Tip:" VerticalOptions="Center" FontSize="13"/>
-                        <Picker ItemsSource="{Binding MonitoringTypeFilters}"
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="De la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Grid.Column="1" Date="{Binding MonitoringFromDate}" FontSize="13"/>
+                        <Label Grid.Column="2" Text="Până la:" VerticalOptions="Center" FontSize="13"/>
+                        <DatePicker Grid.Column="3" Date="{Binding MonitoringToDate}" FontSize="13"/>
+                        <Label Grid.Column="4" Text="Tip:" VerticalOptions="Center" FontSize="13"/>
+                        <Picker Grid.Column="5" ItemsSource="{Binding MonitoringTypeFilters}"
                                 SelectedItem="{Binding SelectedMonitoringTypeFilter}"
                                 WidthRequest="130" FontSize="13"/>
-                        <Label Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
-                        <Border Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32" WidthRequest="180">
+                        <Label Grid.Column="6" Text="Căutare:" VerticalOptions="Center" FontSize="13"/>
+                        <Border Grid.Column="7" Stroke="{StaticResource BorderDefault}" StrokeThickness="1" StrokeShape="RoundRectangle 6" Background="{StaticResource SurfaceBrush}" Padding="8,0" HeightRequest="32">
                             <Entry Placeholder="Pacient sau CNP" Text="{Binding MonitoringSearchText}" FontSize="13" BackgroundColor="Transparent" VerticalOptions="Center">
                                 <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
                             </Entry>
                         </Border>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </Border>
 
                 <Grid Grid.Row="1" ColumnDefinitions="1.2*,2*,1.5*,1*,1*,2*,Auto"
@@ -408,140 +377,247 @@
         <!-- EDIT PANEL -->
         <Border Grid.Row="3"
                 IsVisible="{Binding IsAnyEditVisible}"
-                BackgroundColor="{StaticResource EditPanel}"
-                Stroke="{StaticResource ActiveTab}"
+                BackgroundColor="{StaticResource Surface}"
+                Stroke="{StaticResource Primary}"
                 StrokeThickness="0,2,0,0"
-                Padding="16,10">
+                Padding="16,10,16,12">
             <Grid>
 
                 <!-- Patient edit -->
-                <VerticalStackLayout IsVisible="{Binding IsPatientEditVisible}" Spacing="4">
-                    <Label Text="Editare pacient" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
-                    <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0">
+                <VerticalStackLayout IsVisible="{Binding IsPatientEditVisible}" Spacing="8">
+                    <Grid>
+                        <Label Text="Editare pacient"
+                               FontSize="13" FontFamily="OpenSansSemiBold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalOptions="Center"/>
+                        <HorizontalStackLayout HorizontalOptions="End" Spacing="8" VerticalOptions="Center">
+                            <Button Text="Anulează" Command="{Binding CancelPatientEditCommand}"
+                                    Style="{StaticResource OutlineButton}" Padding="14,6"/>
+                            <Button Text="Salvează" Command="{Binding SavePatientCommand}"
+                                    Padding="14,6"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,0.7*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientLastName}"  Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientLastName}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
                             <Label Text="Prenume" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientFirstName}" Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientFirstName}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2">
+                        <VerticalStackLayout Grid.Column="2" Spacing="2">
                             <Label Text="CNP" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientCnp}"       Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientCnp}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="3">
+                        <VerticalStackLayout Grid.Column="3" Spacing="2">
                             <Label Text="CID" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientCid}"       Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientCid}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="4">
+                        <VerticalStackLayout Grid.Column="4" Spacing="2">
                             <Label Text="Email" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientEmail}"     Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientEmail}" BackgroundColor="Transparent" FontSize="12" Keyboard="Email">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="5">
+                        <VerticalStackLayout Grid.Column="5" Spacing="2">
                             <Label Text="Telefon" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditPatientPhone}"     Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditPatientPhone}" BackgroundColor="Transparent" FontSize="12" Keyboard="Telephone">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="6">
+                        <VerticalStackLayout Grid.Column="6" Spacing="2">
                             <Label Text="Gen" Style="{StaticResource FieldLabel}"/>
-                            <Picker ItemsSource="{Binding GenderOptions}"
-                                    SelectedItem="{Binding EditPatientGender}"
-                                    FontSize="13" HeightRequest="34"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Picker ItemsSource="{Binding GenderOptions}"
+                                        SelectedItem="{Binding EditPatientGender}"
+                                        FontSize="12" BackgroundColor="Transparent"/>
+                            </Border>
                         </VerticalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
-                        <Button Text="Salvează"  Command="{Binding SavePatientCommand}"   Style="{StaticResource SaveBtn}"/>
-                        <Button Text="Anulează"  Command="{Binding CancelPatientEditCommand}" Style="{StaticResource CancelBtn}"/>
-                    </HorizontalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- User edit -->
-                <VerticalStackLayout IsVisible="{Binding IsUserEditVisible}" Spacing="4">
-                    <Label Text="Editare utilizator" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
-                    <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0">
+                <VerticalStackLayout IsVisible="{Binding IsUserEditVisible}" Spacing="8">
+                    <Grid>
+                        <Label Text="Editare utilizator"
+                               FontSize="13" FontFamily="OpenSansSemiBold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalOptions="Center"/>
+                        <HorizontalStackLayout HorizontalOptions="End" Spacing="8" VerticalOptions="Center">
+                            <Button Text="Anulează" Command="{Binding CancelUserEditCommand}"
+                                    Style="{StaticResource OutlineButton}" Padding="14,6"/>
+                            <Button Text="Salvează" Command="{Binding SaveUserCommand}"
+                                    Padding="14,6"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                    <!-- Row 1: identity fields -->
+                    <Grid ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label Text="Nume" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserLastName}"  Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserLastName}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
                             <Label Text="Prenume" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserFirstName}" Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserFirstName}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2">
+                        <VerticalStackLayout Grid.Column="2" Spacing="2">
                             <Label Text="Username" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserUsername}"  Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserUsername}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="3">
+                        <VerticalStackLayout Grid.Column="3" Spacing="2">
                             <Label Text="Email" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserEmail}"     Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserEmail}" BackgroundColor="Transparent" FontSize="12" Keyboard="Email">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="4">
+                        <VerticalStackLayout Grid.Column="4" Spacing="2">
                             <Label Text="Telefon" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserPhone}"     Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserPhone}" BackgroundColor="Transparent" FontSize="12" Keyboard="Telephone">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="5">
+                        <VerticalStackLayout Grid.Column="5" Spacing="2">
                             <Label Text="NCM" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserNcm}"       Style="{StaticResource FieldEntry}"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="6">
-                            <Label Text="Parolă nouă" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserNewPassword}"     IsPassword="True" Style="{StaticResource FieldEntry}" Placeholder="(nemodificată)"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="7">
-                            <Label Text="Confirmare parolă" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditUserConfirmPassword}" IsPassword="True" Style="{StaticResource FieldEntry}" Placeholder="(nemodificată)"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserNcm}" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
-                        <Button Text="Salvează"  Command="{Binding SaveUserCommand}"       Style="{StaticResource SaveBtn}"/>
-                        <Button Text="Anulează"  Command="{Binding CancelUserEditCommand}" Style="{StaticResource CancelBtn}"/>
-                    </HorizontalStackLayout>
+                    <!-- Row 2: password fields -->
+                    <Grid ColumnDefinitions="*,*,2*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Parolă nouă" Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserNewPassword}" IsPassword="True" BackgroundColor="Transparent" FontSize="12" Placeholder="(nemodificată)">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Confirmare parolă" Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditUserConfirmPassword}" IsPassword="True" BackgroundColor="Transparent" FontSize="12" Placeholder="(nemodificată)">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
+                        </VerticalStackLayout>
+                        <BoxView Grid.Column="2" Color="Transparent"/>
+                    </Grid>
                 </VerticalStackLayout>
 
                 <!-- Prescription edit -->
-                <VerticalStackLayout IsVisible="{Binding IsPrescriptionEditVisible}" Spacing="4">
-                    <Label Text="Editare rețetă / act" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0">
+                <VerticalStackLayout IsVisible="{Binding IsPrescriptionEditVisible}" Spacing="8">
+                    <Grid>
+                        <Label Text="Editare rețetă / act"
+                               FontSize="13" FontFamily="OpenSansSemiBold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalOptions="Center"/>
+                        <HorizontalStackLayout HorizontalOptions="End" Spacing="8" VerticalOptions="Center">
+                            <Button Text="Anulează" Command="{Binding CancelPrescriptionEditCommand}"
+                                    Style="{StaticResource OutlineButton}" Padding="14,6"/>
+                            <Button Text="Salvează" Command="{Binding SavePrescriptionCommand}"
+                                    Padding="14,6"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label Text="Diagnostic" Style="{StaticResource FieldLabel}"/>
-                            <Editor Text="{Binding EditPrescriptionDiagnosis}"      Style="{StaticResource FieldEditor}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="60">
+                                <Editor Text="{Binding EditPrescriptionDiagnosis}" BackgroundColor="Transparent" FontSize="12" AutoSize="Disabled"/>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
                             <Label Text="Observații farmacist" Style="{StaticResource FieldLabel}"/>
-                            <Editor Text="{Binding EditPrescriptionObservations}"   Style="{StaticResource FieldEditor}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="60">
+                                <Editor Text="{Binding EditPrescriptionObservations}" BackgroundColor="Transparent" FontSize="12" AutoSize="Disabled"/>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2">
+                        <VerticalStackLayout Grid.Column="2" Spacing="2">
                             <Label Text="Recomandare farmacist" Style="{StaticResource FieldLabel}"/>
-                            <Editor Text="{Binding EditPrescriptionRecommendation}" Style="{StaticResource FieldEditor}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="60">
+                                <Editor Text="{Binding EditPrescriptionRecommendation}" BackgroundColor="Transparent" FontSize="12" AutoSize="Disabled"/>
+                            </Border>
                         </VerticalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
-                        <Button Text="Salvează"  Command="{Binding SavePrescriptionCommand}"   Style="{StaticResource SaveBtn}"/>
-                        <Button Text="Anulează"  Command="{Binding CancelPrescriptionEditCommand}" Style="{StaticResource CancelBtn}"/>
-                    </HorizontalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- Monitoring edit -->
-                <VerticalStackLayout IsVisible="{Binding IsMonitoringEditVisible}" Spacing="4">
-                    <Label Text="Editare monitorizare" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource ButtonHover}"/>
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0">
+                <VerticalStackLayout IsVisible="{Binding IsMonitoringEditVisible}" Spacing="8">
+                    <Grid>
+                        <Label Text="Editare monitorizare"
+                               FontSize="13" FontFamily="OpenSansSemiBold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalOptions="Center"/>
+                        <HorizontalStackLayout HorizontalOptions="End" Spacing="8" VerticalOptions="Center">
+                            <Button Text="Anulează" Command="{Binding CancelMonitoringEditCommand}"
+                                    Style="{StaticResource OutlineButton}" Padding="14,6"/>
+                            <Button Text="Salvează" Command="{Binding SaveMonitoringCommand}"
+                                    Padding="14,6"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,2*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label Text="Înălțime (cm)" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditMonitoringHeight}" Keyboard="Numeric" Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditMonitoringHeight}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
                             <Label Text="Greutate (kg)" Style="{StaticResource FieldLabel}"/>
-                            <Entry Text="{Binding EditMonitoringWeight}" Keyboard="Numeric" Style="{StaticResource FieldEntry}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Entry Text="{Binding EditMonitoringWeight}" Keyboard="Numeric" BackgroundColor="Transparent" FontSize="12">
+                                    <Entry.Behaviors><helpers:FocusBorderBehavior/></Entry.Behaviors>
+                                </Entry>
+                            </Border>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2">
+                        <VerticalStackLayout Grid.Column="2" Spacing="2">
                             <Label Text="Note" Style="{StaticResource FieldLabel}"/>
-                            <Editor Text="{Binding EditMonitoringNotes}" Style="{StaticResource FieldEditor}"/>
+                            <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="60">
+                                <Editor Text="{Binding EditMonitoringNotes}" BackgroundColor="Transparent" FontSize="12" AutoSize="Disabled"/>
+                            </Border>
                         </VerticalStackLayout>
                     </Grid>
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="0" Margin="0,4,0,0">
-                        <Button Text="Salvează"  Command="{Binding SaveMonitoringCommand}"   Style="{StaticResource SaveBtn}"/>
-                        <Button Text="Anulează"  Command="{Binding CancelMonitoringEditCommand}" Style="{StaticResource CancelBtn}"/>
-                    </HorizontalStackLayout>
                 </VerticalStackLayout>
 
             </Grid>

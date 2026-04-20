@@ -342,7 +342,7 @@ public class PdfReportService : IPdfReportService
             AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
             AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-            var folder = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "RaportPDFs");
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
             Directory.CreateDirectory(folder);
             var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
@@ -495,7 +495,7 @@ public class PdfReportService : IPdfReportService
         AddChart("gly", PlotLine(rows, r => r.BloodGlucose, "Glicemie mg/dL"));
         AddChart("temp", PlotLine(rows, r => r.BodyTemperature, "Temperatură °C"));
 
-        var folder = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "RaportPDFs");
+        var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RaportPDFs");
         Directory.CreateDirectory(folder);
         var filePath = Path.Combine(folder, $"Raport_{safePatientName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
